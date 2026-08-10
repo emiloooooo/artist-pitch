@@ -1,0 +1,1630 @@
+/* ============================================================================
+   NIMMERSATT x cc-tapis - restrained client positioning layer
+   This file keeps the original pitch wording and section order intact. It only
+   introduces cc-tapis-inspired UI behavior: generous editorial whitespace,
+   dotted/hairline systems, asymmetrical journal rhythm, and restrained metadata
+   treatment. No client imagery, product illustration, or product recreation.
+   ========================================================================== */
+
+/* Display face for the wordmark + headings (small mono microcopy stays as-is).
+   Single bold weight vendored; mapped across the range so every heading uses it. */
+@font-face {
+  font-family: "Nimbus Sans Round";
+  src: url("../assets/fonts/nimbus-sans-round-bold.woff2") format("woff2"),
+       url("../assets/fonts/nimbus-sans-round-bold.otf") format("opentype");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+body.cc-tapis-pitch {
+  --client: #a87517;
+  --client-brown: #3b241a;
+  --cc-blue: #0005f5; /* cc-tapis brand blue (their --color-blue) — hover accent */
+  --client-paper: #ffffff;
+  --client-panel: #ffffff;
+  --client-line: rgba(59, 36, 26, 0.18);
+  --client-grid: rgba(5, 5, 5, 0.026);
+  --client-box-pad: clamp(1.35rem, 2.6vw, 2.4rem);
+  --client-row-pad: clamp(1.15rem, 2.2vw, 1.8rem);
+  --client-edge-pad: clamp(1.35rem, 4.2vw, 5rem);
+  /* cc-tapis uses these families; keep them as references without vendoring client font files. */
+  --font-client-display: "Nimbus Sans Round", "Alte Haas Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-client-body: "Neue Haas Unica", "Helvetica Neue", Arial, sans-serif;
+  --font-client-mono: "Apercu Mono", "Martian Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --bg: var(--client-paper);
+  --panel: var(--client-panel);
+  --pad-edge: var(--client-edge-pad);
+  /* Three hairlines at 25% / 50% / 75% of the real page width — symmetric, with
+     the middle line exactly centered (a 25vw repeat drifts off-center because vw
+     includes the scrollbar). */
+  background:
+    linear-gradient(90deg,
+      transparent calc(25% - 1px), var(--client-grid) calc(25% - 1px) 25%,
+      transparent 25% calc(50% - 1px), var(--client-grid) calc(50% - 1px) 50%,
+      transparent 50% calc(75% - 1px), var(--client-grid) calc(75% - 1px) 75%,
+      transparent 75%),
+    var(--bg);
+}
+
+.cc-tapis-pitch .client-crown {
+  position: fixed;
+  left: var(--client-edge-pad);
+  bottom: clamp(1rem, 2.4vw, 1.5rem);
+  z-index: calc(var(--z-nav) + 4);
+  width: min(520px, calc(100vw - (var(--client-edge-pad) * 2)));
+  background: #e9e9e6;
+  border: 1px solid rgba(5, 5, 5, 0.08);
+  color: var(--fg);
+  box-shadow: 0 18px 42px rgba(5, 5, 5, 0.08);
+  overflow: hidden;
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo),
+    visibility 0.5s linear;
+}
+
+/* Fades away once the footer is reached. */
+.cc-tapis-pitch .client-crown.is-hidden {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cc-tapis-pitch .client-crown__meta {
+  display: grid;
+  grid-template-columns: 0.7fr 1.7fr 0.45fr;
+  gap: 0.75rem;
+  padding: 1.15rem 1.35rem 0.75rem;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.08);
+  font-size: 0.62rem;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.32);
+  font-family: var(--font-client-mono);
+  font-weight: 500;
+}
+
+.cc-tapis-pitch .client-crown__meta > :nth-child(2),
+.cc-tapis-pitch .client-crown__meta > :nth-child(3) {
+  color: var(--fg);
+  font-weight: 800;
+}
+
+/* Contact lives in the meta row (replaced the duplicate wordmark there);
+   it inherits the row's mono/uppercase treatment. */
+.cc-tapis-pitch .client-crown__meta .client-crown__contact {
+  justify-self: start;
+  text-decoration: none;
+}
+
+.cc-tapis-pitch .client-crown__brackets {
+  position: relative;
+  height: 2.55rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.08);
+  color: var(--fg);
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+  font-family: var(--font-client-mono);
+  font-weight: 500;
+}
+
+.cc-tapis-pitch .client-crown__brackets span {
+  flex: 0 0 auto;
+  min-width: 100%;
+  padding-inline: 1.35rem;
+  animation: crownBrackets 12s linear infinite;
+}
+
+@keyframes crownBrackets {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.cc-tapis-pitch .client-crown__bar {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  min-height: 4.2rem;
+  padding: 0.85rem 1.35rem;
+}
+
+.cc-tapis-pitch .client-crown__brand {
+  justify-self: center;
+  font-size: clamp(0.95rem, 1.15vw, 1.16rem);
+  line-height: 0.95;
+  /* Crown panel keeps its own face — NOT the new Nimbus display font. */
+  font-family: "Alte Haas Grotesk", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+/* Crown links pick up the same cc-tapis blue on hover as the other controls. */
+.cc-tapis-pitch .client-crown__contact,
+.cc-tapis-pitch .client-crown__brand {
+  transition: color var(--dur-ui) var(--ease-spring);
+}
+
+.cc-tapis-pitch .client-crown__contact:hover,
+.cc-tapis-pitch .client-crown__contact:focus-visible,
+.cc-tapis-pitch .client-crown__brand:hover,
+.cc-tapis-pitch .client-crown__brand:focus-visible {
+  color: var(--cc-blue);
+  outline: none;
+}
+
+.cc-tapis-pitch .nav {
+  border-bottom-style: dotted;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+.cc-tapis-pitch .nav__name,
+.cc-tapis-pitch .nav__links a,
+.cc-tapis-pitch .label,
+.cc-tapis-pitch .section__index,
+.cc-tapis-pitch .casefeature__label,
+.cc-tapis-pitch .artist__role,
+.cc-tapis-pitch .partner__role {
+  font-family: var(--font-client-mono);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+}
+
+.cc-tapis-pitch .hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+.cc-tapis-pitch .hero {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.86fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  align-items: center;
+  column-gap: clamp(3rem, 8vw, 8rem);
+  row-gap: clamp(1.2rem, 2.6vw, 2rem);
+  text-align: center;
+}
+
+.cc-tapis-pitch .hero__meta {
+  grid-column: 1;
+  grid-row: 1;
+  justify-content: center;
+  order: initial;
+}
+
+.cc-tapis-pitch .hero__title {
+  grid-column: 1;
+  grid-row: 2;
+  white-space: normal;
+  max-width: 10ch;
+  margin-inline: auto;
+  font-family: var(--font-client-display);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.88;
+  text-transform: uppercase;
+  font-size: clamp(3.6rem, 7.4vw, 7.2rem);
+}
+
+.cc-tapis-pitch .hero__sub {
+  grid-column: 1;
+  grid-row: 3;
+  max-width: 42ch;
+}
+
+.cc-tapis-pitch .hero__mark {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  z-index: 1;
+  width: 100%;
+  max-width: min(46vw, 760px);
+  aspect-ratio: 40 / 27;
+  object-fit: contain;
+  justify-self: end;
+  margin: 0;
+  background: #fff;
+  pointer-events: none;
+}
+
+.cc-tapis-pitch .hero__sub em,
+.cc-tapis-pitch .section__index::before,
+.cc-tapis-pitch .casefeature__label,
+.cc-tapis-pitch .dindex {
+  color: var(--client-brown);
+}
+
+.cc-tapis-pitch .hero__sub em {
+  color: var(--client-brown);
+}
+
+.cc-tapis-pitch .hero__meta::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  align-self: center;
+  background: var(--client);
+}
+
+.cc-tapis-pitch .about,
+.cc-tapis-pitch .pillars,
+.cc-tapis-pitch .work,
+.cc-tapis-pitch .proof,
+.cc-tapis-pitch .roster,
+.cc-tapis-pitch .clients,
+.cc-tapis-pitch .section {
+  border-top-style: dotted;
+}
+
+.cc-tapis-pitch .about .shell,
+.cc-tapis-pitch .work .shell,
+.cc-tapis-pitch .roster .shell {
+  position: relative;
+}
+
+.cc-tapis-pitch .about .shell::after {
+  content: "";
+  position: absolute;
+  right: var(--pad-edge);
+  top: 0;
+  width: 1px;
+  height: clamp(80px, 12vw, 150px);
+  border-left: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .about__services li,
+.cc-tapis-pitch .stat,
+.cc-tapis-pitch .artist,
+.cc-tapis-pitch .projectteam,
+.cc-tapis-pitch .projectperson,
+.cc-tapis-pitch .nextstep,
+.cc-tapis-pitch .partner,
+.cc-tapis-pitch .beat,
+.cc-tapis-pitch .spec,
+.cc-tapis-pitch .casefeature .twocol > div {
+  border-color: var(--client-line);
+  border-style: dotted;
+}
+
+.cc-tapis-pitch .pillars__grid,
+.cc-tapis-pitch .clientwall,
+.cc-tapis-pitch .proof__grid {
+  background: var(--client-line);
+  border-color: var(--client-line);
+}
+
+.cc-tapis-pitch .pillar,
+.cc-tapis-pitch .clientwall__logo {
+  background: var(--bg);
+}
+
+.cc-tapis-pitch .pillar:hover,
+.cc-tapis-pitch .clientwall__logo:hover {
+  background: var(--panel);
+}
+
+.cc-tapis-pitch .casefeature {
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .pillar {
+  padding: var(--client-box-pad);
+}
+
+.cc-tapis-pitch .stat {
+  padding: var(--client-row-pad);
+}
+
+.cc-tapis-pitch .artist,
+.cc-tapis-pitch .projectperson,
+.cc-tapis-pitch .clientwall__logo,
+.cc-tapis-pitch .casefeature .twocol > div {
+  padding: var(--client-box-pad);
+}
+
+.cc-tapis-pitch .casefeature .twocol {
+  gap: 1px;
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .casefeature .twocol > div {
+  background: var(--bg);
+}
+
+.cc-tapis-pitch .casefeature .twocol h3,
+.cc-tapis-pitch .casefeature .twocol p {
+  max-width: 58ch;
+}
+
+.cc-tapis-pitch .casefeature .twocol h3,
+.cc-tapis-pitch .artist__name,
+.cc-tapis-pitch .projectteam__title,
+.cc-tapis-pitch .partner__name {
+  font-family: var(--font-client-body);
+  font-weight: 700;
+}
+
+.cc-tapis-pitch .mood {
+  border-color: var(--client-line);
+}
+
+.cc-tapis-pitch .mood__cap {
+  background: rgba(5, 5, 5, 0.78);
+  padding: 0.65rem 0.8rem;
+  inset-inline: 0 auto;
+  max-width: calc(100% - 1rem);
+}
+
+/* --- Concepts: film treatments for the Fornasetti wall pieces --------------
+   The small rug plates are client-supplied reference artwork (sent by Otto
+   for this pitch) — shown as catalogue plates, kept small on purpose. */
+.cc-tapis-pitch .concept__head {
+  display: grid;
+  /* left half = the two reference squares (25% each), right half = the brief (50%) */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr);
+  gap: 1px;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+/* DOM order is rug · brief · copy — reorder to rug | copy | brief for the 25/25/50 split */
+.cc-tapis-pitch .concept__rug {
+  order: 1;
+}
+.cc-tapis-pitch .concept__rug--copy {
+  order: 2;
+}
+.cc-tapis-pitch .concept__brief {
+  order: 3;
+}
+
+.cc-tapis-pitch .concept__rug,
+.cc-tapis-pitch .concept__brief {
+  background: var(--bg);
+  padding: var(--client-box-pad);
+}
+
+/* brief fills the right half, vertically centred */
+.cc-tapis-pitch .concept__brief {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* reference plate — a perfect square holding the rug image + its caption */
+.cc-tapis-pitch .concept__rug {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* click / Enter enlarges the (left) plate in the lightbox; the copy is decorative */
+.cc-tapis-pitch .concept__rug img {
+  max-width: 100%;
+  max-height: calc(100% - 1.5rem);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  padding: clamp(0.6rem, 1.2vw, 1rem);
+  background: var(--bg);
+  border: 1px dotted var(--client-line);
+  cursor: zoom-in;
+  transition: background var(--dur-ui) var(--ease-spring);
+}
+
+.cc-tapis-pitch .concept__rug--copy img {
+  cursor: default;
+}
+
+.cc-tapis-pitch .concept__rug img:hover,
+.cc-tapis-pitch .concept__rug img:focus-visible {
+  background: var(--panel);
+  outline: 1px solid var(--client-brown);
+  outline-offset: 2px;
+}
+
+.cc-tapis-pitch .concept__rug--copy img:hover {
+  background: var(--bg);
+  outline: none;
+}
+
+.cc-tapis-pitch .concept__rugcap {
+  font-family: var(--font-client-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.38);
+}
+
+.cc-tapis-pitch .concept__title {
+  font-family: var(--font-client-body);
+  font-weight: 700;
+  font-size: clamp(1.35rem, 2.3vw, 1.9rem);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.cc-tapis-pitch .concept__style {
+  margin-top: 0.6rem;
+  font-family: var(--font-client-mono);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--client-brown);
+}
+
+.cc-tapis-pitch .concept__premise {
+  margin-top: clamp(0.9rem, 1.8vw, 1.3rem);
+  max-width: 58ch;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* Concept writeup as four connected blocks: Ideation · Plot · Tone of voice ·
+   Look and feel. One continuous A/B/C/D row on desktop, stacked on mobile. */
+.cc-tapis-pitch .conceptbody {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  margin-top: 1px;
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+/* five blocks — Ideation · Plot · Reveal · Tone of voice · Look and feel — sit
+   side by side in one row of five columns on desktop, stacked on small screens. */
+@media (min-width: 980px) {
+  .cc-tapis-pitch .conceptbody {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.cc-tapis-pitch .conceptblock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: clamp(1.25rem, 2vw, 1.8rem);
+  background: var(--bg);
+}
+
+.cc-tapis-pitch .conceptblock__tag {
+  font-family: var(--font-client-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--client-brown);
+}
+
+.cc-tapis-pitch .conceptblock p {
+  max-width: none;
+  color: var(--muted);
+  font-size: clamp(0.78rem, 0.92vw, 0.94rem);
+  line-height: 1.62;
+}
+
+/* Sub-label lead inside a block (Setup / Progression / Reveal, Audio identity …). */
+.cc-tapis-pitch .conceptblock__sub {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-family: var(--font-client-mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--client-brown);
+}
+
+.cc-tapis-pitch .conceptblock strong {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+/* Nimbus Sans Round on the headings (hero wordmark + crown brand already use the
+   display var). Placed after the concept/title rules so it wins the cascade. */
+.cc-tapis-pitch .manifesto__line,
+.cc-tapis-pitch .closing__line:not(.closing__line--ascii),
+.cc-tapis-pitch .concept__title,
+.cc-tapis-pitch .nextstep h3,
+.cc-tapis-pitch .projectteam__title,
+.cc-tapis-pitch .roster__subhead {
+  font-family: var(--font-client-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cc-tapis-pitch .concept__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+  align-items: baseline;
+  margin-top: 1px;
+  padding: var(--client-row-pad) var(--client-box-pad);
+  border: 1px dotted var(--client-line);
+  background: var(--bg);
+  color: var(--muted);
+  font-family: var(--font-client-mono);
+  font-size: 0.68rem;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cc-tapis-pitch .concept__meta span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.cc-tapis-pitch .concept__meta strong,
+.cc-tapis-pitch .concept__person {
+  color: var(--fg);
+  font-weight: 800;
+}
+
+.cc-tapis-pitch .concept__person {
+  position: relative;
+  text-decoration: none;
+  transition: color var(--dur-ui) var(--ease-spring);
+}
+
+.cc-tapis-pitch .concept__person::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.12em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-ui) var(--ease-spring);
+}
+
+.cc-tapis-pitch .concept__person:hover,
+.cc-tapis-pitch .concept__person:focus-visible {
+  color: var(--client-brown);
+}
+
+.cc-tapis-pitch .concept__person:hover::after,
+.cc-tapis-pitch .concept__person:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Strip wrapper — hosts the stylized scroll control over the viewport. */
+.cc-tapis-pitch .concept__refswrap {
+  position: relative;
+  margin-top: 1px;
+}
+
+.cc-tapis-pitch .concept__refs {
+  --refs-height: clamp(210px, 24vw, 360px);
+  --refs-peek: 0.24;
+  --refs-active-peek: 0.12;
+  --refs-open-gap: clamp(0.25rem, 0.75vw, 0.7rem);
+  position: relative;
+  display: block;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  margin-top: 1px;
+  padding-block: clamp(0.8rem, 1.4vw, 1.35rem);
+  border: 1px dotted var(--client-line);
+  background: var(--client-line);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cc-tapis-pitch .concept__refs::-webkit-scrollbar {
+  display: none;
+}
+
+.cc-tapis-pitch .concept__refswrap .concept__refs {
+  margin-top: 0;
+}
+
+/* Control bar under the strip — arrow buttons + draggable panorama slider,
+   one connected dotted panel in the cc-tapis language. No "Scroll" wording. */
+.cc-tapis-pitch .concept__refsbar {
+  display: none;
+  align-items: stretch;
+  gap: 1px;
+  margin-top: 1px;
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .concept__refsbtn {
+  flex: 0 0 auto;
+  width: clamp(2.8rem, 5vw, 3.6rem);
+  min-height: clamp(2.6rem, 4vw, 3rem);
+  display: grid;
+  place-items: center;
+  border: none;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-client-mono);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--dur-ui) var(--ease-spring),
+    color var(--dur-ui) var(--ease-spring);
+}
+
+.cc-tapis-pitch .concept__refsbtn:hover,
+.cc-tapis-pitch .concept__refsbtn:focus-visible {
+  background: var(--cc-blue);
+  color: #fff;
+  outline: none;
+}
+
+/* Hovering anywhere over a stack tints its controls cc-tapis blue. */
+.cc-tapis-pitch .conceptstack:hover .concept__refsbtn {
+  color: var(--cc-blue);
+}
+.cc-tapis-pitch .conceptstack:hover .concept__refsbtn:hover {
+  color: #fff;
+}
+.cc-tapis-pitch .conceptstack:hover .conceptstack__count [data-stack-index] {
+  color: var(--cc-blue);
+}
+
+.cc-tapis-pitch .concept__slider {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--bg);
+  cursor: grab;
+  touch-action: none;
+}
+
+.cc-tapis-pitch .concept__slider:active {
+  cursor: grabbing;
+}
+
+/* center hairline the thumb rides along */
+.cc-tapis-pitch .concept__slider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .concept__slider:focus-visible {
+  outline: 1px solid var(--client-brown);
+  outline-offset: -2px;
+}
+
+.cc-tapis-pitch .concept__slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 0.55rem;
+  margin-top: -0.275rem;
+  width: 40px;
+  background: var(--client-brown);
+  transform: translateX(0);
+  will-change: transform, width;
+  pointer-events: none;
+}
+
+.cc-tapis-pitch .concept__refs:focus-visible {
+  outline: 1px solid var(--client-brown);
+  outline-offset: 3px;
+}
+
+.cc-tapis-pitch .concept__refs-track {
+  position: relative;
+  display: block;
+  width: max-content;
+  height: var(--refs-height);
+  min-width: 100%;
+  will-change: width;
+}
+
+.cc-tapis-pitch .concept__refs figure {
+  position: absolute;
+  top: 0;
+  left: var(--stack-left, 0px);
+  flex: 0 0 auto;
+  width: var(--stack-width, calc(var(--refs-height) * var(--ar, 1.6)));
+  height: var(--stack-height, var(--refs-height));
+  margin: 0;
+  background: var(--bg);
+  overflow: hidden;
+  cursor: default;
+  transform: translate3d(0, var(--stack-y, 0px), 0) rotate(var(--stack-tilt, 0deg));
+  transform-origin: 50% 88%;
+  box-shadow:
+    -1px 0 0 var(--client-line),
+    -18px 0 34px rgba(5, 5, 5, 0.14);
+  transition:
+    left 520ms var(--ease-out-expo),
+    transform 520ms var(--ease-out-expo),
+    filter 260ms var(--ease-spring),
+    opacity 260ms var(--ease-spring),
+    box-shadow 260ms var(--ease-spring);
+}
+
+.cc-tapis-pitch .concept__refs.is-accordion-active figure {
+  filter: saturate(0.9) contrast(0.96);
+  opacity: 0.82;
+}
+
+.cc-tapis-pitch .concept__refs figure:hover,
+.cc-tapis-pitch .concept__refs figure:focus-within,
+.cc-tapis-pitch .concept__refs figure.is-stack-active {
+  z-index: 8;
+  opacity: 1;
+  filter: contrast(1.05);
+  transform: translate3d(0, -0.35rem, 0) rotate(0deg);
+  box-shadow:
+    -1px 0 0 var(--client-line),
+    -24px 0 46px rgba(5, 5, 5, 0.22);
+}
+
+.cc-tapis-pitch .concept__refs figure:hover + figure,
+.cc-tapis-pitch .concept__refs figure:focus-within + figure,
+.cc-tapis-pitch .concept__refs figure.is-stack-next {
+  opacity: 0.9;
+}
+
+.cc-tapis-pitch .concept__refs figure.is-stack-before,
+.cc-tapis-pitch .concept__refs figure.is-stack-after {
+  filter: saturate(0.86) contrast(0.94);
+  opacity: 0.76;
+}
+
+.cc-tapis-pitch .concept__refs figure.is-stack-near {
+  opacity: 0.9;
+  filter: contrast(0.98);
+}
+
+.cc-tapis-pitch .concept__refs img {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: contrast(1.03);
+}
+
+.cc-tapis-pitch .concept__refs figcaption {
+  display: none;
+}
+
+/* --- Concept reference accordion: horizontal stacked cards ------------------
+   Cards fill the deck height and overlap so only a uniform right-edge sliver of
+   each image shows. JS sets each card's translateX + width; hovering one opens
+   it at its true aspect ratio while the neighbours squeeze together. Shadows are
+   cast sideways ONTO the cards behind (never a soft glow on the panel). */
+.cc-tapis-pitch .conceptstack {
+  margin-top: 1px;
+}
+
+.cc-tapis-pitch .conceptstack__deck {
+  position: relative;
+  height: clamp(240px, 34vw, 420px);
+  border: 1px dotted var(--client-line);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.cc-tapis-pitch .conceptstack__card {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 90%;
+  width: 300px;
+  margin: 0;
+  background: var(--bg);
+  /* no border, no shadow — images sit edge to edge, nothing spills past the frame */
+  overflow: hidden;
+  cursor: pointer;
+  transform: translate(0, -50%);
+  transition: transform 0.44s var(--ease-out-expo), width 0.44s var(--ease-out-expo),
+    height 0.44s var(--ease-out-expo), opacity 0.34s var(--ease-out-expo),
+    box-shadow 0.3s var(--ease-out-expo);
+  will-change: transform, width;
+  backface-visibility: hidden;
+}
+
+.cc-tapis-pitch .conceptstack__card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* card box already equals the image aspect ratio → no crop */
+  display: block;
+  filter: contrast(1.03);
+  pointer-events: none;
+}
+
+/* Opened card rises over its neighbours — no shadow spilling past the frame. */
+.cc-tapis-pitch .conceptstack__card.is-open {
+  box-shadow: none;
+}
+
+/* --- Soft fullscreen lightbox (click an image) ------------------------------
+   Not full-bleed: the image scales up with a margin so the blurred page stays
+   faintly visible behind it. */
+html.cc-lightbox-open {
+  overflow: hidden;
+}
+
+.cc-tapis-pitch .cc-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 6vw, 5rem);
+  background: rgba(240, 236, 230, 0.32);
+  -webkit-backdrop-filter: blur(16px) saturate(1.04);
+  backdrop-filter: blur(16px) saturate(1.04);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.34s var(--ease-out-expo);
+}
+
+.cc-tapis-pitch .cc-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cc-tapis-pitch .cc-lightbox__img {
+  max-width: min(74vw, 1120px);
+  max-height: min(80vh, 820px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 40px 90px rgba(5, 5, 5, 0.34);
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.42s var(--ease-out-expo), opacity 0.42s var(--ease-out-expo);
+}
+
+.cc-tapis-pitch .cc-lightbox.is-open .cc-lightbox__img {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.cc-tapis-pitch .cc-lightbox__close {
+  position: fixed;
+  top: clamp(1rem, 2.5vw, 1.6rem);
+  right: clamp(1rem, 2.5vw, 1.6rem);
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(5, 5, 5, 0.2);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--fg);
+  font-family: var(--font-client-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s var(--ease-out-expo), color 0.25s, border-color 0.25s;
+}
+
+.cc-tapis-pitch .cc-lightbox__close:hover,
+.cc-tapis-pitch .cc-lightbox__close:focus-visible {
+  background: var(--cc-blue);
+  color: #fff;
+  border-color: var(--cc-blue);
+  outline: none;
+}
+
+/* Simple click-through control under the stack — prev / counter / next, same
+   dotted mono language. A fallback for anyone who can't work the hover. */
+.cc-tapis-pitch .conceptstack__bar {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  margin-top: 1px;
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .conceptstack__count {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: var(--font-client-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+}
+
+.cc-tapis-pitch .conceptstack__count [data-stack-index] {
+  color: var(--client-brown);
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-tapis-pitch .conceptstack__card {
+    transition: none !important;
+  }
+}
+
+.cc-tapis-pitch .ref-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: rgba(5, 5, 5, 0.88);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms var(--ease-spring);
+}
+
+.cc-tapis-pitch .ref-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cc-tapis-pitch .ref-lightbox__figure {
+  width: min(92vw, 1480px);
+  height: min(86vh, 920px);
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.cc-tapis-pitch .ref-lightbox__img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.cc-tapis-pitch .ref-lightbox__close {
+  position: fixed;
+  top: clamp(0.9rem, 2vw, 1.4rem);
+  right: clamp(0.9rem, 2vw, 1.4rem);
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px dotted rgba(255, 255, 255, 0.32);
+  background: rgba(5, 5, 5, 0.36);
+  color: var(--on-dark);
+  font-family: var(--font-client-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.cc-tapis-pitch .ref-lightbox__close:hover,
+.cc-tapis-pitch .ref-lightbox__close:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+@media (min-width: 760px) {
+  .cc-tapis-pitch .about .shell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .cc-tapis-pitch .about__lead,
+  .cc-tapis-pitch .about__body {
+    width: min(100%, 48ch);
+    max-width: 48ch;
+    text-align: left;
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .cc-tapis-pitch .about__servicesblock {
+    width: 100%;
+  }
+}
+
+.cc-tapis-pitch .about__lead span {
+  display: block;
+}
+
+.cc-tapis-pitch .about__lead {
+  max-width: 48ch;
+}
+
+.cc-tapis-pitch .about__body {
+  max-width: 48ch;
+  justify-items: stretch;
+}
+
+.cc-tapis-pitch .about__body p:not(.about__emailrow) {
+  font-family: var(--font-client-display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.22;
+}
+
+.cc-tapis-pitch .about__body--full p:not(.about__emailrow) {
+  max-width: none;
+  font-size: clamp(1rem, 1.45vw, 1.34rem);
+}
+
+.cc-tapis-pitch .about__body--short p:not(.about__emailrow) {
+  font-size: clamp(1rem, 4.7vw, 1.42rem);
+}
+
+/* small role line under the contact email */
+.cc-tapis-pitch .about__emailrole {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--font-client-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .cc-tapis-pitch .concept__head {
+    grid-template-columns: 1fr;
+  }
+
+  /* one reference square + brief is enough on a phone — drop the mirrored copy */
+  .cc-tapis-pitch .concept__rug--copy {
+    display: none;
+  }
+
+  .cc-tapis-pitch .concept__rug {
+    aspect-ratio: auto;
+  }
+
+  .cc-tapis-pitch .concept__rug img {
+    max-width: 172px;
+    max-height: none;
+  }
+
+  .cc-tapis-pitch .concept__brief {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .cc-tapis-pitch .concept__refs {
+    --refs-height: clamp(190px, 54vw, 280px);
+  }
+}
+
+/* Services block: small top-left label + a line-filling, roomy list. */
+.cc-tapis-pitch .about__servicesblock {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px dotted var(--client-line);
+  padding-top: clamp(1.4rem, 2.6vw, 2rem);
+  text-align: left;
+}
+
+.cc-tapis-pitch .about__serviceslabel {
+  margin-bottom: clamp(1.1rem, 2.2vw, 1.8rem);
+  font-family: var(--font-client-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--client-brown);
+  text-align: left;
+}
+
+.cc-tapis-pitch .about__services {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+  justify-content: space-between;
+  align-content: start;
+  row-gap: clamp(1.1rem, 2.4vw, 2rem);
+  column-gap: clamp(1rem, 2vw, 2rem);
+  text-align: left;
+}
+
+/* Line-filling distribution: drop the inline dots so each row spreads
+   edge-to-edge, and keep an invisible last-row tail so a short final
+   line still aligns left instead of stretching. */
+.cc-tapis-pitch .about__services li {
+  padding-block: 0.1rem;
+}
+
+.cc-tapis-pitch .about__services li:not(:last-child)::after {
+  content: none;
+  margin: 0;
+}
+
+.cc-tapis-pitch .nextsteps__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+@media (min-width: 860px) {
+  .cc-tapis-pitch .nextsteps__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.cc-tapis-pitch .nextstep {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.8rem, 1.4vw, 1rem);
+  min-height: clamp(210px, 19vw, 280px);
+  padding: var(--client-box-pad);
+  background: var(--bg);
+}
+
+.cc-tapis-pitch .nextstep__num {
+  width: fit-content;
+  color: var(--client-brown);
+  font-family: var(--font-client-mono);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.cc-tapis-pitch .nextstep h3 {
+  max-width: 15ch;
+  font-family: var(--font-client-body);
+  font-size: clamp(1.2rem, 2.1vw, 1.65rem);
+  line-height: 1.08;
+}
+
+.cc-tapis-pitch .nextstep p {
+  margin-top: auto;
+  max-width: 35ch;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.cc-tapis-pitch .projectteams {
+  display: grid;
+  gap: 1px;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+.cc-tapis-pitch .projectteam {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--client-line);
+}
+
+@media (min-width: 780px) {
+  .cc-tapis-pitch .projectteam {
+    grid-template-columns: minmax(160px, 0.28fr) minmax(0, 1fr);
+  }
+}
+
+.cc-tapis-pitch .projectteam__title,
+.cc-tapis-pitch .projectteam__crew {
+  background: var(--bg);
+}
+
+.cc-tapis-pitch .projectteam__title {
+  display: flex;
+  align-items: center;
+  min-height: 100%;
+  padding: var(--client-box-pad);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1;
+}
+
+.cc-tapis-pitch .projectteam__crew {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--client-line);
+}
+
+@media (min-width: 680px) {
+  .cc-tapis-pitch .projectteam__crew {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+.cc-tapis-pitch .projectperson {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  min-height: clamp(92px, 9vw, 118px);
+  background: var(--bg);
+  text-decoration: none;
+  transition: background var(--dur-ui) var(--ease-spring);
+}
+
+.cc-tapis-pitch .projectperson:hover,
+.cc-tapis-pitch .projectperson:focus-visible {
+  background: var(--panel);
+}
+
+.cc-tapis-pitch .partners {
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+@media (min-width: 720px) {
+  .cc-tapis-pitch .partners {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.cc-tapis-pitch .partner {
+  background: var(--bg);
+  padding: var(--client-row-pad);
+  min-height: 96px;
+}
+
+.cc-tapis-pitch .clients {
+  background: var(--bg);
+}
+
+/* One bar, equal-sized blocks (7 logos → single row on desktop). */
+.cc-tapis-pitch .clientlist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(1.5rem, 3vw, 2.2rem);
+  padding: 0;
+  list-style: none;
+  background: var(--client-line);
+  border: 1px dotted var(--client-line);
+}
+
+@media (min-width: 560px) {
+  .cc-tapis-pitch .clientlist { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 920px) {
+  .cc-tapis-pitch .clientlist { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+
+.cc-tapis-pitch .clientlist li {
+  min-width: 0;
+  min-height: clamp(78px, 8vw, 110px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--client-row-pad);
+  background: var(--bg);
+}
+
+.cc-tapis-pitch .clientlist img {
+  display: block;
+  width: auto;
+  max-width: min(72%, 156px);
+  max-height: clamp(28px, 4.2vw, 52px);
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.08);
+  opacity: 0.72;
+}
+
+.cc-tapis-pitch .clientwall {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 560px) {
+  .cc-tapis-pitch .clientwall {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 920px) {
+  .cc-tapis-pitch .clientwall {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+}
+
+.cc-tapis-pitch .clientwall__logo {
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  padding-inline: clamp(0.7rem, 1.3vw, 1.1rem);
+}
+
+.cc-tapis-pitch .clientwall__logo img {
+  max-width: 94%;
+}
+
+.cc-tapis-pitch .clientwall__logo--word img {
+  width: clamp(60px, 5.8vw, 86px);
+}
+
+.cc-tapis-pitch .closing {
+  /* Grid removed per feedback — plain dark ground under the ASCII "Still hungry". */
+  background: var(--dark);
+}
+
+.cc-tapis-pitch .closing__line--ascii {
+  max-width: none;
+  font-family: var(--font-client-mono);
+  font-size: clamp(0.42rem, 0.92vw, 0.82rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: normal;
+}
+
+.cc-tapis-pitch .ascii-art {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-block: 0.15rem;
+  color: var(--on-dark);
+  white-space: pre;
+  font: inherit;
+}
+
+.cc-tapis-pitch .contact__mail::after {
+  background: var(--client);
+}
+
+@media (max-width: 900px) {
+  .cc-tapis-pitch .about .shell::after {
+    display: none;
+  }
+
+  .cc-tapis-pitch .hero {
+    grid-template-columns: 1fr;
+    row-gap: clamp(1.1rem, 4vw, 1.8rem);
+  }
+
+  .cc-tapis-pitch .hero__meta,
+  .cc-tapis-pitch .hero__title,
+  .cc-tapis-pitch .hero__sub,
+  .cc-tapis-pitch .hero__mark {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .cc-tapis-pitch .hero__mark {
+    max-width: min(62vw, 340px);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 640px) {
+  body.cc-tapis-pitch {
+    background: var(--bg);
+    --client-box-pad: 1.1rem;
+    --client-row-pad: 0.95rem;
+    --client-edge-pad: clamp(1.1rem, 5vw, 1.35rem);
+    --client-crown-mobile-height: 6rem;
+    --client-crown-mobile-offset: max(0.55rem, env(safe-area-inset-bottom));
+    --client-crown-mobile-space: calc(
+      var(--client-crown-mobile-height) + var(--client-crown-mobile-offset) + 0.75rem
+    );
+  }
+
+  .cc-tapis-pitch .hero {
+    min-height: 100svh;
+    padding-top: clamp(3.75rem, 12vw, 5.25rem);
+    padding-bottom: var(--client-crown-mobile-space);
+    row-gap: clamp(0.75rem, 3vw, 1.1rem);
+  }
+
+  .cc-tapis-pitch .hero__title {
+    max-width: none;
+    inline-size: 100%;
+    justify-self: center;
+    margin-inline: 0;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    font-size: clamp(1.9rem, 8.8vw, 2.25rem);
+    letter-spacing: -0.055em;
+  }
+
+  .cc-tapis-pitch .hero__sub {
+    max-width: min(23ch, 100%);
+    margin-inline: auto;
+    font-size: clamp(0.92rem, 4.1vw, 1rem);
+    line-height: 1.5;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .cc-tapis-pitch .hero__mark {
+    width: min(58vw, 210px);
+    max-width: min(58vw, 210px);
+  }
+
+  .cc-tapis-pitch .hero__meta {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+  }
+
+  .cc-tapis-pitch .hero__meta .label {
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+  }
+
+  .cc-tapis-pitch .hero__meta::before {
+    display: none;
+  }
+
+  .cc-tapis-pitch .about__lead {
+    width: 100%;
+    font-size: clamp(1.05rem, 5.5vw, 1.65rem);
+    line-height: 1.16;
+  }
+
+  .cc-tapis-pitch .about__lead span {
+    white-space: nowrap;
+  }
+
+  .cc-tapis-pitch .conceptstack__deck {
+    /* JS sizes the deck to the shown image on mobile; this is the pre-JS fallback. */
+    height: clamp(200px, 56vw, 300px);
+    transition: height 0.4s var(--ease-out-expo);
+  }
+
+  /* Bigger lightbox on phones (the 74vw desktop cap would waste the screen). */
+  .cc-tapis-pitch .cc-lightbox {
+    padding: 0.9rem;
+  }
+
+  .cc-tapis-pitch .cc-lightbox__img {
+    max-width: 94vw;
+    max-height: 82vh;
+  }
+
+  .cc-tapis-pitch .cc-lightbox__close {
+    font-size: 0.66rem;
+  }
+
+  .cc-tapis-pitch .closing {
+    padding-bottom: calc(var(--gap-section) + var(--client-crown-mobile-space));
+  }
+
+  .cc-tapis-pitch .backtotop {
+    bottom: calc(var(--client-crown-mobile-space) + 0.5rem);
+  }
+
+  .cc-tapis-pitch .client-crown {
+    left: max(0.6rem, env(safe-area-inset-left));
+    right: max(0.6rem, env(safe-area-inset-right));
+    bottom: var(--client-crown-mobile-offset);
+    width: auto;
+    max-height: var(--client-crown-mobile-height);
+  }
+
+  .cc-tapis-pitch .client-crown__meta {
+    grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr) minmax(0, 0.45fr);
+    gap: 0.45rem;
+    padding: 0.58rem 0.72rem 0.42rem;
+    font-size: 0.5rem;
+  }
+
+  .cc-tapis-pitch .client-crown__brackets {
+    height: 1.65rem;
+    font-size: 0.76rem;
+  }
+
+  .cc-tapis-pitch .client-crown__brackets span {
+    padding-inline: 0.72rem;
+  }
+
+  .cc-tapis-pitch .client-crown__bar {
+    min-height: 2.65rem;
+    padding: 0.42rem 0.72rem;
+  }
+
+  .cc-tapis-pitch .client-crown__brand {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: clamp(0.72rem, 3.4vw, 0.84rem);
+    text-overflow: ellipsis;
+  }
+
+  .cc-tapis-pitch .closing__line--ascii {
+    font-size: clamp(0.3rem, 1.9vw, 0.48rem);
+  }
+}
+
+@media (max-width: 640px) and (max-height: 650px) {
+  body.cc-tapis-pitch {
+    --client-crown-mobile-height: 5rem;
+  }
+
+  .cc-tapis-pitch .hero {
+    padding-top: 2.8rem;
+    row-gap: 0.5rem;
+  }
+
+  .cc-tapis-pitch .hero__title {
+    font-size: clamp(1.65rem, 8.8vw, 1.9rem);
+  }
+
+  .cc-tapis-pitch .hero__sub {
+    max-width: min(27ch, 100%);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .cc-tapis-pitch .hero__mark {
+    width: min(46vw, 168px);
+    max-width: min(46vw, 168px);
+  }
+
+  .cc-tapis-pitch .hero__meta {
+    gap: 0.28rem;
+  }
+
+  .cc-tapis-pitch .hero__meta .label {
+    font-size: 0.5rem;
+  }
+
+  .cc-tapis-pitch .client-crown__meta {
+    padding: 0.4rem 0.58rem 0.3rem;
+    font-size: 0.46rem;
+  }
+
+  .cc-tapis-pitch .client-crown__brackets {
+    height: 1.3rem;
+    font-size: 0.66rem;
+  }
+
+  .cc-tapis-pitch .client-crown__bar {
+    min-height: 2.25rem;
+    padding-block: 0.3rem;
+  }
+
+  .cc-tapis-pitch .client-crown__brand {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-tapis-pitch .client-crown__brackets span {
+    animation: none;
+    transform: none;
+  }
+
+  .cc-tapis-pitch .concept__refs-track {
+    transform: none;
+  }
+}
+
+@media print {
+  body.cc-tapis-pitch {
+    background: var(--bg) !important;
+  }
+
+  .cc-tapis-pitch .about .shell::after {
+    display: none !important;
+  }
+}

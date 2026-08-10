@@ -1,0 +1,232 @@
+/* ============================================================================
+   NIMMERSATT — Design Tokens & Base
+   Single source of truth for the Nimmersatt visual language.
+   Distilled from the live Nimmersatt projects + Mango Brain vault.
+
+   Philosophy: "Subtract before you add." Restraint with confidence.
+   Monochrome (white / near-black) + exactly ONE accent used as punctuation.
+   Two typefaces only: Rock 3D (display) + Martian Mono (body / mono).
+   ========================================================================== */
+
+:root {
+  /* --- Color: monochrome base ------------------------------------------- */
+  --bg:            #ffffff;            /* page background — never cream/off-white */
+  --fg:            #050505;            /* near-black, softer than pure #000 */
+  --muted:         rgba(5, 5, 5, 0.58);/* secondary labels, metadata */
+  --faint:         rgba(5, 5, 5, 0.10);/* hairline borders, dividers */
+  --panel:         #f6f6f2;            /* quiet surface for sections */
+  --dark:          #090909;            /* inverted bands (ticker, footer) */
+  --on-dark:       #f5f5f0;            /* text on dark bands */
+  --on-dark-muted: rgba(245, 245, 240, 0.55);
+
+  /* --- Editorial reading system ----------------------------------------- */
+  /* Martian Mono is hard to read heavy, so running text is set lighter, with
+     a darker ink for AA+ contrast and a controlled measure. See the
+     "EDITORIAL TYPE SYSTEM" block in pitch.css / deck.css for the roles. */
+  --ink:           rgba(5, 5, 5, 0.72);   /* running body text — ~8.7:1 (AAA) */
+  --ink-strong:    rgba(5, 5, 5, 0.90);   /* standfirst / intro lines, near-black */
+  --on-dark-read:  rgba(245, 245, 240, 0.78); /* body text on dark bands */
+  --measure:       64ch;                   /* optimal line length for reading */
+  --lh-read:       1.72;                   /* body leading */
+  --lh-lead:       1.5;                    /* standfirst leading */
+  --w-read:        460;                    /* body weight (mono reads light) */
+  --w-lead:        500;                    /* standfirst weight */
+
+  /* --- Strictly black & white. No colour anywhere. ---------------------- */
+  /* "Accent" is now solid black — emphasis comes from black-on-grey contrast
+     and weight, never hue. Body text is grey (--muted), emphasis is black. */
+  --accent:        #050505;
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-display:  "Rock 3D", sans-serif;
+  --font-mono:     "Martian Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Fluid type scale (clamp: min, preferred-vw, max) */
+  --text-hero:     clamp(2.75rem, 11.2vw, 9.75rem);   /* hero wordmark only */
+  /* Section headlines: Rock 3D is hand-drawn — kept legible, never a full
+     sentence at poster scale. Short headlines + this controlled size read. */
+  --text-display:  clamp(1.9rem, 4.6vw, 3.6rem);
+  --text-heading:  clamp(1.6rem, 4vw, 3rem);
+  --text-sub:      clamp(1.1rem, 1.7vw, 1.45rem);
+  --text-body:     clamp(0.95rem, 1.1vw, 1.0625rem);
+  --text-label:    clamp(0.62rem, 0.78vw, 0.78rem);
+
+  /* --- Spacing ---------------------------------------------------------- */
+  --pad-edge:      clamp(1.25rem, 4vw, 4.5rem);  /* symmetric page gutters */
+  --gap-section:   clamp(3.75rem, 7.5vw, 8rem);
+  --gap-tile:      clamp(1.25rem, 2.5vw, 2.5rem);
+  --maxw:          1480px;
+
+  /* --- Motion: never linear, never the browser default ------------------ */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.30, 1);  /* entrances */
+  --ease-spring:    cubic-bezier(0.23, 1, 0.32, 1);  /* hovers / UI states */
+  --dur-enter:      0.7s;
+  --dur-ui:         0.32s;
+
+  /* --- Layering --------------------------------------------------------- */
+  --z-content:    10;
+  --z-nav:        100;
+  --z-preloader:  9999;
+}
+
+/* ---------------------------------------------------------------------------
+   Reset & base
+   ------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.7;
+  overflow-x: hidden;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+button {
+  font: inherit; color: inherit; cursor: pointer;
+  background: none; border: none; outline: none;
+}
+
+/* Display type: Rock 3D, uppercase, the editorial statement voice */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+}
+
+/* Caption / label: small mono, uppercase, wide tracking */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+.accent { color: var(--accent); }
+
+/* ---------------------------------------------------------------------------
+   Shared layout helpers
+   ------------------------------------------------------------------------- */
+.shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--pad-edge);
+}
+
+/* ---------------------------------------------------------------------------
+   Entrance animation — opacity + translateY only (never scale/rotate)
+   ------------------------------------------------------------------------- */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition:
+    opacity var(--dur-enter) var(--ease-out-expo),
+    transform var(--dur-enter) var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+[data-animate].is-visible { opacity: 1; transform: translateY(0); }
+
+[data-stagger] > * {
+  opacity: 0;
+  transform: translateY(1.25rem);
+  transition:
+    opacity 0.6s var(--ease-out-expo),
+    transform 0.6s var(--ease-out-expo);
+}
+[data-stagger].is-visible > * { opacity: 1; transform: translateY(0); }
+[data-stagger].is-visible > *:nth-child(1) { transition-delay: 0.00s; }
+[data-stagger].is-visible > *:nth-child(2) { transition-delay: 0.08s; }
+[data-stagger].is-visible > *:nth-child(3) { transition-delay: 0.16s; }
+[data-stagger].is-visible > *:nth-child(4) { transition-delay: 0.24s; }
+[data-stagger].is-visible > *:nth-child(5) { transition-delay: 0.32s; }
+[data-stagger].is-visible > *:nth-child(6) { transition-delay: 0.40s; }
+
+/* Respect reduced motion everywhere */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-animate], [data-stagger] > * { opacity: 1; transform: none; }
+}
+
+/* ============================================================================
+   PRINT — clean PDF export for every deck.
+   Pitch decks travel as PDF, so print must render the full content (no scroll
+   reveals hiding sections), drop the on-screen chrome, keep the dark bands, and
+   break section-by-section like slides.
+   ========================================================================== */
+@media print {
+  @page { margin: 14mm; }
+
+  html { scroll-behavior: auto; }
+  body { overflow: visible; }
+
+  /* Show everything — reveals must never hide content on paper. */
+  [data-animate], [data-stagger] > * { opacity: 1 !important; transform: none !important; }
+
+  /* Drop on-screen-only chrome. */
+  .preloader, .progress, .skip-link, .nav, .dnav, .hero__stamp, .ticker { display: none !important; }
+
+  /* Keep dark sections actually dark in the PDF. */
+  .closing, .dclosing, .ticker {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  /* Slide feel: each major section starts on a fresh page. */
+  .section, .dsection { break-before: page; padding-block: 0 !important; }
+  .hero, .cover { min-height: auto; padding-top: 0 !important; justify-content: flex-start; }
+
+  /* Never split a card, beat, spec or reference tile across pages. */
+  .pillar, .case, .dcase, .hubcard, .mood, .beat, .spec, .stat,
+  .roster__col, .twocol > * { break-inside: avoid; }
+
+  /* Tame the largest type so a headline fits one printed line. */
+  .hero__title { font-size: clamp(2.5rem, 8vw, 5rem) !important; white-space: normal; }
+  .manifesto__line, .dhead, .cover__title { font-size: clamp(2rem, 6vw, 3.5rem) !important; }
+
+  a { text-decoration: none; }
+}
+
+/* Skip-link focus target: move focus to <main> without a full-element outline */
+main[tabindex="-1"]:focus { outline: none; }
+
+/* In-page anchor jumps must clear the fixed header (nav / dnav), so the target
+   heading isn't hidden underneath it. */
+section[id], main[id] { scroll-margin-top: clamp(72px, 9vh, 96px); }
+
+/* Back-to-top button (injected by main.js; shows after scrolling on long pages) */
+.backtotop {
+  position: fixed; left: var(--pad-edge); bottom: clamp(1rem, 2.5vw, 1.75rem);
+  z-index: var(--z-nav);
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 0.9rem; border: 1px solid var(--faint); border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(10px) saturate(1.2); -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  font-family: var(--font-mono);
+  font-size: var(--text-label); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+  opacity: 0; visibility: hidden; transform: translateY(8px);
+  transition: opacity var(--dur-ui) var(--ease-spring), transform var(--dur-ui) var(--ease-spring),
+              visibility var(--dur-ui), color var(--dur-ui) var(--ease-spring), border-color var(--dur-ui) var(--ease-spring);
+}
+.backtotop.is-shown { opacity: 1; visibility: visible; transform: translateY(0); }
+.backtotop:hover { color: var(--fg); border-color: var(--fg); }
+@media print { .backtotop { display: none !important; } }

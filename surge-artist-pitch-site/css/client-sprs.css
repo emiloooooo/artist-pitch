@@ -1,0 +1,245 @@
+/* SPRS client layer: one treatment, three prepared reference directions. */
+
+body.sprs-pitch {
+  --client: #171717;
+  --client-brown: #2a2420;
+  --client-line: rgba(24, 20, 18, 0.2);
+  --client-grid: rgba(24, 20, 18, 0.03);
+}
+
+.sprs-pitch .hero__title {
+  max-width: none;
+  letter-spacing: -0.04em;
+}
+
+.sprs-pitch .hero__sub em,
+.sprs-pitch .casefeature__label,
+.sprs-pitch .conceptblock__tag,
+.sprs-pitch .conceptblock__sub,
+.sprs-pitch .nextstep__num {
+  color: var(--fg);
+}
+
+.sprs-pitch .sprs-intro__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 6vw, 7rem);
+  align-items: start;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+.sprs-pitch .sprs-intro__copy {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.sprs-pitch .sprs-intro__copy p {
+  max-width: 52ch;
+  color: var(--ink);
+  font-family: var(--font-client-display);
+  font-size: clamp(1.05rem, 1.55vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.24;
+}
+
+.sprs-pitch .sprs-intro__services {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border: 1px dotted var(--client-line);
+  background: var(--client-line);
+}
+
+.sprs-pitch .sprs-intro__services span {
+  min-width: 0;
+  padding: var(--client-row-pad);
+  background: var(--bg);
+  font-family: var(--font-client-mono);
+  font-size: clamp(0.58rem, 0.8vw, 0.7rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sprs-pitch .sprs-treatmentcard {
+  width: 100%;
+  max-width: 320px;
+  justify-self: center;
+}
+
+.sprs-pitch .sprs-treatmentcard__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px dotted var(--client-line);
+  background: #121212;
+  color: #f6f4ef;
+}
+
+.sprs-pitch .sprs-treatmentcard__frame::before,
+.sprs-pitch .sprs-treatmentcard__frame::after {
+  content: "";
+  position: absolute;
+  background: rgba(246, 244, 239, 0.18);
+}
+
+.sprs-pitch .sprs-treatmentcard__frame::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+}
+
+.sprs-pitch .sprs-treatmentcard__frame::after {
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+}
+
+.sprs-pitch .sprs-treatmentcard__brand,
+.sprs-pitch .sprs-treatmentcard__number,
+.sprs-pitch .sprs-treatmentcard__format {
+  position: absolute;
+  z-index: 1;
+}
+
+.sprs-pitch .sprs-treatmentcard__brand {
+  left: clamp(1rem, 2vw, 1.5rem);
+  bottom: clamp(1rem, 2vw, 1.5rem);
+  font-family: var(--font-client-display);
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+}
+
+.sprs-pitch .sprs-treatmentcard__number,
+.sprs-pitch .sprs-treatmentcard__format {
+  font-family: var(--font-client-mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.sprs-pitch .sprs-treatmentcard__number {
+  top: 1rem;
+  right: 1rem;
+}
+
+.sprs-pitch .sprs-treatmentcard__format {
+  top: calc(50% + 1rem);
+  left: calc(50% + 1rem);
+}
+
+.sprs-pitch .sprs-referenceboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 1px;
+  border: 1px dotted var(--client-line);
+  background: var(--client-line);
+}
+
+.sprs-pitch .sprs-reference {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.65rem);
+}
+
+.sprs-pitch .sprs-reference--warm {
+  background: #eadfce;
+  color: #251d18;
+}
+
+.sprs-pitch .sprs-reference--dark {
+  background: #121212;
+  color: #f6f4ef;
+}
+
+.sprs-pitch .sprs-reference--neutral {
+  background: #d9d9d4;
+  color: #181818;
+}
+
+.sprs-pitch .sprs-reference__num,
+.sprs-pitch .sprs-reference__status {
+  font-family: var(--font-client-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.68;
+}
+
+.sprs-pitch .sprs-reference h4 {
+  max-width: 14ch;
+  font-family: var(--font-client-display);
+  font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+  font-weight: 700;
+  line-height: 1.02;
+}
+
+.sprs-pitch .sprs-reference p {
+  max-width: 34ch;
+  margin-top: 0.65rem;
+  font-size: clamp(0.72rem, 0.95vw, 0.88rem);
+  font-weight: 500;
+  line-height: 1.55;
+  opacity: 0.75;
+}
+
+.sprs-pitch .closing__lead {
+  max-width: 48ch;
+}
+
+@media (max-width: 720px) {
+  .sprs-pitch .sprs-intro__grid,
+  .sprs-pitch .sprs-intro__services {
+    grid-template-columns: 1fr;
+  }
+
+  .sprs-pitch .sprs-intro__grid {
+    gap: 1.5rem;
+  }
+
+  .sprs-pitch .sprs-treatmentcard {
+    max-width: 220px;
+  }
+
+  .sprs-pitch .sprs-referenceboard {
+    grid-template-columns: 1fr;
+  }
+
+  .sprs-pitch .sprs-reference {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 420px) {
+  .sprs-pitch .sprs-treatmentcard {
+    max-width: 190px;
+  }
+
+  .sprs-pitch .sprs-reference {
+    padding: 1rem;
+  }
+}
+
+@media print {
+  .sprs-pitch .sprs-treatmentcard__frame,
+  .sprs-pitch .sprs-reference {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

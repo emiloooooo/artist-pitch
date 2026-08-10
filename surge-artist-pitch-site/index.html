@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NIMMERSATT — Your place in the collective</title>
+  <meta name="description" content="Infrastructure that protects your visual language, elevates your work and gets you booked—without compromising your creative identity." />
+
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <link rel="canonical" href="https://nimmersatt-artist-pitch.surge.sh/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="NIMMERSATT" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:url" content="https://nimmersatt-artist-pitch.surge.sh/?v=20260717" />
+  <meta property="og:title" content="NIMMERSATT — Your place in the collective" />
+  <meta property="og:description" content="Infrastructure that protects your visual language, elevates your work and gets you booked—without compromising your creative identity." />
+  <meta property="og:image" content="https://nimmersatt-artist-pitch.surge.sh/assets/og-artist-pitch-20260717.jpg" />
+  <meta property="og:image:secure_url" content="https://nimmersatt-artist-pitch.surge.sh/assets/og-artist-pitch-20260717.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Nimmersatt artist pitch: infrastructure that protects and elevates an artist's visual language." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NIMMERSATT — Your place in the collective" />
+  <meta name="twitter:description" content="Infrastructure that protects your visual language, elevates your work and gets you booked—without compromising your creative identity." />
+  <meta name="twitter:image" content="https://nimmersatt-artist-pitch.surge.sh/assets/og-artist-pitch-20260717.jpg" />
+  <meta name="twitter:image:alt" content="Nimmersatt artist pitch: infrastructure that protects and elevates an artist's visual language." />
+  <meta name="theme-color" content="#ffffff" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Nimmersatt",
+    "url": "https://nimmersatt.fyi",
+    "description": "Artist booking, management and creative production from Berlin.",
+    "areaServed": "Berlin, DE",
+    "email": "hello@nimmersatt.fyi",
+    "knowsAbout": ["Artist booking", "Artist management", "Creative production", "Music videos", "Fashion film", "VFX", "Brand worlds"]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+3D&family=Martian+Mono:wght@100..800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/pitch.css" />
+  <link rel="stylesheet" href="css/deck.css" />
+  <noscript><style>[data-animate],[data-stagger]>*{opacity:1!important;transform:none!important}.preloader{display:none!important}.scrolly{display:none!important}</style></noscript>
+</head>
+<body>
+
+  <!-- Preloader: the real Nimmersatt loader (logo-masked footage). Encoded as a
+       small h264 video (was a 780KB GIF → ~168KB mp4) for a fast critical path;
+       poster paints instantly. Plays in full colour, flattened on white. -->
+  <div class="preloader" id="preloader" title="Tap to enter">
+    <video class="preloader__media" src="assets/loader.mp4" poster="assets/loader-poster.webp"
+           autoplay muted loop playsinline preload="auto" aria-label="Nimmersatt"></video>
+  </div>
+
+  <!-- Header: hidden over the hero, reappears once the hero is scrolled past -->
+  <header class="nav" id="siteHeader">
+    <a class="nav__brand" href="#top" aria-label="Nimmersatt, home">
+      <img class="nav__mark" src="assets/logo.svg" alt="" />
+      <span class="nav__name">Nimmersatt</span>
+    </a>
+    <nav class="nav__links" id="navLinks">
+      <a href="#about">About</a>
+      <a href="#work">Workflow</a>
+      <a href="#collective">Collective</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
+  </header>
+
+  <main id="top" tabindex="-1">
+
+    <!-- Hero: the wordmark, invitation and the dot monogram extracted from the
+         Nimmersatt business-card PSD. -->
+    <section class="hero shell" id="hero">
+      <h1 class="hero__title display" data-animate>Nimmersatt</h1>
+
+      <p class="hero__sub" data-animate>
+        You’ve mastered your unique visual language. We’ve been building an
+        infrastructure to protect, elevate, and get you booked—without
+        compromising your identity.
+      </p>
+
+      <div class="hero__meta" data-animate>
+        <span class="label">Artist Management</span>
+        <span class="label">Visual Production</span>
+        <span class="label">Creative Community</span>
+      </div>
+
+      <img class="hero__mark hero__mark--dot" src="assets/nimmersatt_gif_artists.jpg" alt="" aria-hidden="true" data-animate />
+    </section>
+
+    <!-- About / Info, original Nimmersatt manifesto kept unchanged -->
+    <section class="about section" id="about">
+      <div class="shell">
+        <p class="about__lead" data-animate>At nimmersatt, we believe<br />in a simple truth:</p>
+        <p class="about__lead" data-animate>you are what you eat.</p>
+        <!-- Full manifesto, desktop / tablet -->
+        <div class="about__body about__body--full" data-stagger>
+          <p>Ideas we consume shape the work we create. That's why we begin every project by understanding culture before pushing content. Based on research, insights and generational decoding, we identify what resonates organically, how communities of the next generation interact, we are able to embed brands from within through authentic participation.</p>
+          <p>We operate as a creative studio, artist management and production company in one. Rather than fitting projects into fixed agency structures, we curate bespoke creative units from our roster of directors, designers, photographers, strategists, editors, developers and producers. Whether a project requires a single specialist or an end-to-end team, every unit is assembled around the brief, not the other way around.</p>
+          <p>Our network brings together established industry professionals and the next generation of creative voices. By pairing senior expertise with emerging talent, we create work that combines experience with stylizing perspectives while remaining adaptable to all scales and budgets.</p>
+        </div>
+        <!-- Condensed manifesto, original mobile version -->
+        <div class="about__body about__body--short" data-stagger>
+          <p>What we make mirrors what we consume. We've built a collective of Berlin's most exceptional visual minds, found on its streets and in its digital networks.</p>
+          <p>Our artists are self-made: they skipped the academic route for raw experimentation, and reject outdated workflows.</p>
+          <p>We don't just manage talent, we run the whole process, from first input to a polished, cinematic output, the link between established brands and the new generation.</p>
+          <p>In-house conception and production. Versatile, precise, and adaptable to any scale:</p>
+        </div>
+        <ul class="about__services" aria-label="What we do">
+          <li>Generational Decoding</li><li>Brand Identity</li><li>Conception &amp; Execution</li>
+          <li class="about__services-br" aria-hidden="true"></li>
+          <li>Personal Branding</li><li>Treatment Design</li><li>Illustration &amp; Graphic</li><li>Creative Direction</li>
+          <li class="about__services-br" aria-hidden="true"></li>
+          <li>Heritage Modernization</li><li>Web Experiences</li><li>Fashion Editorials</li><li>Sourcing &amp; Scouting</li>
+          <li class="about__services-br" aria-hidden="true"></li>
+          <li>Graphic Design</li><li>Motion Design</li><li>Lookbooks</li><li>Cinematic Storytelling</li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- Internal project management tool -->
+    <section class="work section" id="work">
+      <div class="shell">
+        <h2 class="manifesto__line" data-animate>One workflow.<br />We’re working on it…</h2>
+
+        <p class="section__lead" data-animate>Our homies from the backend are currently in the final steps of providing you the best experience.</p>
+
+        <article class="casefeature" data-stagger>
+          <p class="casefeature__label">01 / Every project in one place</p>
+          <div class="moodgrid">
+            <div class="tool-video mood--wide">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/L8e_iV6BrQo?autoplay=1&mute=1&loop=1&playlist=L8e_iV6BrQo&controls=1&playsinline=1&modestbranding=1&rel=0"
+                title="Project overview"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+          </div>
+          <div class="twocol">
+            <div><h3>Your overview</h3><p>Every active project is listed with its stage, deadline and team. You always know what is moving, what is waiting and what needs your attention next.</p></div>
+            <div><h3>Your tasks</h3><p>Briefs become clear actions with owners and due dates. You see exactly what Nimmersatt needs from you and what we are handling for you.</p></div>
+          </div>
+        </article>
+
+        <article class="casefeature" data-stagger>
+          <p class="casefeature__label">02 / Built for the artist side</p>
+          <div class="moodgrid">
+            <figure class="tool-shot">
+              <img src="assets/tool/dashboard.png" alt="Nimmersatt project dashboard: overview, deadlines and team" loading="lazy" decoding="async" />
+              <figcaption>
+                <strong class="tool-shot__title">Task view</strong>
+                <span class="tool-shot__meta">Briefs · Actions · Approvals</span>
+              </figcaption>
+            </figure>
+            <figure class="tool-shot">
+              <img src="assets/tool/ki-assistant.png" alt="Nimmersatt AI assistant creating a task inside the tool" loading="lazy" decoding="async" />
+              <figcaption>
+                <strong class="tool-shot__title">AI AGENT</strong>
+                <span class="tool-shot__meta">STRUCTURE · PLAN · OVERVIEW</span>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="twocol">
+            <div><h3>One shared source</h3><p>Files, feedback and approvals stay attached to the project. No missing links, buried voice notes or different versions moving through separate chats.</p></div>
+            <div><h3>Free and easy to join</h3><p>Your account is free. Setup takes a few minutes, and we prepare the structure before you enter. You can focus on the work instead of learning another system.</p></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- The three pillars -->
+    <section class="pillars section" id="pillars">
+      <div class="shell">
+        <h2 class="manifesto__line" data-animate>Let’s address the elephant in the room. Where is the fucking catch?</h2>
+
+        <div class="pillars__grid" data-stagger>
+          <article class="pillar">
+            <h3 class="pillar__name">Non-Exclusivity</h3>
+            <p class="pillar__desc">
+              You are not signed away. Your own clients stay your own clients, and
+              nothing stops you from working outside the network. What we do ask is
+              that everything touching our name, our references and our contacts runs
+              through us for as long as we work together and for a year after. We
+              represent you worldwide, we speak to clients with one voice, and we
+              price your work so nobody undercuts the room you are standing in.
+            </p>
+          </article>
+          <article class="pillar">
+            <h3 class="pillar__name">Commission</h3>
+            <p class="pillar__desc">
+              Twenty percent of the net fee, on projects we bring in. Nothing hidden
+              behind it. Your day rate is set together and neither side moves it
+              alone, so no discount happens over your head. You get paid within
+              thirty days of the client paying us, and if a job goes wrong, the crew
+              around you gets paid before anyone argues about the rest.
+            </p>
+          </article>
+          <article class="pillar">
+            <h3 class="pillar__name">Exit</h3>
+            <p class="pillar__desc">
+              Open-ended, three months on probation, then one month’s notice to the
+              end of the month. No lock-in, no ten-page exit. Everything already
+              running gets finished and settled properly, whoever ends it and for
+              whatever reason. The only thing that outlives the contract is a
+              twelve-month agreement not to walk away with the clients we introduced
+              you to.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- By industry -->
+    <section class="industries section" id="industries">
+      <div class="shell">
+        <h2 class="manifesto__line" data-animate>But go ahead<br />And see for yourself</h2>
+        <p class="section__lead" data-animate>Or read the 12.428 characters. If you do, make sure to set a timer. We’re currently holding a contest for quickest read within the roster.</p>
+
+        <div class="chat" data-animate>
+          <div class="chat__tabs" role="tablist" aria-label="Choose an assistant">
+            <button class="chat__tab is-active" type="button" role="tab" aria-selected="true" data-assistant="ChatGPT">ChatGPT</button>
+            <button class="chat__tab" type="button" role="tab" aria-selected="false" data-assistant="Gemini">Gemini</button>
+            <button class="chat__tab" type="button" role="tab" aria-selected="false" data-assistant="Claude">Claude</button>
+          </div>
+          <div class="chat__window" id="chatWindow" aria-live="polite">
+            <div class="chat__msg chat__msg--bot">
+              <span class="chat__who">ChatGPT</span>
+              <p>Paste the contract or ask me anything about it — I’ll read all 12.428 characters so you don’t have to.</p>
+            </div>
+          </div>
+          <form class="chat__form" id="chatForm">
+            <input class="chat__input" id="chatInput" type="text" autocomplete="off"
+                   placeholder="Summarize each paragraph of the contract" aria-label="Message the assistant" />
+            <button class="chat__send" type="submit" aria-label="Send message">↑</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Artist Care -->
+    <section class="proof section" id="proof">
+      <div class="shell">
+        <h2 class="manifesto__line" data-animate>Nimmersatt — Code of Conduct</h2>
+        <p class="section__lead" data-animate>“Ideas we consume shape the work we create. Always hungry. Never satisfied.”</p>
+        <div class="proof__grid" data-stagger>
+          <div class="stat">
+            <div class="stat__num">01</div>
+            <div class="stat__copy">
+              <p class="stat__label label">Cultural Craft &amp; Quality Standard</p>
+              <p class="stat__desc"><strong>Decode Before Creating:</strong> Immerse yourself in the brief and culture—no empty noise, only work that resonates authentically with modern communities.</p>
+              <p class="stat__desc"><strong>Cinematic Standard:</strong> Whether working across strategy, set, design, or post-production, maintain a high-end, cinematic standard across all budgets.</p>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat__num">02</div>
+            <div class="stat__copy">
+              <p class="stat__label label">Collaborative Ownership &amp; Respect</p>
+              <p class="stat__desc"><strong>Cross-Generational Mindset:</strong> Combine established senior expertise with emerging perspectives through mutual respect and openness.</p>
+              <p class="stat__desc"><strong>Lean Execution:</strong> Work directly without agency bloat—take proactive ownership of your role and add tangible value to every deliverable.</p>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat__num">03</div>
+            <div class="stat__copy">
+              <p class="stat__label label">Transparent Commitment &amp; Mutual Growth</p>
+              <p class="stat__desc"><strong>Clear &amp; Early Communication:</strong> Speak up early about capacity, boundaries, or bottlenecks before small issues turn into production problems.</p>
+              <p class="stat__desc"><strong>Building a Career, Not Just a Calendar:</strong> Align with clarified briefs and deadlines, using every job to elevate your portfolio and the collective work.</p>
+            </div>
+          </div>
+        </div>
+        <p class="proof__signoff" data-animate>Always hungry. Never satisfied.</p>
+      </div>
+    </section>
+
+    <!-- The collective logic, without names -->
+    <section class="roster section" id="collective">
+      <div class="shell">
+        <h2 class="manifesto__line" data-animate>Dont fight over fucking crumbles. Lets bake the cake together</h2>
+        <p class="roster__lead" data-animate>
+          We are not a roster. The people here shoot each other’s work, lend each
+          other crew, and hold the same price floor. Nobody is competing for the
+          same three jobs, because everyone is bringing in different ones.
+        </p>
+
+        <div class="artists" data-stagger>
+          <div class="artist"><span class="artist__name">Discord</span><span class="artist__role">connect with the community before joining yourself</span></div>
+          <div class="artist"><span class="artist__name">Contract</span><span class="artist__role">find the whole contract downloadable right here</span></div>
+          <div class="artist"><span class="artist__name">Package</span><span class="artist__role">keep that for the call. but we appreciate you giving it a look</span></div>
+        </div>
+
+        <div class="roster__partners" data-animate>
+          <h3 class="roster__subhead">What we expect from you</h3>
+          <div class="partners">
+            <div class="partner"><span class="partner__name">Authenticity</span><span class="partner__role">be who you are</span></div>
+            <div class="partner"><span class="partner__name">Reliability</span><span class="partner__role">trust the freedom</span></div>
+            <div class="partner"><span class="partner__name">Openness</span><span class="partner__role">keep it real</span></div>
+            <div class="partner"><span class="partner__name">Appetite</span><span class="partner__role">make it count</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clients -->
+    <section class="clients section--tight section">
+      <div class="shell">
+        <p class="section__index" data-animate>Where your work can land</p>
+        <div class="clientwall" data-stagger>
+          <span class="clientwall__logo clientwall__logo--mark"><img loading="lazy" decoding="async" src="assets/clients/universal-music.png" alt="Universal Music" /></span>
+          <span class="clientwall__logo clientwall__logo--word"><img loading="lazy" decoding="async" src="assets/clients/sony-music.png" alt="Sony Music" /></span>
+          <span class="clientwall__logo clientwall__logo--mark"><img loading="lazy" decoding="async" src="assets/clients/atlantic.png" alt="Atlantic Records" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/032c.png" alt="032c" /></span>
+          <span class="clientwall__logo clientwall__logo--mark"><img loading="lazy" decoding="async" src="assets/clients/cupra.png" alt="CUPRA" /></span>
+          <span class="clientwall__logo clientwall__logo--mark"><img loading="lazy" decoding="async" src="assets/clients/adidas-originals.png" alt="Adidas Originals" /></span>
+          <span class="clientwall__logo clientwall__logo--word"><img loading="lazy" decoding="async" src="assets/clients/ottolinger.webp" alt="Ottolinger" /></span>
+          <span class="clientwall__logo clientwall__logo--word"><img loading="lazy" decoding="async" src="assets/clients/marc-o-polo.png" alt="Marc O&rsquo;Polo" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/birkenstock.png" alt="Birkenstock" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/lululemon.png" alt="Lululemon" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/ugg.png" alt="UGG" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/nike.svg" alt="Nike" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/gmbh.png" alt="GmbH" /></span>
+          <span class="clientwall__logo"><img loading="lazy" decoding="async" src="assets/clients/ssense.svg" alt="SSENSE" /></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing / CTA -->
+    <section class="closing section" id="contact">
+      <div class="shell">
+        <h2 class="closing__line" data-animate>We read the room before we set the table.</h2>
+        <p class="closing__lead" data-animate>We answer. You work.<br />We settle. You move on.<br />We negotiate. You create.</p>
+
+        <div class="application-timeline" data-stagger>
+          <div class="timeline__step">
+            <span class="timeline__no">01</span>
+            <h3>Make it here</h3>
+            <p>Thanks for spending your time with us. It was a pleasure and you’ve already made it to the second step!</p>
+            <p class="timeline__note">admin here: thank you gang, fr</p>
+          </div>
+          <div class="timeline__step">
+            <span class="timeline__no">02</span>
+            <h3>Take a decision</h3>
+            <p>If interested, collect your portfolio and make up your mind. When it comes to the data itself, you can upload via Google Drive, swisstransfer or whatever is your thing.</p>
+          </div>
+          <div class="timeline__step">
+            <span class="timeline__no">03</span>
+            <h3>Book your date</h3>
+            <p>Bring questions, feedback and thirty minutes of your time. Our team will meet you and discuss all details.<br />till then: stay hungry but humble</p>
+            <p class="timeline__note">speak soon on nimmersatt.meet</p>
+          </div>
+        </div>
+
+        <a class="application-cta" href="mailto:hello@nimmersatt.fyi" data-animate>
+          <span class="application-cta__label">anything else</span>
+          <span class="application-cta__mail">hello@nimmersatt.fyi</span>
+        </a>
+
+        <details class="document-downloads document-downloads--dropdown" data-animate aria-labelledby="document-downloads-title">
+          <summary class="document-downloads__summary">
+            <span id="document-downloads-title" class="document-downloads__summary-title">Documents</span>
+            <span class="document-downloads__chevron" aria-hidden="true">↓</span>
+          </summary>
+
+          <div class="document-downloads__list">
+            <article class="document-download">
+              <span class="document-download__no">01</span>
+              <div class="document-download__name">
+                <strong>Artist Agreement</strong>
+                <span>Künstlervertrag</span>
+              </div>
+              <div class="document-download__languages" aria-label="Download Artist Agreement">
+                <a href="assets/documents/nimmersatt-vertrag-de.download" download="NIMMERSATT-Vertrag-DE.pdf" lang="de">Deutsch <span aria-hidden="true">↓</span></a>
+                <a href="assets/documents/nimmersatt-contract-en.download" download="NIMMERSATT-Contract-EN.pdf" lang="en">English <span aria-hidden="true">↓</span></a>
+              </div>
+            </article>
+
+            <article class="document-download">
+              <span class="document-download__no">02</span>
+              <div class="document-download__name">
+                <strong>Deal Package</strong>
+                <span>Dealpaket</span>
+              </div>
+              <div class="document-download__languages" aria-label="Download Deal Package">
+                <a href="assets/documents/nimmersatt-dealpaket-de.download" download="NIMMERSATT-Dealpaket-DE.pdf" lang="de">Deutsch <span aria-hidden="true">↓</span></a>
+                <a href="assets/documents/nimmersatt-deal-package-en.download" download="NIMMERSATT-Deal-Package-EN.pdf" lang="en">English <span aria-hidden="true">↓</span></a>
+              </div>
+            </article>
+          </div>
+        </details>
+
+        <div class="closing__foot">
+          <span>Nimmersatt · Berlin</span>
+          <span>Never full · Never finished</span>
+          <span>© 2026</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Fluid motion layer: smooth-scroll (Lenis) + light parallax (GSAP). -->
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/vendor/lenis.min.js"></script>
+  <script src="js/motion.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- "Let the AI read the contract" chat demo (industries section) -->
+  <script>
+  (function () {
+    var form = document.getElementById('chatForm');
+    if (!form) return;
+    var input = document.getElementById('chatInput');
+    var win = document.getElementById('chatWindow');
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.chat__tab'));
+    var assistant = 'ChatGPT';
+
+    var SUMMARY =
+      'Sure — here’s the whole thing in three lines:\n\n' +
+      '1 · Non-exclusivity — You’re not signed away. Your own clients stay yours and you can work outside the network; anything touching Nimmersatt’s name, references or contacts runs through them while you work together and for 12 months after.\n\n' +
+      '2 · Commission — 20% of the net fee on projects they bring in. Day rate is set together, no discounts over your head, paid within 30 days of the client paying. If a job goes wrong, the crew gets paid first.\n\n' +
+      '3 · Term & exit — Open-ended, 3-month probation, then one month’s notice to month-end. No lock-in. Work in progress gets finished and settled. Only a 12-month non-solicit of introduced clients outlives the contract.\n\n' +
+      'Total read: 12.428 characters. You just saved yourself the timer.';
+
+    function scroll() { win.scrollTop = win.scrollHeight; }
+
+    function addMsg(kind, who, text) {
+      var wrap = document.createElement('div');
+      wrap.className = 'chat__msg chat__msg--' + kind;
+      if (who) {
+        var w = document.createElement('span');
+        w.className = 'chat__who';
+        w.textContent = who;
+        wrap.appendChild(w);
+      }
+      var p = document.createElement('p');
+      p.textContent = text;
+      wrap.appendChild(p);
+      win.appendChild(wrap);
+      scroll();
+      return wrap;
+    }
+
+    function reply(text) {
+      var typing = addMsg('bot chat__msg--typing', assistant, 'typing…');
+      setTimeout(function () {
+        typing.remove();
+        var msg = /contract|summar|paragraph|catch|read|term|exit|commission|exclus/i.test(text)
+          ? SUMMARY
+          : 'I’ve only got the Nimmersatt contract loaded right now — try “Summarize each paragraph of the contract”.';
+        addMsg('bot', assistant, msg);
+      }, 900);
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('is-active'); t.setAttribute('aria-selected', 'false'); });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        assistant = tab.getAttribute('data-assistant');
+        input.focus();
+      });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = (input.value || input.placeholder).trim();
+      if (!text) return;
+      addMsg('user', null, text);
+      input.value = '';
+      reply(text);
+    });
+  })();
+  </script>
+</body>
+</html>
