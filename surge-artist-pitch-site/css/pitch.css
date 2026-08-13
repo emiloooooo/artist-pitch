@@ -1317,6 +1317,26 @@ html.lenis, html.lenis body { height: auto; }
 .document-download__languages a:hover,
 .document-download__languages a:focus-visible { background: var(--on-dark); color: var(--dark); }
 
+/* Second row of the agreement cell: the readable, summarised version.
+   Sits under the title column so it reads as a property of that document. */
+.document-download__read {
+  grid-column: 2 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: max-content;
+  max-width: 100%;
+  min-height: 44px;
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-dark-muted);
+  border-bottom: 1px solid rgba(245, 245, 240, 0.28);
+  transition: color var(--dur-ui) var(--ease-spring), border-color var(--dur-ui) var(--ease-spring);
+}
+.document-download__read:hover,
+.document-download__read:focus-visible { color: var(--on-dark); border-bottom-color: var(--on-dark); }
+
 /* --- Code of Conduct sign-off -------------------------------------------- */
 .proof__signoff {
   margin-top: clamp(2.5rem, 5vw, 4rem);
@@ -1421,6 +1441,7 @@ html.lenis, html.lenis body { height: auto; }
     width: 100%;
   }
   .document-download__languages a { min-width: 0; }
+  .document-download__read { grid-column: 1 / -1; width: 100%; }
 
   /* Roster cells a touch shorter */
   .artist { min-height: 82px; }

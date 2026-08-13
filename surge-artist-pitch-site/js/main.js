@@ -107,6 +107,22 @@
     }, { passive: true });
   })();
 
+  /* --- Contract download → readable version --------------------------------
+     Downloading the agreement is the moment someone actually wants to read it,
+     so the click does both: the file downloads (the `download` attribute means
+     the browser never navigates for it) and we then send them to the
+     section-by-section version. Modifier-clicks and middle-clicks are left
+     alone — those mean "open elsewhere", not "take me there". */
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest && e.target.closest("a[data-contract-download]");
+    if (!a) return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (e.defaultPrevented) return;
+    window.setTimeout(function () {
+      window.location.href = "contract.html?from=download";
+    }, 700);
+  });
+
   /* --- Contact anchors: on this long pitch, "Contact" means page end ------- */
   document.addEventListener("click", function (e) {
     if (window.lenis) return;
