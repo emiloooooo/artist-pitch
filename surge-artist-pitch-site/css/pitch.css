@@ -161,6 +161,13 @@
   font-size: var(--text-display);
   max-width: 18ch;
 }
+/* Force a single-line heading (e.g. "Nimmersatt — Code of Conduct"): drop the
+   18ch cap, keep it on one row, and scale the display face down so it fits. */
+.manifesto__line--onerow {
+  max-width: none;
+  white-space: nowrap;
+  font-size: clamp(0.72rem, 2.9vw, 2.4rem);
+}
 .manifesto__body {
   margin-top: clamp(1.5rem, 3vw, 2.5rem);
   max-width: 54ch;
@@ -1055,8 +1062,9 @@ html.lenis, html.lenis body { height: auto; }
 .about__services-br::after { content: none !important; }
 .about__services li {
   font-family: var(--font-mono);
-  /* Sized off the viewport so all four items on a line fit without wrapping. */
-  font-size: clamp(0.72rem, 1.4vw, 1.05rem);
+  /* Sized off the viewport so even the longest (6-item) staircase row fits on
+     one line without wrapping. */
+  font-size: clamp(0.62rem, 1.2vw, 0.9rem);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -1112,7 +1120,7 @@ html.lenis, html.lenis body { height: auto; }
   flex-direction: column;
   gap: 0.3rem;
   min-height: clamp(96px, 11vw, 128px);
-  justify-content: flex-end;
+  justify-content: flex-start;
   transition: background var(--dur-ui) var(--ease-spring);
 }
 .artist:hover { background: var(--panel); }
@@ -1149,6 +1157,7 @@ html.lenis, html.lenis body { height: auto; }
   gap: clamp(0.85rem, 1.6vw, 1.3rem) clamp(1.5rem, 3vw, 3rem);
 }
 @media (min-width: 760px) { .partners { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 760px) { .partners--three { grid-template-columns: repeat(3, 1fr); } }
 .partner { display: flex; flex-direction: column; gap: 0.2rem; }
 .partner__name {
   font-family: var(--font-mono);
@@ -1225,6 +1234,17 @@ html.lenis, html.lenis body { height: auto; }
   letter-spacing: 0.02em;
   color: var(--on-dark-muted);
 }
+/* Drop this note down by roughly one / two extra rows. */
+.timeline__note--lower { margin-top: 2.6rem; }
+.timeline__note--lower2 { margin-top: 7.5rem; }
+.timeline__note a {
+  color: var(--on-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-style: normal;
+  transition: color var(--dur-ui) var(--ease-spring);
+}
+.timeline__note a:hover { color: var(--accent); }
 .application-cta {
   display: flex;
   flex-wrap: wrap;
