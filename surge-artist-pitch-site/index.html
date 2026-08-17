@@ -229,14 +229,13 @@
         <p class="section__lead" data-animate>Or read the 12.428 characters. If you do, make sure to set a timer. We’re currently holding a contest for quickest read within the roster.</p>
 
         <div class="chat" data-animate>
-          <div class="chat__tabs" role="tablist" aria-label="Choose an assistant">
-            <button class="chat__tab is-active" type="button" role="tab" aria-selected="true" data-assistant="ChatGPT">ChatGPT</button>
-            <button class="chat__tab" type="button" role="tab" aria-selected="false" data-assistant="Gemini">Gemini</button>
-            <button class="chat__tab" type="button" role="tab" aria-selected="false" data-assistant="Claude">Claude</button>
+          <div class="chat__brand">
+            <span class="chat__brandname">Nimmersatt Bot</span>
+            <span class="chat__brandmeta">reads the Nimmersatt contract for you</span>
           </div>
           <div class="chat__window" id="chatWindow" aria-live="polite">
             <div class="chat__msg chat__msg--bot">
-              <span class="chat__who">ChatGPT</span>
+              <span class="chat__who">Nimmersatt Bot</span>
               <p>Paste the contract or ask me anything about it — I’ll read all 12.428 characters so you don’t have to.</p>
             </div>
           </div>
@@ -422,8 +421,7 @@
     if (!form) return;
     var input = document.getElementById('chatInput');
     var win = document.getElementById('chatWindow');
-    var tabs = Array.prototype.slice.call(document.querySelectorAll('.chat__tab'));
-    var assistant = 'ChatGPT';
+    var assistant = 'Nimmersatt Bot';
 
     var SUMMARY =
       'Sure — here’s the whole thing in three lines:\n\n' +
@@ -476,16 +474,6 @@
           setTimeout(function () { typing.remove(); addMsg('bot', assistant, fallback(text)); }, 600);
         });
     }
-
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) { t.classList.remove('is-active'); t.setAttribute('aria-selected', 'false'); });
-        tab.classList.add('is-active');
-        tab.setAttribute('aria-selected', 'true');
-        assistant = tab.getAttribute('data-assistant');
-        input.focus();
-      });
-    });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
