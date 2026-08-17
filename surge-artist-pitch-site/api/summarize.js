@@ -14,10 +14,19 @@ const fs = require('fs');
 const path = require('path');
 
 // The ONLY knowledge source. Loaded once, at cold start.
-const CONTRACT = fs.readFileSync(
-  path.join(process.cwd(), 'agent', 'nimmersatt-vertrag-de.txt'),
-  'utf8'
-);
+// Resolve robustly: on Vercel the function bundle may root either at the
+// deployment cwd or next to this file (see vercel.json `includeFiles`).
+function loadContract() {
+  const candidates = [
+    path.join(process.cwd(), 'agent', 'nimmersatt-vertrag-de.txt'),
+    path.join(__dirname, '..', 'agent', 'nimmersatt-vertrag-de.txt'),
+  ];
+  for (const p of candidates) {
+    try { return fs.readFileSync(p, 'utf8'); } catch (_) { /* try next */ }
+  }
+  throw new Error('contract knowledge source not found in any known path');
+}
+const CONTRACT = loadContract();
 
 const SYSTEM_PROMPT =
   'Du bist der NIMMERSATT-Vertrags-Zusammenfasser. Fasse ausschließlich auf ' +
