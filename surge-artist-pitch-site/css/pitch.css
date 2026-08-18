@@ -514,11 +514,10 @@
   -webkit-backdrop-filter: blur(22px) saturate(1.25);
   backdrop-filter: blur(22px) saturate(1.25);
   border: 1px solid color-mix(in srgb, var(--fg) 9%, transparent);
+  /* Flat, shadowless chat base — keep only the glass edge highlights, no drop shadow. */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.8),   /* top liquid highlight */
-    inset 0 0 0 1px rgba(255, 255, 255, 0.35), /* inner glass edge */
-    0 1px 2px rgba(5, 5, 5, 0.04),
-    0 18px 48px -20px rgba(5, 5, 5, 0.28);     /* soft floating depth */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35); /* inner glass edge */
 }
 
 /* Header: avatar chip, name, live status */
@@ -531,10 +530,10 @@
 .chat__avatar {
   flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
   display: grid; place-items: center;
-  font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem;
   color: var(--bg); background: var(--fg);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px rgba(5, 5, 5, 0.22);
 }
+.chat__logo { display: block; width: 19px; height: 19px; }
 .chat__brandtext { display: flex; flex-direction: column; gap: 0.12rem; min-width: 0; }
 .chat__brandname {
   font-size: 0.82rem; font-weight: 700; letter-spacing: 0.01em;
@@ -560,7 +559,11 @@
 .chat__window {
   padding: clamp(1rem, 2.4vw, 1.4rem);
   display: flex; flex-direction: column; gap: 0.7rem;
-  min-height: 200px; max-height: 60vh; overflow-y: auto;
+  /* Fixed height: reserves room for the first message and never grows as the
+     conversation fills up, so the page layout below can't be pushed around.
+     New messages just scroll inside this box. */
+  height: clamp(340px, 52vh, 460px);
+  overflow-y: auto;
   overscroll-behavior: contain;                 /* don't chain to the page */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
