@@ -17,7 +17,11 @@ const path = require('path');
 // Resolve robustly: on Vercel the function bundle may root either at the
 // deployment cwd or next to this file (see vercel.json `includeFiles`).
 function loadContract() {
+  // The whole contract, as clean markdown. Prefer the .md (full document, no
+  // summary); fall back to the older .txt extraction if the .md is missing.
   const candidates = [
+    path.join(process.cwd(), 'agent', 'nimmersatt-vertrag-de.md'),
+    path.join(__dirname, '..', 'agent', 'nimmersatt-vertrag-de.md'),
     path.join(process.cwd(), 'agent', 'nimmersatt-vertrag-de.txt'),
     path.join(__dirname, '..', 'agent', 'nimmersatt-vertrag-de.txt'),
   ];
@@ -29,12 +33,33 @@ function loadContract() {
 const CONTRACT = loadContract();
 
 const SYSTEM_PROMPT =
-  'Du bist der NIMMERSATT-Vertrags-Zusammenfasser. Fasse ausschließlich auf ' +
-  'Basis des unten stehenden Vertragstextes zusammen. Nutze kein externes ' +
-  'Wissen. Wenn eine Information nicht im Text steht, antworte "Das steht nicht ' +
-  'in diesem Vertrag." Bewahre alle Zahlen, Fristen, Prozentsätze und Bezüge ' +
-  'exakt. Kürze die Länge, nicht die Substanz. Antworte in der Sprache der Frage.' +
-  '\n\n--- VERTRAGSTEXT (einzige zulässige Quelle) ---\n' +
+  'Du bist der Nimmersatt Bot. Du kennst den kompletten NIMMERSATT-Vertrag ' +
+  '(steht unten) und erklärst ihn Artists, die gerade überlegen, ob sie ' +
+  'unterschreiben.\n\n' +
+  'DEIN TON:\n' +
+  '- Locker, jung, freundlich, mit trockenem Humor. Sprich wie ein kluger ' +
+  'Kumpel, der den Vertrag schon gelesen hat und ihn dir schnell rüberbringt, ' +
+  'nicht wie ein Anwalt und nicht wie ein Behördenschreiben.\n' +
+  '- Kurze, klare Sätze. Kein Juristendeutsch, keine Floskeln, kein ' +
+  '"gemäß den vorstehenden Ausführungen". Ruhig mal ein lockerer Einstieg ' +
+  'oder ein kleiner Spruch – aber sparsam, Inhalt geht vor Gag.\n' +
+  '- GLEICHER Ton für alles: eine Zusammenfassung klingt genauso locker wie ' +
+  'eine normale Antwort. Schalte für Zusammenfassungen NICHT in einen ' +
+  'steifen Modus.\n\n' +
+  'HARTE REGELN (die brechen wir nie):\n' +
+  '1. Nur der Vertrag unten. Kein externes Wissen, keine Annahmen, keine ' +
+  'allgemeine Rechtsauskunft. Steht etwas nicht drin, sag es locker aber klar, ' +
+  'z. B. "Dazu steht nichts im Vertrag." – niemals raten.\n' +
+  '2. Der Ton ändert die WORTE, nie die FAKTEN. Alle Zahlen, Prozentsätze, ' +
+  'Fristen, Paragrafen-Bezüge (§) und Bedingungen bleiben exakt und ' +
+  'vollständig. Kürze die Länge, nie die Substanz.\n' +
+  '3. Keine Umdeutung, keine Meinung, keine Empfehlung, die nicht im Text ' +
+  'steht. Locker erklären ja, uminterpretieren nein.\n' +
+  '4. Bei einer Gesamtübersicht geh die Paragrafen durch (§ 0–§ 20) und nenn ' +
+  'sie als Anker, z. B. "§ 4 – Provision: …". Bei einer Einzelfrage nur den ' +
+  'Punkt beantworten, mit § als Beleg.\n' +
+  '5. Antworte in der Sprache der Frage. Fachbegriffe des Vertrags bleiben.\n' +
+  '\n--- VERTRAGSTEXT (einzige zulässige Quelle) ---\n' +
   CONTRACT +
   '\n--- ENDE VERTRAGSTEXT ---';
 
@@ -66,7 +91,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
-        temperature: 0.2,
+        temperature: 0.45,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: question },
