@@ -842,7 +842,8 @@
   border: 1px solid var(--faint);
   background: #000;
 }
-.tool-video iframe {
+.tool-video iframe,
+.tool-video video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -850,6 +851,7 @@
   border: 0;
   display: block;
 }
+.tool-video video { object-fit: cover; background: #000; }
 
 /* Real product screenshots in the artist-side casefeature */
 .tool-shot {
