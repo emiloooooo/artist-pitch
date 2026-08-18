@@ -1243,7 +1243,7 @@ html.lenis, html.lenis body { height: auto; }
   font-size: clamp(1.85rem, 4.6vw, 3.55rem);
   line-height: 1.16;
   letter-spacing: -0.015em;
-  max-width: 24ch;
+  max-width: 28ch; /* holds each 26-char <br/> segment on one line -> exactly 2 lines */
   margin-bottom: clamp(2rem, 4vw, 3.25rem);
 }
 .about__body { max-width: var(--measure); }
@@ -1643,8 +1643,8 @@ html.lenis, html.lenis body { height: auto; }
   .hero { gap: clamp(1.8rem, 7vw, 3rem); }
   .hero__sub { font-size: 1.02rem; max-width: 35ch; }
 
-  /* About lead: big but never overflowing */
-  .about__lead { font-size: clamp(1.55rem, 8.5vw, 2.4rem); max-width: none; }
+  /* About lead: sized so each 26-char segment fits one line -> stays 2 lines */
+  .about__lead { font-size: clamp(1rem, 4.7vw, 2.4rem); max-width: none; }
 
   /* About body: swap the full manifesto for the condensed, faster-to-read copy */
   .about .about__body--full { display: none; }
