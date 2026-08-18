@@ -47,6 +47,7 @@
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/pitch.css" />
   <link rel="stylesheet" href="css/deck.css" />
+  <link rel="stylesheet" href="css/funnel.css" />
   <noscript><style>[data-animate],[data-stagger]>*{opacity:1!important;transform:none!important}.preloader{display:none!important}.scrolly{display:none!important}</style></noscript>
 </head>
 <body>
@@ -329,6 +330,313 @@
       </div>
     </section>
 
+    <!-- Insurance funnel (Markel Pro Media, Berufshaftpflicht). German-law
+         product (VVG / KSK / SEPA), so it is shown to German-language visitors
+         only: the section ships hidden and js/funnel.js unhides it for de*. -->
+    <section class="funnel-section section" id="versicherung" hidden data-de-only>
+      <div class="shell">
+        <h2 class="manifesto__line" data-animate>Absicherung,<br />ohne Kleingedrucktes</h2>
+        <p class="section__lead" data-animate>Als Creator haftest du für deine Arbeit, oft mit dem Privatvermögen. Die Berufshaftpflicht für Medienberufe (Markel Pro Media) fängt genau das ab. Klick dich durch, sieh in Echtzeit, was es ungefähr kostet, und lass uns deinen Antrag prüfen.</p>
+
+        <form class="funnel" id="insuranceFunnel" novalidate>
+          <div class="funnel__head">
+            <span class="funnel__mark" aria-hidden="true">
+              <svg viewBox="0 0 2930 2060" fill="currentColor" fill-rule="evenodd" width="19" height="19" role="img" aria-label="Nimmersatt"><path d="M1809.50,2058.34C1797.94,2056.97 1789.75,2055.60 1783.43,2053.98C1758.54,2047.62 1740.07,2034.51 1726.47,2013.55C1719.66,2003.07 1716.26,1996.14 1710.72,1981.50C1704.92,1966.17 1701.83,1954.57 1698.06,1934.00C1693.85,1911.03 1691.59,1902.94 1686.35,1892.09C1678.20,1875.23 1663.57,1863.28 1641.96,1855.85C1633.01,1852.77 1631.75,1852.59 1618.50,1852.63C1606.22,1852.66 1603.39,1853.00 1595.50,1855.38C1568.56,1863.50 1548.08,1876.63 1498.43,1917.60C1444.27,1962.29 1426.42,1972.70 1393.89,1978.55C1381.60,1980.76 1360.35,1981.46 1347.50,1980.07C1300.50,1974.98 1267.09,1954.66 1253.96,1923.17C1247.48,1907.64 1243.28,1878.60 1244.47,1857.57C1246.10,1828.67 1251.90,1805.49 1269.50,1757.50C1295.11,1687.70 1299.66,1667.44 1301.97,1613.24C1303.50,1577.19 1301.05,1531.11 1296.37,1508.00C1292.85,1490.62 1285.54,1474.49 1274.63,1460.00C1266.63,1449.37 1247.23,1430.46 1231.50,1417.95C1191.40,1386.07 1183.58,1379.60 1174.19,1370.57C1141.29,1338.87 1126.50,1309.43 1122.99,1268.63C1121.74,1254.04 1122.84,1238.74 1127.01,1213.00C1133.00,1176.00 1133.08,1164.38 1127.42,1152.43C1115.13,1126.44 1069.01,1122.52 1044.24,1145.34C1037.45,1151.61 1034.77,1156.97 1034.23,1165.36C1033.80,1172.06 1034.04,1173.12 1038.09,1182.50C1042.39,1192.46 1042.41,1192.56 1042.79,1206.50C1043.53,1233.51 1038.15,1249.88 1014.72,1291.97C995.47,1326.52 990.97,1341.05 991.02,1368.47C991.13,1439.55 1032.15,1546.59 1074.20,1585.52C1077.63,1588.70 1089.00,1598.14 1099.47,1606.50C1124.17,1626.23 1130.97,1633.65 1138.84,1649.51C1151.54,1675.05 1154.94,1709.07 1147.56,1736.61C1137.22,1775.16 1105.90,1807.49 1060.42,1826.56C1040.76,1834.80 1014.07,1841.66 954.00,1853.89C876.03,1869.76 847.27,1876.67 813.50,1887.67C773.81,1900.59 752.04,1911.32 689.00,1949.01C638.50,1979.20 619.81,1989.15 595.20,1998.93C554.90,2014.95 511.49,2020.51 473.00,2014.59C453.94,2011.65 441.91,2006.44 431.11,1996.44C422.99,1988.92 418.02,1981.15 406.83,1958.50C401.67,1948.05 396.01,1937.41 394.25,1934.86C381.04,1915.69 355.05,1906.65 279.50,1894.96C255.05,1891.18 239.84,1887.63 219.25,1880.92C171.68,1865.40 127.56,1842.36 90.00,1813.40C74.46,1801.42 47.43,1774.34 37.20,1760.50C17.55,1733.93 5.94,1706.47 1.90,1677.00C0.03,1663.42 0.29,1629.45 2.38,1614.00C8.96,1565.33 28.17,1520.44 57.47,1485.31C66.89,1474.01 75.69,1466.66 108.05,1443.07C121.95,1432.93 136.13,1422.00 139.56,1418.79C149.01,1409.96 149.25,1409.04 150.07,1379.00C150.71,1355.38 150.95,1352.84 153.43,1344.50C158.91,1326.10 167.59,1310.17 194.03,1270.00C215.59,1237.26 223.54,1223.46 227.58,1211.78C230.10,1204.47 230.42,1202.21 230.30,1192.50C230.17,1181.89 229.34,1176.24 221.48,1132.50C215.63,1099.93 216.23,1056.96 223.08,1018.00C232.65,963.56 255.00,914.34 289.38,872.00C300.91,857.79 314.24,845.04 330.91,832.27C356.69,812.52 366.00,802.09 366.00,792.93C366.00,786.14 362.04,771.79 345.50,718.50C336.31,688.88 333.20,674.88 331.90,657.15C327.47,597.08 341.53,528.82 370.06,471.88C397.70,416.71 436.41,372.26 486.00,338.77C493.43,333.75 504.00,326.43 509.50,322.50C534.48,304.65 551.10,297.58 616.50,277.01C646.97,267.43 663.86,261.16 678.97,253.82C690.28,248.32 692.23,246.96 699.98,239.13C704.68,234.38 716.82,219.47 726.98,206.00C746.92,179.53 753.03,172.57 773.34,153.15C809.65,118.46 852.94,83.26 893.00,55.83C937.14,25.62 971.84,11.60 1021.99,3.71C1033.78,1.85 1039.82,1.58 1069.50,1.56C1099.31,1.53 1105.53,1.81 1120.00,3.78C1182.02,12.25 1244.80,33.00 1298.34,62.75C1325.11,77.62 1337.80,87.06 1360.50,109.01C1392.80,140.24 1401.19,147.55 1414.58,156.18C1427.42,164.45 1446.51,171.59 1463.50,174.49C1474.76,176.41 1494.14,176.65 1509.00,175.06C1556.14,169.99 1621.76,183.65 1674.59,209.53C1767.92,255.25 1835.19,341.47 1855.96,442.00C1861.89,470.70 1862.33,476.30 1862.54,525.00C1862.74,575.06 1863.22,580.34 1869.00,596.16C1877.26,618.80 1890.55,632.94 1935.50,666.95C1954.60,681.41 1968.20,693.13 1976.13,701.99C1995.72,723.87 2010.09,752.59 2015.91,781.50C2020.77,805.60 2020.66,826.32 2015.47,870.50C2007.76,936.03 2012.41,961.85 2039.08,1001.50C2049.89,1017.58 2054.76,1022.75 2062.78,1026.69C2067.95,1029.23 2069.52,1029.50 2079.00,1029.50C2088.30,1029.50 2090.15,1029.19 2095.22,1026.82C2106.63,1021.47 2114.72,1011.16 2117.00,999.06C2118.20,992.67 2117.14,979.71 2113.39,955.00C2108.95,925.77 2101.73,894.61 2085.35,834.00C2058.83,735.89 2050.99,694.22 2049.34,642.50C2046.97,568.58 2069.63,516.40 2114.00,493.58C2131.36,484.65 2147.11,481.40 2168.89,482.27C2221.88,484.38 2272.65,520.81 2301.70,577.54C2312.40,598.44 2328.79,644.11 2341.38,688.11C2349.16,715.28 2358.89,753.69 2370.50,803.00C2386.05,869.10 2394.07,900.24 2396.85,905.42C2401.94,914.89 2411.29,918.80 2416.47,913.62C2421.19,908.90 2429.08,890.67 2443.80,850.50C2452.91,825.61 2458.82,807.25 2471.06,765.72C2484.86,718.93 2491.83,696.75 2506.36,653.50C2528.12,588.70 2541.18,556.88 2559.30,524.50C2579.08,489.17 2603.53,462.73 2627.50,450.73C2642.33,443.31 2666.24,439.34 2690.00,440.34C2720.36,441.63 2742.13,450.20 2760.13,467.97C2808.85,516.08 2813.88,625.48 2774.97,790.50C2768.22,819.09 2767.40,821.87 2750.97,872.00C2721.54,961.78 2717.51,982.18 2724.90,1004.00C2732.88,1027.58 2746.25,1047.76 2789.81,1101.91C2821.89,1141.79 2829.30,1153.04 2847.86,1190.00C2878.71,1251.46 2905.93,1330.96 2919.93,1400.50C2929.83,1449.66 2931.83,1510.78 2925.46,1569.50C2916.29,1653.95 2887.45,1742.44 2844.45,1818.00C2813.51,1872.38 2773.39,1915.24 2717.00,1954.19C2691.70,1971.66 2646.74,1995.41 2616.00,2007.54C2559.12,2029.99 2498.00,2043.79 2436.56,2048.07C2403.21,2050.39 2353.76,2048.44 2321.00,2043.52C2276.23,2036.78 2258.54,2030.01 2202.50,1998.14C2156.13,1971.77 2135.81,1964.73 2106.00,1964.68C2084.12,1964.65 2063.94,1969.50 2042.50,1979.95C2032.48,1984.84 2025.08,1989.86 2002.23,2007.34C1984.68,2020.75 1966.30,2029.94 1937.50,2039.68C1900.55,2052.18 1860.26,2059.18 1827.28,2058.85C1819.15,2058.77 1811.15,2058.54 1809.50,2058.34ZM2337.31,1662.52C2369.59,1655.68 2396.54,1621.22 2404.58,1576.50C2407.00,1563.09 2407.00,1537.21 2404.60,1524.07C2398.85,1492.61 2384.13,1466.01 2364.08,1450.83C2336.56,1430.00 2302.60,1432.74 2277.11,1457.85C2259.94,1474.76 2247.96,1500.49 2243.98,1529.00C2242.47,1539.86 2242.70,1563.48 2244.43,1574.24C2248.72,1600.86 2259.02,1623.39 2274.35,1639.65C2292.94,1659.38 2314.76,1667.30 2337.31,1662.52Z"/></svg>
+            </span>
+            <span class="funnel__headtext">
+              <span class="funnel__title">Berufshaftpflicht — Markel Pro Media</span>
+              <span class="funnel__sub">Für Medienberufe, Creator &amp; Dienstleister</span>
+            </span>
+          </div>
+
+          <div class="funnel__steps" aria-hidden="true">
+            <span class="funnel__step is-active" data-step-ind="1"><span class="funnel__step-num">1</span><span class="funnel__step-label">Tarif</span></span>
+            <span class="funnel__step-line"></span>
+            <span class="funnel__step" data-step-ind="2"><span class="funnel__step-num">2</span><span class="funnel__step-label">Risiko</span></span>
+            <span class="funnel__step-line"></span>
+            <span class="funnel__step" data-step-ind="3"><span class="funnel__step-num">3</span><span class="funnel__step-label">Abschluss</span></span>
+          </div>
+
+          <div class="funnel__body">
+
+            <!-- ============ STEP 1 · Tarif & Preiskalkulation ============ -->
+            <div class="funnel__panel is-active" data-panel="1">
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">In welchem Hauptbereich bist du überwiegend tätig?</span>
+                <div class="funnel__opts" role="radiogroup" aria-label="Haupttätigkeit">
+                  <label class="funnel__opt"><input type="radio" name="prof" value="video" /><span>Video, Film &amp; Content<small>Cutter, Regie, Kamera, Producer, Streamer, YouTuber, Podcaster</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="prof" value="design" /><span>Grafik, Web &amp; Kommunikationsdesign<small>Webdesign, Digital Art, Grafik, UI/UX</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="prof" value="agency" /><span>Marketing- &amp; Medienagentur<small>Social Media, Performance/SEO/SEM, PR</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="prof" value="text" /><span>Text, Redaktion &amp; Verlag<small>Journalist, Texter, Fachautor, Redakteur</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="prof" value="music" /><span>Musik, Audio &amp; Event<small>Musiker, Sounddesign, DJ, Komponist, Eventmanager</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="prof" value="consulting" /><span>Beratung / sonstige Dienstleistungen<small>Consulting, Coaching, Projektmanagement</small></span></label>
+                </div>
+              </div>
+
+              <div class="funnel__field">
+                <label class="funnel__label" for="funRevenue">Voraussichtlicher Jahresnettoumsatz</label>
+                <select class="funnel__select" id="funRevenue" name="revenue">
+                  <option value="" selected>Bitte wählen…</option>
+                  <option value="r50">bis 50.000 €</option>
+                  <option value="r100">bis 100.000 €</option>
+                  <option value="r250">bis 250.000 €</option>
+                  <option value="r500">bis 500.000 €</option>
+                  <option value="r500plus">über 500.000 €</option>
+                </select>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Versicherungssumme für reine Vermögensschäden</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Versicherungssumme">
+                  <label class="funnel__opt"><input type="radio" name="vsh" value="300000" /><span>300.000 €<small>Standard-Einstieg</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="vsh" value="500000" /><span>500.000 €</span></label>
+                  <label class="funnel__opt"><input type="radio" name="vsh" value="1000000" checked /><span>1.000.000 €<small>Empfohlen</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="vsh" value="2000000" /><span>2.000.000 €</span></label>
+                  <label class="funnel__opt"><input type="radio" name="vsh" value="5000000" /><span>5.000.000 €</span></label>
+                  <label class="funnel__opt"><input type="radio" name="vsh" value="10000000" /><span>10.000.000 €</span></label>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Selbstbeteiligung pro Schadensfall</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Selbstbeteiligung">
+                  <label class="funnel__opt"><input type="radio" name="sb" value="0" checked /><span>0 €<small>Ohne Selbstbehalt</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="sb" value="250" /><span>250 €</span></label>
+                  <label class="funnel__opt"><input type="radio" name="sb" value="500" /><span>500 €</span></label>
+                  <label class="funnel__opt"><input type="radio" name="sb" value="1000" /><span>1.000 €<small>Günstigere Prämie</small></span></label>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Auch physische Schäden mitversichern?</span>
+                <span class="funnel__q-help">Personen-, Sach- und Mietsachschäden, z. B. am Set, Drehort oder im Büro (Betriebshaftpflicht).</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Betriebshaftpflicht">
+                  <label class="funnel__opt"><input type="radio" name="bhp" value="no" checked /><span>Nein<small>Nur Vermögensschäden (VSH)</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="bhp" value="yes" /><span>Ja<small>Inkl. Betriebshaftpflicht</small></span></label>
+                </div>
+                <div class="funnel__detail" id="funBhpDetail">
+                  <label class="funnel__label" for="funBhpSum">Deckungssumme Personen- &amp; Sachschäden</label>
+                  <select class="funnel__select" id="funBhpSum" name="bhpsum">
+                    <option value="3000000" selected>3.000.000 € pauschal</option>
+                    <option value="5000000">5.000.000 € pauschal</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Optionale Zusatzbausteine</span>
+                <div class="funnel__modules">
+                  <label class="funnel__module"><input type="checkbox" name="module" value="cyber" /><span class="funnel__module-card"><span class="funnel__module-check" aria-hidden="true"></span><span class="funnel__module-text"><span class="funnel__module-name">Cyber &amp; Daten-Eigenschaden</span><span class="funnel__module-desc">Hackerangriff, Datenwiederherstellung, IT-Forensik &amp; DSGVO-Krisenberatung (Sublimit 100.000 €).</span></span><span class="funnel__module-price">+ ca. 96 €/J</span></span></label>
+                  <label class="funnel__module"><input type="checkbox" name="module" value="eigenschaden" /><span class="funnel__module-card"><span class="funnel__module-check" aria-hidden="true"></span><span class="funnel__module-text"><span class="funnel__module-name">Eigenschadendeckung</span><span class="funnel__module-desc">Berechtigter Projektrücktritt, Reputationsschäden, Fake President / Phishing, Verlust eigener Dokumente.</span></span><span class="funnel__module-price">+ ca. 72 €/J</span></span></label>
+                  <label class="funnel__module"><input type="checkbox" name="module" value="druck" /><span class="funnel__module-card"><span class="funnel__module-check" aria-hidden="true"></span><span class="funnel__module-text"><span class="funnel__module-name">Druckeigenschaden</span><span class="funnel__module-desc">Fehlerhafte eigene oder an Druckereien vergebene Druckaufträge (Sublimit 250.000 €).</span></span><span class="funnel__module-price">+ ca. 48 €/J</span></span></label>
+                  <label class="funnel__module"><input type="checkbox" name="module" value="veranstaltung" /><span class="funnel__module-card"><span class="funnel__module-check" aria-hidden="true"></span><span class="funnel__module-text"><span class="funnel__module-name">Erweiterte Veranstaltungsdeckung</span><span class="funnel__module-desc">Haftpflicht aus Organisation von Events für Dritte (bis 250 Personen / max. 5 Events p.a.).</span></span><span class="funnel__module-price">+ ca. 84 €/J</span></span></label>
+                  <label class="funnel__module"><input type="checkbox" name="module" value="doe" /><span class="funnel__module-card"><span class="funnel__module-check" aria-hidden="true"></span><span class="funnel__module-text"><span class="funnel__module-name">D&amp;O-Außenhaftung</span><span class="funnel__module-desc">Persönliche Haftung leitender Organe/Geschäftsführer gegenüber Dritten (Sublimit 100.000 €).</span></span><span class="funnel__module-price">+ ca. 60 €/J</span></span></label>
+                </div>
+              </div>
+
+              <div class="funnel__result" aria-live="polite">
+                <span class="funnel__result-tag">Unverbindliche Schätzung</span>
+                <div class="funnel__price funnel__price--empty" id="funPrice">
+                  <span class="funnel__price-main">Wähle Bereich &amp; Umsatz</span>
+                </div>
+                <p class="funnel__result-basis" id="funBasis">Sobald Berufsfeld und Umsatz gesetzt sind, rechnen wir dir eine grobe Größenordnung aus.</p>
+              </div>
+
+              <p class="funnel__note-box">Der angezeigte Betrag ist eine grobe, unverbindliche Beispielrechnung auf Basis deiner Angaben, kein verbindliches Markel-Angebot. Die tatsächliche Prämie ermittelt Markel nach Antragsprüfung. Keine Rechts- oder Versicherungsberatung.</p>
+
+              <div class="funnel__nav">
+                <span class="funnel__nav-spacer"></span>
+                <button type="button" class="funnel__btn funnel__btn--primary" data-next>Weiter zu den Risikofragen</button>
+              </div>
+              <p class="funnel__note" id="funNote1" role="status" aria-live="polite"></p>
+            </div>
+
+            <!-- ============ STEP 2 · Risikofragen & Gefahrprüfung ============ -->
+            <div class="funnel__panel" data-panel="2">
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Bestanden in den letzten 3 bzw. 5 Jahren Haftpflichtansprüche, Vermögens- oder Eigenschäden oder anhängige Streitigkeiten aus deiner beruflichen Tätigkeit?</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Vorschäden">
+                  <label class="funnel__opt"><input type="radio" name="q_claims" value="no" /><span>Nein</span></label>
+                  <label class="funnel__opt"><input type="radio" name="q_claims" value="yes" /><span>Ja</span></label>
+                </div>
+                <div class="funnel__detail" data-detail-for="q_claims">
+                  <textarea class="funnel__textarea" name="q_claims_detail" placeholder="Schadendatum, Schadenhöhe, Ursache und Regulierungsstatus"></textarea>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Sind dir aktuell Umstände, Pflichtverletzungen oder Schadenfälle bekannt, die zu künftigen Ansprüchen gegen dich oder dein Unternehmen führen könnten?</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Drohende Ansprüche">
+                  <label class="funnel__opt"><input type="radio" name="q_known" value="no" /><span>Nein</span></label>
+                  <label class="funnel__opt"><input type="radio" name="q_known" value="yes" /><span>Ja</span></label>
+                </div>
+                <div class="funnel__detail" data-detail-for="q_known">
+                  <textarea class="funnel__textarea" name="q_known_detail" placeholder="Sachverhalt kurz schildern (manuelle Vorprüfung durch den Versicherer)"></textarea>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Wurde dein Unternehmen in den letzten 12 Monaten neu gegründet?</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Neugründung">
+                  <label class="funnel__opt"><input type="radio" name="q_startup" value="yes" /><span>Ja<small>Rückwärtsdeckung bis 12 Monate</small></span></label>
+                  <label class="funnel__opt"><input type="radio" name="q_startup" value="no" /><span>Nein<small>Standard-Geltungsbereich</small></span></label>
+                </div>
+              </div>
+
+              <div class="funnel__q" data-only-when="q_startup=no">
+                <span class="funnel__q-title">Bestand unmittelbar vor diesem Antrag eine gleichartige Berufshaftpflicht?</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Vorversicherung">
+                  <label class="funnel__opt"><input type="radio" name="q_prev" value="yes" /><span>Ja</span></label>
+                  <label class="funnel__opt"><input type="radio" name="q_prev" value="no" /><span>Nein<small>Rückwärtsdeckung bis 6 Monate</small></span></label>
+                </div>
+                <div class="funnel__detail" data-detail-for="q_prev" data-detail-value="yes">
+                  <div class="funnel__row">
+                    <label class="funnel__field"><span class="funnel__label">Vorversicherer</span><input class="funnel__input" name="q_prev_insurer" type="text" /></label>
+                    <label class="funnel__field"><span class="funnel__label">Ablaufdatum</span><input class="funnel__input" name="q_prev_end" type="text" placeholder="TT.MM.JJJJ" /></label>
+                  </div>
+                  <label class="funnel__field"><span class="funnel__label">Kündigungsgrund</span><input class="funnel__input" name="q_prev_reason" type="text" /></label>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Erzielst du Umsätze mit direkten Auftraggebern in den USA oder Kanada oder erbringst du dort Leistungen vor Ort?</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Nordamerika">
+                  <label class="funnel__opt"><input type="radio" name="q_us" value="no" /><span>Nein</span></label>
+                  <label class="funnel__opt"><input type="radio" name="q_us" value="yes" /><span>Ja</span></label>
+                </div>
+                <div class="funnel__detail" data-detail-for="q_us">
+                  <label class="funnel__field"><span class="funnel__label">US-/Kanada-Umsatzanteil (%)</span><input class="funnel__input" name="q_us_share" type="number" min="0" max="100" inputmode="numeric" placeholder="z. B. 15" /></label>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Übst du Tätigkeiten als Architekt/Ingenieur mit Bauüberwachung, Anlage-/Vermögensberatung oder Planung von Waffensystemen bzw. kerntechnischen Anlagen aus?</span>
+                <div class="funnel__opts funnel__opts--2" role="radiogroup" aria-label="Tätigkeitsausschlüsse">
+                  <label class="funnel__opt"><input type="radio" name="q_excl" value="no" /><span>Nein</span></label>
+                  <label class="funnel__opt"><input type="radio" name="q_excl" value="yes" /><span>Ja</span></label>
+                </div>
+                <p class="funnel__note-box" id="funExclNote" hidden>Diese Tätigkeiten sind im Standardtarif ausgeschlossen. Wir leiten dich an ein passendes Sonderkonzept weiter, du kannst deine Anfrage trotzdem absenden.</p>
+              </div>
+
+              <div class="funnel__nav">
+                <button type="button" class="funnel__btn funnel__btn--ghost" data-prev>Zurück</button>
+                <span class="funnel__nav-spacer"></span>
+                <button type="button" class="funnel__btn funnel__btn--primary" data-next>Weiter zum Abschluss</button>
+              </div>
+              <p class="funnel__note" id="funNote2" role="status" aria-live="polite"></p>
+            </div>
+
+            <!-- ============ STEP 3 · Stammdaten & Antragsanfrage ============ -->
+            <div class="funnel__panel" data-panel="3">
+
+              <dl class="funnel__review" id="funReview" aria-label="Deine Auswahl">
+                <div class="funnel__review-row"><dt>Tätigkeit</dt><dd data-review="prof">—</dd></div>
+                <div class="funnel__review-row"><dt>Deckung</dt><dd data-review="cover">—</dd></div>
+                <div class="funnel__review-row"><dt>Geschätzte Prämie</dt><dd data-review="price">—</dd></div>
+              </dl>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Angaben zum Versicherungsnehmer</span>
+                <div class="funnel__field">
+                  <label class="funnel__label" for="funLegal">Rechtsform</label>
+                  <select class="funnel__select" id="funLegal" name="legalForm">
+                    <option value="" selected>Bitte wählen…</option>
+                    <option>Freiberufler:in</option>
+                    <option>Einzelunternehmen</option>
+                    <option>GbR</option>
+                    <option>UG (haftungsbeschränkt)</option>
+                    <option>GmbH</option>
+                    <option>Sonstige</option>
+                  </select>
+                </div>
+                <label class="funnel__field"><span class="funnel__label">Firmen- / Unternehmensname (falls vorhanden)</span><input class="funnel__input" name="company" type="text" autocomplete="organization" /></label>
+                <div class="funnel__row">
+                  <div class="funnel__field" style="flex:0 0 34%;">
+                    <label class="funnel__label" for="funSalut">Anrede</label>
+                    <select class="funnel__select" id="funSalut" name="salutation">
+                      <option value="" selected>–</option>
+                      <option>Frau</option>
+                      <option>Herr</option>
+                      <option>Divers</option>
+                    </select>
+                  </div>
+                  <label class="funnel__field"><span class="funnel__label">Vorname</span><input class="funnel__input" name="firstName" type="text" autocomplete="given-name" required /></label>
+                  <label class="funnel__field"><span class="funnel__label">Nachname</span><input class="funnel__input" name="lastName" type="text" autocomplete="family-name" required /></label>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Kontakt</span>
+                <div class="funnel__row">
+                  <label class="funnel__field"><span class="funnel__label">E-Mail</span><input class="funnel__input" name="email" type="email" autocomplete="email" required /></label>
+                  <label class="funnel__field"><span class="funnel__label">Telefon / Mobil</span><input class="funnel__input" name="phone" type="tel" autocomplete="tel" /></label>
+                </div>
+                <label class="funnel__field"><span class="funnel__label">Webseite / Social-Media (zur Verifikation)</span><input class="funnel__input" name="website" type="text" inputmode="url" placeholder="z. B. instagram.com/…" /></label>
+                <div class="funnel__row">
+                  <label class="funnel__field" style="flex:1 1 62%;"><span class="funnel__label">Postleitzahl &amp; Ort</span><input class="funnel__input" name="city" type="text" autocomplete="postal-code" placeholder="PLZ, Ort" /></label>
+                  <div class="funnel__field" style="flex:1 1 38%;">
+                    <label class="funnel__label" for="funLand">Sitz</label>
+                    <select class="funnel__select" id="funLand" name="country">
+                      <option value="DE" selected>Deutschland</option>
+                      <option value="EU">EU</option>
+                      <option value="EWR">EWR</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="funnel__q">
+                <span class="funnel__q-title">Vertragswunsch</span>
+                <div class="funnel__row">
+                  <div class="funnel__field">
+                    <label class="funnel__label" for="funTerm">Laufzeit</label>
+                    <select class="funnel__select" id="funTerm" name="term">
+                      <option value="1">1 Jahr (autom. Verlängerung)</option>
+                      <option value="3">3 Jahre</option>
+                    </select>
+                  </div>
+                  <div class="funnel__field">
+                    <label class="funnel__label" for="funInterval">Zahlungsintervall</label>
+                    <select class="funnel__select" id="funInterval" name="interval">
+                      <option value="yearly">Jährlich (ohne Zuschlag)</option>
+                      <option value="halfyearly">Halbjährlich</option>
+                      <option value="quarterly">Vierteljährlich</option>
+                    </select>
+                  </div>
+                </div>
+                <label class="funnel__field"><span class="funnel__label">Gewünschter Versicherungsbeginn</span><input class="funnel__input" name="startDate" type="text" placeholder="sofort oder TT.MM.JJJJ" /></label>
+              </div>
+
+              <div class="funnel__consents">
+                <label class="funnel__consent"><input type="checkbox" name="c_vvg" /><span class="funnel__consent-box" aria-hidden="true"></span><span class="funnel__consent-text">Ich bestätige, dass meine Angaben wahrheitsgemäß und vollständig sind (vorvertragliche Anzeigepflicht nach § 19 Abs. 5 VVG).</span></label>
+                <label class="funnel__consent"><input type="checkbox" name="c_avb" /><span class="funnel__consent-box" aria-hidden="true"></span><span class="funnel__consent-text">Ich nehme zur Kenntnis, dass mir vor Abschluss die Allgemeinen Versicherungsbedingungen (AVB), das Produktinformationsblatt (IPID) und die 14-tägige Widerrufsbelehrung zugestellt werden.</span></label>
+                <label class="funnel__consent"><input type="checkbox" name="c_dsgvo" /><span class="funnel__consent-box" aria-hidden="true"></span><span class="funnel__consent-text">Ich willige in die Verarbeitung meiner Daten zur Bearbeitung dieser Anfrage gemäß DSGVO ein und habe die Datenschutzerklärung zur Kenntnis genommen.</span></label>
+              </div>
+
+              <p class="funnel__note-box">Das ist eine unverbindliche Antragsanfrage. Es werden hier keine Bankdaten erhoben und kein Vertrag rechtsverbindlich geschlossen. Wir prüfen deine Angaben, holen das verbindliche Markel-Angebot ein und melden uns mit den nächsten Schritten (Angebot, Bedingungen, SEPA-Mandat).</p>
+
+              <div class="funnel__nav">
+                <button type="button" class="funnel__btn funnel__btn--ghost" data-prev>Zurück</button>
+                <span class="funnel__nav-spacer"></span>
+                <button type="submit" class="funnel__btn funnel__btn--primary" id="funSubmit">Antrag prüfen lassen</button>
+              </div>
+              <p class="funnel__note" id="funNote3" role="status" aria-live="polite"></p>
+            </div>
+
+            <!-- Done -->
+            <div class="funnel__done">
+              <strong>Danke, deine Anfrage ist raus.</strong>
+              <p>Wir prüfen deine Angaben, holen das verbindliche Markel-Angebot ein und melden uns bei dir. Bis dahin: bleib hungrig.</p>
+              <span class="funnel__done-ref" id="funDoneRef"></span>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </section>
+
     <!-- Artist Care -->
     <section class="proof section" id="proof">
       <div class="shell">
@@ -494,6 +802,7 @@
   <script src="js/vendor/lenis.min.js"></script>
   <script src="js/motion.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/funnel.js"></script>
 
   <!-- "Let the AI read the contract" chat demo (industries section) -->
   <script>

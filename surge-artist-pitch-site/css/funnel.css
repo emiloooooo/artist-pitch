@@ -1,0 +1,270 @@
+/* ============================================================================
+   NIMMERSATT — Insurance funnel (Markel Pro Media, Berufshaftpflicht)
+   A 3-step quote/apply wizard, shown to German-language visitors only.
+   Reuses the flat liquid-glass frame of the chat / lead blocks: one accent
+   (black), no colour, no gradients, no drop shadow — only glass edge lights.
+   ========================================================================== */
+
+.funnel {
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
+  max-width: 680px;
+  border-radius: 22px;
+  isolation: isolate;
+  background: color-mix(in srgb, var(--bg) 74%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  backdrop-filter: blur(22px) saturate(1.25);
+  border: 1px solid color-mix(in srgb, var(--fg) 9%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+}
+
+/* Header — same avatar chip + title/sub as the lead block */
+.funnel__head {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.9rem 1.05rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 7%, transparent);
+  background: color-mix(in srgb, var(--bg) 40%, transparent);
+}
+.funnel__mark {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--bg); background: var(--fg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px rgba(5, 5, 5, 0.22);
+}
+.funnel__mark svg { display: block; width: 19px; height: 19px; }
+.funnel__headtext { display: flex; flex-direction: column; gap: 0.12rem; min-width: 0; }
+.funnel__title { font-size: 0.82rem; font-weight: 700; color: var(--fg); line-height: 1.1; }
+.funnel__sub { font-size: var(--text-label); letter-spacing: 0.02em; color: var(--muted); }
+
+/* Step progress — three dotted labels */
+.funnel__steps {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.7rem clamp(1rem, 2.4vw, 1.4rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 7%, transparent);
+}
+.funnel__step {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: var(--text-label); letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap;
+}
+.funnel__step-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; flex: 0 0 auto;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0;
+  border: 1px solid color-mix(in srgb, var(--fg) 22%, transparent);
+  color: var(--muted); background: transparent;
+  transition: background var(--dur-ui) var(--ease-spring), color var(--dur-ui) var(--ease-spring), border-color var(--dur-ui) var(--ease-spring);
+}
+.funnel__step-line { flex: 1 1 auto; height: 1px; background: color-mix(in srgb, var(--fg) 12%, transparent); min-width: 8px; }
+.funnel__step-label { display: none; }
+@media (min-width: 520px) { .funnel__step-label { display: inline; } }
+.funnel__step.is-active { color: var(--fg); }
+.funnel__step.is-active .funnel__step-num { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.funnel__step.is-done .funnel__step-num { background: color-mix(in srgb, var(--fg) 16%, transparent); color: var(--fg); border-color: transparent; }
+
+.funnel__body { padding: clamp(1rem, 2.4vw, 1.4rem); display: flex; flex-direction: column; gap: 1.1rem; }
+
+/* A wizard panel — only the active one is shown */
+.funnel__panel { display: none; flex-direction: column; gap: 1.05rem; }
+.funnel__panel.is-active { display: flex; animation: funnelIn 0.32s var(--ease-out-expo) both; }
+@keyframes funnelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.funnel__q { display: flex; flex-direction: column; gap: 0.5rem; }
+.funnel__q-title { font-size: 0.9rem; font-weight: 700; color: var(--fg); line-height: 1.35; }
+.funnel__q-help { font-size: 0.78rem; line-height: 1.5; color: var(--muted); margin-top: -0.15rem; }
+
+.funnel__label {
+  font-size: var(--text-label); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); padding-inline: 0.15rem;
+}
+
+/* Option cards — radio buttons rendered as selectable rows */
+.funnel__opts { display: grid; gap: 0.5rem; }
+.funnel__opts--2 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 480px) { .funnel__opts--2 { grid-template-columns: 1fr; } }
+.funnel__opt { position: relative; }
+.funnel__opt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+.funnel__opt span {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  padding: 0.7rem 0.9rem; border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  font-size: 0.9rem; font-weight: 600; color: var(--fg); line-height: 1.35;
+  transition: border-color var(--dur-ui) var(--ease-spring), background var(--dur-ui) var(--ease-spring);
+}
+.funnel__opt small { font-size: 0.74rem; font-weight: 500; color: var(--muted); }
+.funnel__opt input:hover + span { border-color: color-mix(in srgb, var(--fg) 26%, transparent); }
+.funnel__opt input:checked + span {
+  border-color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  box-shadow: inset 0 0 0 1px var(--fg);
+}
+.funnel__opt input:focus-visible + span { box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 12%, transparent); }
+
+/* Inputs / selects / textareas — pill inputs like the lead block */
+.funnel__field { display: flex; flex-direction: column; gap: 0.32rem; }
+.funnel__row { display: flex; gap: 0.6rem; }
+.funnel__row > .funnel__field { flex: 1; min-width: 0; }
+@media (max-width: 520px) { .funnel__row { flex-direction: column; } }
+.funnel__input, .funnel__select {
+  appearance: none; width: 100%;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 999px; padding: 0.72rem 1.05rem;
+  font: inherit; font-size: 0.92rem; font-weight: 500;
+  transition: border-color var(--dur-ui) var(--ease-spring), box-shadow var(--dur-ui) var(--ease-spring);
+}
+.funnel__select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center; background-size: 16px;
+  padding-right: 2.6rem; cursor: pointer;
+}
+.funnel__textarea {
+  appearance: none; width: 100%; resize: vertical; min-height: 84px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 16px; padding: 0.7rem 0.95rem;
+  font: inherit; font-size: 0.9rem; font-weight: 500; line-height: 1.55;
+  transition: border-color var(--dur-ui) var(--ease-spring), box-shadow var(--dur-ui) var(--ease-spring);
+}
+.funnel__input::placeholder, .funnel__textarea::placeholder { color: color-mix(in srgb, var(--fg) 42%, transparent); }
+.funnel__input:focus, .funnel__select:focus, .funnel__textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--fg) 32%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+/* Modules — checkbox chips (explicit indicator; native input hidden but covers
+   the whole card for the click target) */
+.funnel__modules { display: grid; gap: 0.5rem; }
+.funnel__module { position: relative; display: block; }
+.funnel__module input {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  appearance: none; -webkit-appearance: none; margin: 0; opacity: 0; cursor: pointer;
+}
+.funnel__module-card {
+  display: flex; align-items: flex-start; gap: 0.7rem;
+  padding: 0.7rem 0.9rem; border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  transition: border-color var(--dur-ui) var(--ease-spring), background var(--dur-ui) var(--ease-spring);
+}
+.funnel__module-check {
+  flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--fg) 30%, transparent);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  transition: background var(--dur-ui) var(--ease-spring), border-color var(--dur-ui) var(--ease-spring);
+}
+.funnel__module-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.funnel__module-name { font-size: 0.88rem; font-weight: 600; color: var(--fg); line-height: 1.35; }
+.funnel__module-desc { font-size: 0.74rem; font-weight: 500; color: var(--muted); line-height: 1.5; }
+.funnel__module-price { flex: 0 0 auto; font-size: 0.76rem; font-weight: 600; color: var(--muted); white-space: nowrap; margin-top: 1px; }
+.funnel__module input:checked + .funnel__module-card { border-color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.funnel__module input:checked + .funnel__module-card .funnel__module-check {
+  background: var(--fg); border-color: var(--fg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center; background-size: 13px;
+}
+.funnel__module input:focus-visible + .funnel__module-card { box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 12%, transparent); }
+
+/* Conditional detail block (revealed on "Ja") */
+.funnel__detail { display: none; flex-direction: column; gap: 0.5rem; padding-left: 0.15rem; }
+.funnel__detail.is-open { display: flex; }
+
+/* Live estimate panel */
+.funnel__result {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding: 0.95rem 1.05rem; border-radius: 16px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+}
+.funnel__result-tag {
+  font-size: var(--text-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+.funnel__price { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.funnel__price-main { font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; color: var(--fg); letter-spacing: -0.01em; line-height: 1; }
+.funnel__price-per { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+.funnel__price-alt { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+.funnel__price--empty .funnel__price-main { font-size: 1rem; font-weight: 600; color: var(--muted); }
+.funnel__result-basis { font-size: 0.74rem; line-height: 1.5; color: var(--muted); }
+
+/* Note / disclaimer */
+.funnel__note-box {
+  margin: 0; font-size: 0.72rem; line-height: 1.55; color: var(--muted);
+  padding: 0.7rem 0.85rem; border-radius: 12px;
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+/* Consent checkboxes */
+.funnel__consents { display: flex; flex-direction: column; gap: 0.55rem; }
+.funnel__consent { display: grid; grid-template-columns: 20px 1fr; gap: 0.6rem; align-items: start; cursor: pointer; }
+.funnel__consent input { position: absolute; opacity: 0; width: 18px; height: 18px; margin: 0; cursor: pointer; }
+.funnel__consent-box {
+  width: 18px; height: 18px; margin-top: 2px; border-radius: 6px; flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--fg) 30%, transparent);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  transition: background var(--dur-ui) var(--ease-spring), border-color var(--dur-ui) var(--ease-spring);
+}
+.funnel__consent input:checked + .funnel__consent-box {
+  background: var(--fg); border-color: var(--fg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center; background-size: 13px;
+}
+.funnel__consent input:focus-visible + .funnel__consent-box { box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 12%, transparent); }
+.funnel__consent-text { font-size: 0.78rem; line-height: 1.5; color: var(--fg); }
+
+/* Review summary on the final step */
+.funnel__review {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding: 0.9rem 1.05rem; border-radius: 16px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+}
+.funnel__review-row { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.8rem; }
+.funnel__review-row dt { color: var(--muted); }
+.funnel__review-row dd { color: var(--fg); font-weight: 600; text-align: right; margin: 0; }
+
+/* Nav — back / next / submit */
+.funnel__nav { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.funnel__btn {
+  appearance: none; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.72rem 1.3rem; border-radius: 999px;
+  font: inherit; font-weight: 600; font-size: 0.92rem;
+  transition: transform var(--dur-ui) var(--ease-spring), opacity var(--dur-ui) var(--ease-spring), border-color var(--dur-ui) var(--ease-spring), color var(--dur-ui) var(--ease-spring);
+}
+.funnel__btn--primary {
+  background: var(--fg); color: var(--bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 12px -4px rgba(5, 5, 5, 0.5);
+}
+.funnel__btn--primary:hover { transform: translateY(-1px); }
+.funnel__btn--primary:active { transform: translateY(0) scale(0.98); }
+.funnel__btn--ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
+}
+.funnel__btn--ghost:hover { color: var(--fg); border-color: var(--fg); }
+.funnel__btn[disabled] { opacity: 0.5; cursor: default; transform: none; }
+.funnel__nav-spacer { flex: 1 1 auto; }
+
+.funnel__note { margin: 0; font-size: 0.82rem; color: var(--muted); min-height: 1em; }
+.funnel__note--error { color: var(--fg); }
+
+/* Done state */
+.funnel__done { display: none; flex-direction: column; gap: 0.5rem; }
+.funnel.is-sent .funnel__steps,
+.funnel.is-sent .funnel__body > *:not(.funnel__done) { display: none; }
+.funnel.is-sent .funnel__done { display: flex; }
+.funnel__done strong { font-weight: 700; font-size: 0.95rem; color: var(--fg); }
+.funnel__done p { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--fg); }
+.funnel__done-ref { font-size: 0.78rem; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .funnel__panel.is-active { animation: none; }
+  .funnel__btn--primary:hover { transform: none; }
+}
