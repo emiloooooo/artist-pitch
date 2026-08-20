@@ -1405,6 +1405,12 @@ html.lenis, html.lenis body { height: auto; }
   transition: background var(--dur-ui) var(--ease-spring);
 }
 .artist:hover { background: var(--panel); }
+/* Clickable rows (download / invite): monochrome, no underline; the ↓ / ↗
+   marker darkens on hover so the row reads as actionable. */
+.artist--link { text-decoration: none; color: inherit; cursor: pointer; }
+.artist__mark { font-size: 0.8em; color: var(--muted); transition: color var(--dur-ui) var(--ease-spring); }
+.artist--link:hover .artist__mark { color: var(--fg); }
+.artist--link:focus-visible { outline: 2px solid var(--fg); outline-offset: -2px; }
 .artist__name {
   font-family: var(--font-mono);
   font-weight: 700;
