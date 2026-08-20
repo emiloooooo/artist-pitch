@@ -33,7 +33,7 @@ function loadContract() {
 const CONTRACT = loadContract();
 
 const SYSTEM_PROMPT =
-  'Du bist der Nimmersatt Bot. Du kennst den kompletten NIMMERSATT-Vertrag ' +
+  'Du bist der nimmersatt Bot. Du kennst den kompletten NIMMERSATT-Vertrag ' +
   '(steht unten) und erklärst ihn Artists, die gerade überlegen, ob sie ' +
   'unterschreiben.\n\n' +
   'DEIN TON:\n' +

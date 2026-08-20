@@ -522,7 +522,7 @@
 
 /* Header: avatar chip, name, live status */
 .chat__brand {
-  display: flex; align-items: center; gap: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
   padding: 0.9rem 1.05rem;
   border-bottom: 1px solid color-mix(in srgb, var(--fg) 7%, transparent);
   background: color-mix(in srgb, var(--bg) 40%, transparent);
@@ -542,6 +542,23 @@
 .chat__brandmeta {
   display: flex; align-items: center; gap: 0.4rem;
   font-size: var(--text-label); letter-spacing: 0.02em; color: var(--muted);
+}
+/* Which model powers the bot — a quiet hairline pill. Right-aligned on the
+   header row on desktop; on phones it drops to its own line under the name so
+   the bot name and status keep the full width. */
+.chat__model {
+  flex: 0 0 auto; margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap;
+  padding: 0.28rem 0.55rem; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+@media (max-width: 559px) {
+  .chat__model {
+    order: 3; flex-basis: 100%; margin-left: calc(34px + 0.75rem); margin-top: 0.15rem;
+  }
 }
 .chat__status {
   width: 7px; height: 7px; border-radius: 50%;
@@ -887,6 +904,33 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* Screenshot + note pairs. Single container so mobile order is
+   shot → note → shot → note (each screenshot keeps its own explanation right
+   under it). On desktop the grid areas restore the shots-row / notes-row look. */
+.toolpairs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 3.5vw, 1.6rem);
+  margin-top: clamp(1.5rem, 3vw, 2.2rem);
+}
+.tool-note h3 {
+  font-size: var(--text-label); letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--fg); margin-bottom: 0.7rem;
+}
+.tool-note p { color: var(--muted); line-height: 1.7; font-size: var(--text-body); }
+@media (min-width: 720px) {
+  .toolpairs {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "shot1 shot2" "note1 note2";
+    column-gap: clamp(1.5rem, 3vw, 2.4rem);
+    row-gap: clamp(1.6rem, 3vw, 2.4rem);
+  }
+  .toolpairs > *:nth-child(1) { grid-area: shot1; }
+  .toolpairs > *:nth-child(2) { grid-area: note1; }
+  .toolpairs > *:nth-child(3) { grid-area: shot2; }
+  .toolpairs > *:nth-child(4) { grid-area: note2; }
 }
 
 /* ============================================================================
