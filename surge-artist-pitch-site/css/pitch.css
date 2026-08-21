@@ -673,6 +673,10 @@
 }
 .chat__send:hover { transform: translateY(-1px) scale(1.04); }
 .chat__send:active { transform: translateY(0) scale(0.96); }
+/* While the bot is answering the button is dead: no second question can be
+   fired on top of the first one. */
+.chat__send:disabled { cursor: default; opacity: 0.42; }
+.chat__send:disabled:hover, .chat__send:disabled:active { transform: none; }
 .chat__send svg { display: block; }
 
 @media (prefers-reduced-motion: reduce) {

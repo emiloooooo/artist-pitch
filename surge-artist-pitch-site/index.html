@@ -562,6 +562,23 @@
       '3 · Term & exit — Open-ended, 3-month probation, then one month’s notice to month-end. No lock-in. Work in progress gets finished and settled. Only a 12-month non-solicit of introduced clients outlives the contract.\n\n' +
       'That’s it. You just saved yourself the read.';
 
+    var send = form.querySelector('.chat__send');
+    var pending = false;   // a request is in flight
+    var hasTyped = false;  // the visitor has entered text at least once
+
+    input.addEventListener('input', function () {
+      if (input.value.trim()) hasTyped = true;
+    });
+
+    function setPending(state) {
+      pending = state;
+      if (send) {
+        send.disabled = state;
+        send.setAttribute('aria-disabled', state ? 'true' : 'false');
+      }
+      form.classList.toggle('is-busy', state);
+    }
+
     function scroll() { win.scrollTop = win.scrollHeight; }
 
     function addMsg(kind, who, text) {
@@ -609,6 +626,7 @@
 
     function reply(text) {
       var typing = addTyping();
+      setPending(true);
       fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -623,15 +641,28 @@
         .then(function (data) {
           typing.remove();
           addMsg('bot', assistant, (data && data.answer) ? data.answer : fallback(text));
+          setPending(false);
         })
         .catch(function () {
-          setTimeout(function () { typing.remove(); addMsg('bot', assistant, fallback(text)); }, 600);
+          setTimeout(function () {
+            typing.remove();
+            addMsg('bot', assistant, fallback(text));
+            setPending(false);
+          }, 600);
         });
     }
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var text = (input.value || input.placeholder).trim();
+      // One question at a time. Without this, a second tap on send while the
+      // bot is still typing goes through on an already-cleared input.
+      if (pending) return;
+      // The placeholder doubles as a suggested first question, so sending an
+      // empty box fires it. That shortcut dies the moment the visitor types
+      // anything of their own — otherwise their double-tap on send would post
+      // the canned "Frag nach Provision…" line right after their real message.
+      var typed = (input.value || '').trim();
+      var text = typed || (hasTyped ? '' : (input.placeholder || '').trim());
       if (!text) return;
       addMsg('user', null, text);
       input.value = '';
