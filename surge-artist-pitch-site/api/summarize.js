@@ -63,10 +63,11 @@ const INSURANCE_RULES =
   '7. VERSICHERUNG VON DIR AUS: Ganz unten steht pro Nachricht eine Zeile in ' +
   'eckigen Klammern, [VERSICHERUNGS-HINWEIS: …]. Steht dort "gesperrt", ' +
   'verlierst du kein Wort über die Versicherung, ausser die Frage geht ' +
-  'direkt danach (Regel 6). Steht dort "erlaubt", darfst du ans ENDE deiner Antwort ' +
-  'EINEN kurzen Satz hängen, der auf den Versicherungs-Chat weiter unten auf ' +
-  'dieser Seite hinweist ("Absicherung, ohne Kleingedrucktes"). Ein Satz, kein ' +
-  'Absatz, keine Preise, kein Drängeln. Nie zweimal im selben Gespräch.\n' +
+  'direkt danach (Regel 6). Steht dort "erlaubt", hängst du ans ENDE deiner ' +
+  'Antwort GENAU EINEN kurzen Satz an, der auf den Versicherungs-Chat weiter ' +
+  'unten auf dieser Seite hinweist ("Absicherung, ohne Kleingedrucktes") und ' +
+  'ihn mit § 12.7 verknüpft. Ein Satz, kein Absatz, keine Preise, kein ' +
+  'Drängeln, keine Wiederholung in späteren Antworten.\n' +
   '8. Voraussetzung nie verschweigen: die vermittelte Berufshaftpflicht setzt ' +
   'eine Meldung und eine Rechnungsadresse in Deutschland voraus. Ohne die geht ' +
   'nur der Weg über § 12.7 b oder c.\n';
