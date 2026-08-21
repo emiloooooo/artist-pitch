@@ -24,14 +24,31 @@
       : [navigator.language || navigator.userLanguage || ''];
     return langs.some(function (l) { return /^de/i.test(l || ''); });
   }
-  if (forceOff || (!force && !isGerman())) return;   // stays hidden, unwired
+  if (forceOff) return;   // stays hidden, unwired
 
-  section.hidden = false;
-  // main.js's scroll-reveal observer registered these while the section was
-  // display:none, so reveal them directly (the section sits below the fold).
-  section.querySelectorAll('[data-animate], [data-stagger]').forEach(function (el) {
-    el.classList.add('is-visible');
-  });
+  // The section is wired either way, but it is only SHOWN on the German page:
+  // the visitor can switch language at any time, so visibility follows the
+  // current page language (js/i18n.js) and falls back to the browser locale
+  // when the language layer is not present.
+  section.setAttribute('data-de-ready', '1');
+  function pageLang() {
+    if (window.nsatLang && window.nsatLang.get) return window.nsatLang.get();
+    return isGerman() ? 'de' : 'en';
+  }
+  function syncVisibility() {
+    // Two conditions, both required: the page has to be in German AND the
+    // visitor's browser has to be German (the original gate — this is a
+    // German-law product). Switching the page to English hides it either way.
+    if (!force && (pageLang() !== 'de' || !isGerman())) { section.hidden = true; return; }
+    section.hidden = false;
+    // main.js's scroll-reveal observer registered these while the section was
+    // display:none, so reveal them directly (the section sits below the fold).
+    section.querySelectorAll('[data-animate], [data-stagger]').forEach(function (el) {
+      el.classList.add('is-visible');
+    });
+  }
+  document.addEventListener('nsat:langchange', syncVisibility);
+  syncVisibility();
 
   var win = document.getElementById('ifunnelWindow');
   var form = document.getElementById('ifunnelForm');

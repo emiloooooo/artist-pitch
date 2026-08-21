@@ -1,0 +1,114 @@
+/* ===========================================================================
+   Language switcher — DE / EN.
+   Same monochrome, mono-type chrome as the rest of the page: hairline border,
+   uppercase label, no colour, no glass. Two instances (hero + header) share
+   these rules; js/i18n.js keeps them in sync.
+   =========================================================================== */
+
+.langswitch {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.langswitch__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 32px;
+  padding: 0.3rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--faint);
+  border-radius: 0;
+  cursor: pointer;
+  transition: color var(--dur-ui) var(--ease-spring),
+              border-color var(--dur-ui) var(--ease-spring);
+}
+.langswitch__btn:hover,
+.langswitch__btn:focus-visible {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.langswitch__caret {
+  font-size: 0.85em;
+  line-height: 1;
+  transition: transform var(--dur-ui) var(--ease-spring);
+}
+.langswitch.is-open .langswitch__caret { transform: rotate(180deg); }
+.langswitch.is-open .langswitch__btn { color: var(--fg); border-color: var(--fg); }
+
+.langswitch__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2;
+  min-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--fg);
+  box-shadow: 0 18px 36px -28px rgba(5, 5, 5, 0.65);
+}
+
+.langswitch__opt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  white-space: nowrap;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--dur-ui) var(--ease-spring),
+              background-color var(--dur-ui) var(--ease-spring);
+}
+.langswitch__opt + .langswitch__opt { border-top: 1px solid var(--faint); }
+.langswitch__opt:hover,
+.langswitch__opt:focus-visible { color: var(--fg); background: var(--panel); outline: none; }
+.langswitch__opt.is-current { color: var(--fg); }
+
+.langswitch__optcode {
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.langswitch__optname { letter-spacing: 0.02em; }
+
+/* Header instance: sits at the right edge next to the nav links. */
+.nav__lang { margin-left: clamp(0.75rem, 2vw, 1.6rem); }
+
+/* Hero instance: the header is hidden over the hero, so the switch has to be
+   reachable at first paint. Pinned to the hero's top-right corner, out of the
+   hero's flex flow (the hero is a centred 100svh column — a fourth child would
+   push the wordmark up and drop the switch below the fold on phones). Top and
+   right match the header padding, so the control does not jump when the header
+   slides in on scroll. */
+.hero__lang {
+  position: absolute;
+  top: clamp(0.9rem, 2vw, 1.5rem);
+  right: var(--pad-edge);
+  margin: 0;
+}
+
+/* Phones: the switch stays outside the hamburger panel, always one tap away.
+   44px minimum target per the mobile rules. */
+@media (max-width: 760px) {
+  .nav__lang { margin-left: auto; margin-right: 0.6rem; }
+  .langswitch__btn { min-height: 44px; padding-inline: 0.7rem; }
+  .langswitch__opt { padding: 0.85rem 0.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .langswitch__btn,
+  .langswitch__caret,
+  .langswitch__opt { transition: none; }
+}

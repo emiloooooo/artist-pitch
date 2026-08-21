@@ -77,6 +77,14 @@ module.exports = async function handler(req, res) {
   let body = req.body;
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (_) { body = {}; } }
   const question = (body && body.question ? String(body.question) : '').slice(0, 2000).trim();
+  // The page can be read in German or English; the bot follows it.
+  const lang = (body && body.lang === 'en') ? 'en' : 'de';
+  const langRule = lang === 'en'
+    ? '\n\nSPRACHE: Die Seite steht gerade auf Englisch. Antworte auf Englisch, ' +
+      'im gleichen lockeren Ton. Deutsche Rechtsbegriffe und Paragrafen-Bezuege ' +
+      '(z. B. "§ 4", "Kuenstlersozialkasse") bleiben stehen, kurz erklaert. ' +
+      'Nur wenn die Frage eindeutig auf Deutsch gestellt ist, antworte auf Deutsch.'
+    : '';
   if (!question) {
     res.status(400).json({ error: 'Missing "question"' });
     return;
@@ -93,7 +101,7 @@ module.exports = async function handler(req, res) {
         model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
         temperature: 0.45,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'system', content: SYSTEM_PROMPT + langRule },
           { role: 'user', content: question },
         ],
       }),

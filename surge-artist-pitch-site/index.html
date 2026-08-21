@@ -48,6 +48,7 @@
   <link rel="stylesheet" href="css/pitch.css" />
   <link rel="stylesheet" href="css/deck.css" />
   <link rel="stylesheet" href="css/funnel.css" />
+  <link rel="stylesheet" href="css/i18n.css" />
   <noscript><style>[data-animate],[data-stagger]>*{opacity:1!important;transform:none!important}.preloader{display:none!important}.scrolly{display:none!important}</style></noscript>
 </head>
 <body>
@@ -55,14 +56,14 @@
   <!-- Preloader: the real Nimmersatt loader (logo-masked footage). Encoded as a
        small h264 video (was a 780KB GIF → ~168KB mp4) for a fast critical path;
        poster paints instantly. Plays in full colour, flattened on white. -->
-  <div class="preloader" id="preloader" title="Zum Betreten tippen">
+  <div class="preloader" id="preloader" title="Zum Betreten tippen" data-i18n-attr="title:pre.enter">
     <video class="preloader__media" src="assets/loader.mp4" poster="assets/loader-poster.webp"
            autoplay muted loop playsinline preload="auto" aria-label="Nimmersatt"></video>
   </div>
 
   <!-- Header: hidden over the hero, reappears once the hero is scrolled past -->
   <header class="nav" id="siteHeader">
-    <a class="nav__brand" href="#top" aria-label="Nimmersatt, Startseite">
+    <a class="nav__brand" href="#top" aria-label="Nimmersatt, Startseite" data-i18n-attr="aria-label:nav.home">
       <img class="nav__mark" src="assets/logo.svg" alt="" />
       <span class="nav__name">Nimmersatt</span>
     </a>
@@ -70,9 +71,10 @@
       <a href="#about">FYI</a>
       <a href="#work">Workflow</a>
       <a href="#collective">Deal</a>
-      <a href="#contact">Kontakt</a>
+      <a href="#contact" data-i18n="nav.contact">Kontakt</a>
     </nav>
-    <button class="nav__toggle" id="navToggle" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navLinks">
+    <div class="nav__lang" data-lang-slot></div>
+    <button class="nav__toggle" id="navToggle" type="button" aria-label="Menü öffnen" data-i18n-attr="aria-label:nav.menu" aria-expanded="false" aria-controls="navLinks">
       <span class="nav__toggle-bar"></span>
       <span class="nav__toggle-bar"></span>
     </button>
@@ -92,45 +94,47 @@
 
       <h1 class="hero__title display" data-animate>Nimmersatt</h1>
 
-      <p class="hero__sub" data-animate>
+      <p class="hero__sub" data-animate data-i18n="hero.sub">
         Du hast deine eigene Bildsprache längst gefunden. Wir haben die
         Infrastruktur gebaut, die sie schützt, größer macht und dir Jobs bringt –
         ohne dass du dich oder deine Kunst verbiegst.
       </p>
 
       <div class="hero__meta" data-animate>
-        <span class="label">Artist-Management</span>
-        <span class="label">Visuelle Produktion</span>
-        <span class="label">Kreative Community</span>
+        <span class="label" data-i18n="hero.m1">Artist-Management</span>
+        <span class="label" data-i18n="hero.m2">Visuelle Produktion</span>
+        <span class="label" data-i18n="hero.m3">Kreative Community</span>
       </div>
+
+      <div class="hero__lang" data-lang-slot data-animate></div>
     </section>
 
     <!-- About / Info, original Nimmersatt manifesto kept unchanged -->
     <section class="about section" id="about">
       <div class="shell">
-        <p class="about__lead" data-animate>Bei nimmersatt glauben wir<br />an eine einfache Wahrheit:</p>
+        <p class="about__lead" data-animate data-i18n-html="about.lead1">Bei nimmersatt glauben wir<br />an eine einfache Wahrheit:</p>
         <p class="about__lead" data-animate>You are what you eat.</p>
         <!-- Full manifesto, desktop / tablet -->
         <div class="about__body about__body--full" data-stagger>
-          <p>Was wir an Ideen aufnehmen, prägt, was wir machen. Deshalb fängt jedes Projekt bei uns mit der Kultur an, nicht mit dem Content. Aus Recherche, echten Insights und dem Entschlüsseln einer ganzen Generation lesen wir heraus, was von selbst zündet und wie die nächste Generation wirklich tickt. So bringen wir Marken von innen ins Spiel: Sie spielen ehrlich mit, statt nur zu senden.</p>
-          <p>Wir sind Kreativstudio, Artist-Management und Produktionsfirma in einem. Statt Projekte in starre Agenturstrukturen zu pressen, bauen wir für jeden Auftrag ein eigenes Team aus unserem Kreis von Regie, Design, Foto, Strategie, Schnitt, Entwicklung und Produktion. Ob ein Projekt einen einzelnen Kopf braucht oder ein komplettes Team von Anfang bis Ende: Zusammengestellt wird rund ums Briefing, nicht andersrum.</p>
-          <p>In unserem Netzwerk treffen alte Hasen aus der Branche auf die nächste Generation kreativer Stimmen. Wir bringen erfahrene Köpfe mit jungem Talent zusammen, und so entsteht Arbeit, die Handwerk und frische Perspektive verbindet und in jedem Maßstab und Budget funktioniert.</p>
+          <p data-i18n="about.p1">Was wir an Ideen aufnehmen, prägt, was wir machen. Deshalb fängt jedes Projekt bei uns mit der Kultur an, nicht mit dem Content. Aus Recherche, echten Insights und dem Entschlüsseln einer ganzen Generation lesen wir heraus, was von selbst zündet und wie die nächste Generation wirklich tickt. So bringen wir Marken von innen ins Spiel: Sie spielen ehrlich mit, statt nur zu senden.</p>
+          <p data-i18n="about.p2">Wir sind Kreativstudio, Artist-Management und Produktionsfirma in einem. Statt Projekte in starre Agenturstrukturen zu pressen, bauen wir für jeden Auftrag ein eigenes Team aus unserem Kreis von Regie, Design, Foto, Strategie, Schnitt, Entwicklung und Produktion. Ob ein Projekt einen einzelnen Kopf braucht oder ein komplettes Team von Anfang bis Ende: Zusammengestellt wird rund ums Briefing, nicht andersrum.</p>
+          <p data-i18n="about.p3">In unserem Netzwerk treffen alte Hasen aus der Branche auf die nächste Generation kreativer Stimmen. Wir bringen erfahrene Köpfe mit jungem Talent zusammen, und so entsteht Arbeit, die Handwerk und frische Perspektive verbindet und in jedem Maßstab und Budget funktioniert.</p>
         </div>
         <!-- Condensed manifesto, original mobile version -->
         <div class="about__body about__body--short" data-stagger>
-          <p>Was wir machen, spiegelt, was wir aufnehmen. Wir haben ein Kollektiv aus Berlins stärksten visuellen Köpfen gebaut, gefunden auf der Straße und in den Netzen der Stadt.</p>
-          <p>Unsere Artists sind Autodidakten: Statt Uni gab es rohes Ausprobieren, und veraltete Abläufe sind ihnen egal.</p>
-          <p>Wir managen nicht nur Talent, wir übernehmen den ganzen Prozess, vom ersten Input bis zum fertigen, cineastischen Ergebnis. Die Schnittstelle zwischen etablierten Marken und der neuen Generation.</p>
-          <p>Konzept und Produktion aus einer Hand. Vielseitig, präzise, für jeden Maßstab:</p>
+          <p data-i18n="about.s1">Was wir machen, spiegelt, was wir aufnehmen. Wir haben ein Kollektiv aus Berlins stärksten visuellen Köpfen gebaut, gefunden auf der Straße und in den Netzen der Stadt.</p>
+          <p data-i18n="about.s2">Unsere Artists sind Autodidakten: Statt Uni gab es rohes Ausprobieren, und veraltete Abläufe sind ihnen egal.</p>
+          <p data-i18n="about.s3">Wir managen nicht nur Talent, wir übernehmen den ganzen Prozess, vom ersten Input bis zum fertigen, cineastischen Ergebnis. Die Schnittstelle zwischen etablierten Marken und der neuen Generation.</p>
+          <p data-i18n="about.s4">Konzept und Produktion aus einer Hand. Vielseitig, präzise, für jeden Maßstab:</p>
         </div>
-        <ul class="about__services" aria-label="Was wir machen">
-          <li>Generationen entschlüsseln</li><li>Markenidentität</li>
+        <ul class="about__services" aria-label="Was wir machen" data-i18n-attr="aria-label:about.svcLabel">
+          <li data-i18n="svc.1">Generationen entschlüsseln</li><li data-i18n="svc.2">Markenidentität</li>
           <li class="about__services-br" aria-hidden="true"></li>
-          <li>Creative Direction</li><li>Personal Branding</li><li>Treatment-Design</li>
+          <li data-i18n="svc.3">Creative Direction</li><li data-i18n="svc.4">Personal Branding</li><li data-i18n="svc.5">Treatment-Design</li>
           <li class="about__services-br" aria-hidden="true"></li>
-          <li>Fashion-Editorials</li><li>Sourcing &amp; Scouting</li><li>Grafikdesign</li><li>Motion Design</li><li>Lookbooks</li>
+          <li data-i18n="svc.6">Fashion-Editorials</li><li data-i18n="svc.7">Sourcing &amp; Scouting</li><li data-i18n="svc.8">Grafikdesign</li><li data-i18n="svc.9">Motion Design</li><li data-i18n="svc.10">Lookbooks</li>
           <li class="about__services-br" aria-hidden="true"></li>
-          <li>Konzept &amp; Umsetzung</li><li>Illustration &amp; Grafik</li><li>Heritage-Modernisierung</li><li>Web-Experiences</li>
+          <li data-i18n="svc.11">Konzept &amp; Umsetzung</li><li data-i18n="svc.12">Illustration &amp; Grafik</li><li data-i18n="svc.13">Heritage-Modernisierung</li><li data-i18n="svc.14">Web-Experiences</li>
         </ul>
       </div>
     </section>
@@ -139,12 +143,12 @@
     <!-- Internal project management tool -->
     <section class="work section" id="work">
       <div class="shell">
-        <h2 class="manifesto__line" data-animate>Ein Workflow.<br />Wir sind noch dran…</h2>
+        <h2 class="manifesto__line" data-animate data-i18n-html="work.h">Ein Workflow.<br />Wir sind noch dran…</h2>
 
-        <p class="section__lead" data-animate>Unser Team zieht gerade Nachtschichten im Backend, damit das hier richtig gut wird. Sobald du im Roster bist, kriegst du deinen Account, und wir helfen dir, deine Leute zu finden.</p>
+        <p class="section__lead" data-animate data-i18n="work.lead">Unser Team zieht gerade Nachtschichten im Backend, damit das hier richtig gut wird. Sobald du im Roster bist, kriegst du deinen Account, und wir helfen dir, deine Leute zu finden.</p>
 
         <article class="casefeature" data-stagger>
-          <p class="casefeature__label">01 / Jedes Projekt an einem Ort</p>
+          <p class="casefeature__label" data-i18n="work.l1">01 / Jedes Projekt an einem Ort</p>
           <div class="moodgrid">
             <div class="tool-video mood--wide">
               <video
@@ -153,40 +157,40 @@
                 loop
                 playsinline
                 preload="none"
-                title="Nimmersatt Workflow-Tool im Überblick">
+                title="Nimmersatt Workflow-Tool im Überblick" data-i18n-attr="title:work.vidTitle">
                 <source src="assets/tool/workflow.mp4" type="video/mp4" />
               </video>
             </div>
           </div>
           <div class="twocol">
-            <div><h3>Dein Überblick</h3><p>Jedes laufende Projekt steht hier mit Phase, Deadline und Team. Du siehst immer, was läuft, was wartet und wo du gerade gebraucht wirst.</p></div>
-            <div><h3>Deine Aufgaben</h3><p>Aus Briefings werden klare Aufgaben, mit Zuständigen und Fristen. Du siehst genau, was Nimmersatt von dir braucht und was wir für dich erledigen.</p></div>
+            <div><h3 data-i18n="work.o1h">Dein Überblick</h3><p data-i18n="work.o1p">Jedes laufende Projekt steht hier mit Phase, Deadline und Team. Du siehst immer, was läuft, was wartet und wo du gerade gebraucht wirst.</p></div>
+            <div><h3 data-i18n="work.o2h">Deine Aufgaben</h3><p data-i18n="work.o2p">Aus Briefings werden klare Aufgaben, mit Zuständigen und Fristen. Du siehst genau, was Nimmersatt von dir braucht und was wir für dich erledigen.</p></div>
           </div>
         </article>
 
         <article class="casefeature" data-stagger>
-          <p class="casefeature__label">02 / Gebaut für die Artist-Seite</p>
+          <p class="casefeature__label" data-i18n="work.l2">02 / Gebaut für die Artist-Seite</p>
           <!-- Screenshot + its note travel together (one grid), so on phones each
                shot is immediately followed by the text that explains it instead
                of both shots stacking first and both notes after. Desktop keeps
                the shots-row / notes-row look via the grid areas below. -->
           <div class="toolpairs">
             <figure class="tool-shot">
-              <img src="assets/tool/dashboard.png" alt="Nimmersatt Projekt-Dashboard: Überblick, Deadlines und Team" loading="lazy" decoding="async" />
+              <img src="assets/tool/dashboard.png" alt="Nimmersatt Projekt-Dashboard: Überblick, Deadlines und Team" data-i18n-attr="alt:work.alt1" loading="lazy" decoding="async" />
               <figcaption>
-                <strong class="tool-shot__title">Aufgaben-Ansicht</strong>
-                <span class="tool-shot__meta">Briefings · Aufgaben · Freigaben</span>
+                <strong class="tool-shot__title" data-i18n="work.s1t">Aufgaben-Ansicht</strong>
+                <span class="tool-shot__meta" data-i18n="work.s1m">Briefings · Aufgaben · Freigaben</span>
               </figcaption>
             </figure>
-            <div class="tool-note"><h3>Eine gemeinsame Quelle</h3><p>Dateien, Feedback und Freigaben hängen direkt am Projekt. Keine verlorenen Links, keine vergrabenen Sprachnachrichten, keine drei Versionen, die durch getrennte Chats geistern.</p></div>
+            <div class="tool-note"><h3 data-i18n="work.n1h">Eine gemeinsame Quelle</h3><p data-i18n="work.n1p">Dateien, Feedback und Freigaben hängen direkt am Projekt. Keine verlorenen Links, keine vergrabenen Sprachnachrichten, keine drei Versionen, die durch getrennte Chats geistern.</p></div>
             <figure class="tool-shot">
-              <img src="assets/tool/ki-assistant.png" alt="Nimmersatt KI-Assistent, der im Tool eine Aufgabe anlegt" loading="lazy" decoding="async" />
+              <img src="assets/tool/ki-assistant.png" alt="Nimmersatt KI-Assistent, der im Tool eine Aufgabe anlegt" data-i18n-attr="alt:work.alt2" loading="lazy" decoding="async" />
               <figcaption>
-                <strong class="tool-shot__title">KI-AGENT</strong>
-                <span class="tool-shot__meta">STRUKTUR · PLAN · ÜBERBLICK</span>
+                <strong class="tool-shot__title" data-i18n="work.s2t">KI-AGENT</strong>
+                <span class="tool-shot__meta" data-i18n="work.s2m">STRUKTUR · PLAN · ÜBERBLICK</span>
               </figcaption>
             </figure>
-            <div class="tool-note"><h3>Dein eigenes Sekretariat</h3><p>Dein Account ist kostenlos. Die Einrichtung dauert ein paar Minuten, und die Struktur steht schon, bevor du reinkommst. Du kümmerst dich um die Arbeit, nicht um noch ein neues System.</p></div>
+            <div class="tool-note"><h3 data-i18n="work.n2h">Dein eigenes Sekretariat</h3><p data-i18n="work.n2p">Dein Account ist kostenlos. Die Einrichtung dauert ein paar Minuten, und die Struktur steht schon, bevor du reinkommst. Du kümmerst dich um die Arbeit, nicht um noch ein neues System.</p></div>
           </div>
         </article>
       </div>
@@ -195,12 +199,12 @@
     <!-- The three pillars -->
     <section class="pillars section" id="pillars">
       <div class="shell">
-        <h2 class="manifesto__line" data-animate>Reden wir über den Elefanten im Raum. Wo ist verdammt nochmal der Haken?</h2>
+        <h2 class="manifesto__line" data-animate data-i18n="pil.h">Reden wir über den Elefanten im Raum. Wo ist verdammt nochmal der Haken?</h2>
 
         <div class="pillars__grid" data-stagger>
           <article class="pillar">
-            <h3 class="pillar__name">Keine Exklusivität</h3>
-            <p class="pillar__desc">
+            <h3 class="pillar__name" data-i18n="pil.1n">Keine Exklusivität</h3>
+            <p class="pillar__desc" data-i18n="pil.1d">
               Du wirst nicht verkauft. Deine eigenen Kunden bleiben deine Kunden,
               und niemand hält dich davon ab, außerhalb des Netzwerks zu arbeiten.
               Wir bitten dich nur um eins: Alles, was mit unserem Namen, unseren
@@ -211,8 +215,8 @@
             </p>
           </article>
           <article class="pillar">
-            <h3 class="pillar__name">Provision</h3>
-            <p class="pillar__desc">
+            <h3 class="pillar__name" data-i18n="pil.2n">Provision</h3>
+            <p class="pillar__desc" data-i18n="pil.2d">
               Zwanzig Prozent vom Netto-Honorar, bei Projekten, die wir reinholen.
               Nichts versteckt sich dahinter. Deinen Tagessatz legen wir gemeinsam
               fest, und keiner verschiebt ihn im Alleingang, kein Rabatt über deinen
@@ -222,8 +226,8 @@
             </p>
           </article>
           <article class="pillar">
-            <h3 class="pillar__name">Ausstieg</h3>
-            <p class="pillar__desc">
+            <h3 class="pillar__name" data-i18n="pil.3n">Ausstieg</h3>
+            <p class="pillar__desc" data-i18n="pil.3d">
               Unbefristet, drei Monate Probezeit, danach ein Monat Kündigungsfrist
               zum Monatsende. Keine Fesseln, kein zehnseitiger Ausstieg. Was schon
               läuft, wird sauber zu Ende gebracht und abgerechnet, egal wer kündigt
@@ -239,8 +243,8 @@
     <!-- By industry -->
     <section class="industries section" id="industries">
       <div class="shell">
-        <h2 class="manifesto__line" data-animate>Aber bitte,<br />überzeug dich selbst</h2>
-        <p class="section__lead" data-animate>Oder lies die 12.428 Zeichen selbst. Wenn ja, stell dir einen Timer, im Roster läuft gerade eine Wette, wer am schnellsten durch ist.</p>
+        <h2 class="manifesto__line" data-animate data-i18n-html="ind.h">Aber bitte,<br />überzeug dich selbst</h2>
+        <p class="section__lead" data-animate data-i18n="ind.lead">Oder lies die 12.428 Zeichen selbst. Wenn ja, stell dir einen Timer, im Roster läuft gerade eine Wette, wer am schnellsten durch ist.</p>
 
         <div class="chat" data-animate>
           <div class="chat__brand">
@@ -249,20 +253,20 @@
             </span>
             <span class="chat__brandtext">
               <span class="chat__brandname">nimmersatt Bot</span>
-              <span class="chat__brandmeta"><span class="chat__status" aria-hidden="true"></span>liest den ganzen Vertrag für dich</span>
+              <span class="chat__brandmeta"><span class="chat__status" aria-hidden="true"></span><span data-i18n="chat.meta">liest den ganzen Vertrag für dich</span></span>
             </span>
             <span class="chat__model" title="Antwortet über DeepSeek V4 Flash">DeepSeek V4 Flash</span>
           </div>
           <div class="chat__window" id="chatWindow" aria-live="polite" tabindex="0" data-lenis-prevent>
             <div class="chat__msg chat__msg--bot">
               <span class="chat__who">nimmersatt Bot</span>
-              <p>Hey! Ich hab den ganzen Nimmersatt-Vertrag gelesen, damit du es nicht musst. Frag mich alles: Provision, Ausstieg, deine Rechte, und ich halt es kurz.</p>
+              <p data-i18n="chat.hello">Hey! Ich hab den ganzen Nimmersatt-Vertrag gelesen, damit du es nicht musst. Frag mich alles: Provision, Ausstieg, deine Rechte, und ich halt es kurz.</p>
             </div>
           </div>
           <form class="chat__form" id="chatForm">
             <input class="chat__input" id="chatInput" type="text" autocomplete="off"
-                   placeholder="Frag nach Provision, Ausstieg, deinen Rechten…" aria-label="Nachricht an den nimmersatt Bot" />
-            <button class="chat__send" type="submit" aria-label="Nachricht senden">
+                   placeholder="Frag nach Provision, Ausstieg, deinen Rechten…" aria-label="Nachricht an den nimmersatt Bot" data-i18n-attr="placeholder:chat.ph;aria-label:chat.aria" />
+            <button class="chat__send" type="submit" aria-label="Nachricht senden" data-i18n-attr="aria-label:chat.send">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
                 <path d="M12 20V5M12 5l-6 6M12 5l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -278,55 +282,55 @@
               <svg viewBox="0 0 2930 2060" fill="currentColor" fill-rule="evenodd" width="19" height="19" role="img" aria-label="Nimmersatt"><path d="M1809.50,2058.34C1797.94,2056.97 1789.75,2055.60 1783.43,2053.98C1758.54,2047.62 1740.07,2034.51 1726.47,2013.55C1719.66,2003.07 1716.26,1996.14 1710.72,1981.50C1704.92,1966.17 1701.83,1954.57 1698.06,1934.00C1693.85,1911.03 1691.59,1902.94 1686.35,1892.09C1678.20,1875.23 1663.57,1863.28 1641.96,1855.85C1633.01,1852.77 1631.75,1852.59 1618.50,1852.63C1606.22,1852.66 1603.39,1853.00 1595.50,1855.38C1568.56,1863.50 1548.08,1876.63 1498.43,1917.60C1444.27,1962.29 1426.42,1972.70 1393.89,1978.55C1381.60,1980.76 1360.35,1981.46 1347.50,1980.07C1300.50,1974.98 1267.09,1954.66 1253.96,1923.17C1247.48,1907.64 1243.28,1878.60 1244.47,1857.57C1246.10,1828.67 1251.90,1805.49 1269.50,1757.50C1295.11,1687.70 1299.66,1667.44 1301.97,1613.24C1303.50,1577.19 1301.05,1531.11 1296.37,1508.00C1292.85,1490.62 1285.54,1474.49 1274.63,1460.00C1266.63,1449.37 1247.23,1430.46 1231.50,1417.95C1191.40,1386.07 1183.58,1379.60 1174.19,1370.57C1141.29,1338.87 1126.50,1309.43 1122.99,1268.63C1121.74,1254.04 1122.84,1238.74 1127.01,1213.00C1133.00,1176.00 1133.08,1164.38 1127.42,1152.43C1115.13,1126.44 1069.01,1122.52 1044.24,1145.34C1037.45,1151.61 1034.77,1156.97 1034.23,1165.36C1033.80,1172.06 1034.04,1173.12 1038.09,1182.50C1042.39,1192.46 1042.41,1192.56 1042.79,1206.50C1043.53,1233.51 1038.15,1249.88 1014.72,1291.97C995.47,1326.52 990.97,1341.05 991.02,1368.47C991.13,1439.55 1032.15,1546.59 1074.20,1585.52C1077.63,1588.70 1089.00,1598.14 1099.47,1606.50C1124.17,1626.23 1130.97,1633.65 1138.84,1649.51C1151.54,1675.05 1154.94,1709.07 1147.56,1736.61C1137.22,1775.16 1105.90,1807.49 1060.42,1826.56C1040.76,1834.80 1014.07,1841.66 954.00,1853.89C876.03,1869.76 847.27,1876.67 813.50,1887.67C773.81,1900.59 752.04,1911.32 689.00,1949.01C638.50,1979.20 619.81,1989.15 595.20,1998.93C554.90,2014.95 511.49,2020.51 473.00,2014.59C453.94,2011.65 441.91,2006.44 431.11,1996.44C422.99,1988.92 418.02,1981.15 406.83,1958.50C401.67,1948.05 396.01,1937.41 394.25,1934.86C381.04,1915.69 355.05,1906.65 279.50,1894.96C255.05,1891.18 239.84,1887.63 219.25,1880.92C171.68,1865.40 127.56,1842.36 90.00,1813.40C74.46,1801.42 47.43,1774.34 37.20,1760.50C17.55,1733.93 5.94,1706.47 1.90,1677.00C0.03,1663.42 0.29,1629.45 2.38,1614.00C8.96,1565.33 28.17,1520.44 57.47,1485.31C66.89,1474.01 75.69,1466.66 108.05,1443.07C121.95,1432.93 136.13,1422.00 139.56,1418.79C149.01,1409.96 149.25,1409.04 150.07,1379.00C150.71,1355.38 150.95,1352.84 153.43,1344.50C158.91,1326.10 167.59,1310.17 194.03,1270.00C215.59,1237.26 223.54,1223.46 227.58,1211.78C230.10,1204.47 230.42,1202.21 230.30,1192.50C230.17,1181.89 229.34,1176.24 221.48,1132.50C215.63,1099.93 216.23,1056.96 223.08,1018.00C232.65,963.56 255.00,914.34 289.38,872.00C300.91,857.79 314.24,845.04 330.91,832.27C356.69,812.52 366.00,802.09 366.00,792.93C366.00,786.14 362.04,771.79 345.50,718.50C336.31,688.88 333.20,674.88 331.90,657.15C327.47,597.08 341.53,528.82 370.06,471.88C397.70,416.71 436.41,372.26 486.00,338.77C493.43,333.75 504.00,326.43 509.50,322.50C534.48,304.65 551.10,297.58 616.50,277.01C646.97,267.43 663.86,261.16 678.97,253.82C690.28,248.32 692.23,246.96 699.98,239.13C704.68,234.38 716.82,219.47 726.98,206.00C746.92,179.53 753.03,172.57 773.34,153.15C809.65,118.46 852.94,83.26 893.00,55.83C937.14,25.62 971.84,11.60 1021.99,3.71C1033.78,1.85 1039.82,1.58 1069.50,1.56C1099.31,1.53 1105.53,1.81 1120.00,3.78C1182.02,12.25 1244.80,33.00 1298.34,62.75C1325.11,77.62 1337.80,87.06 1360.50,109.01C1392.80,140.24 1401.19,147.55 1414.58,156.18C1427.42,164.45 1446.51,171.59 1463.50,174.49C1474.76,176.41 1494.14,176.65 1509.00,175.06C1556.14,169.99 1621.76,183.65 1674.59,209.53C1767.92,255.25 1835.19,341.47 1855.96,442.00C1861.89,470.70 1862.33,476.30 1862.54,525.00C1862.74,575.06 1863.22,580.34 1869.00,596.16C1877.26,618.80 1890.55,632.94 1935.50,666.95C1954.60,681.41 1968.20,693.13 1976.13,701.99C1995.72,723.87 2010.09,752.59 2015.91,781.50C2020.77,805.60 2020.66,826.32 2015.47,870.50C2007.76,936.03 2012.41,961.85 2039.08,1001.50C2049.89,1017.58 2054.76,1022.75 2062.78,1026.69C2067.95,1029.23 2069.52,1029.50 2079.00,1029.50C2088.30,1029.50 2090.15,1029.19 2095.22,1026.82C2106.63,1021.47 2114.72,1011.16 2117.00,999.06C2118.20,992.67 2117.14,979.71 2113.39,955.00C2108.95,925.77 2101.73,894.61 2085.35,834.00C2058.83,735.89 2050.99,694.22 2049.34,642.50C2046.97,568.58 2069.63,516.40 2114.00,493.58C2131.36,484.65 2147.11,481.40 2168.89,482.27C2221.88,484.38 2272.65,520.81 2301.70,577.54C2312.40,598.44 2328.79,644.11 2341.38,688.11C2349.16,715.28 2358.89,753.69 2370.50,803.00C2386.05,869.10 2394.07,900.24 2396.85,905.42C2401.94,914.89 2411.29,918.80 2416.47,913.62C2421.19,908.90 2429.08,890.67 2443.80,850.50C2452.91,825.61 2458.82,807.25 2471.06,765.72C2484.86,718.93 2491.83,696.75 2506.36,653.50C2528.12,588.70 2541.18,556.88 2559.30,524.50C2579.08,489.17 2603.53,462.73 2627.50,450.73C2642.33,443.31 2666.24,439.34 2690.00,440.34C2720.36,441.63 2742.13,450.20 2760.13,467.97C2808.85,516.08 2813.88,625.48 2774.97,790.50C2768.22,819.09 2767.40,821.87 2750.97,872.00C2721.54,961.78 2717.51,982.18 2724.90,1004.00C2732.88,1027.58 2746.25,1047.76 2789.81,1101.91C2821.89,1141.79 2829.30,1153.04 2847.86,1190.00C2878.71,1251.46 2905.93,1330.96 2919.93,1400.50C2929.83,1449.66 2931.83,1510.78 2925.46,1569.50C2916.29,1653.95 2887.45,1742.44 2844.45,1818.00C2813.51,1872.38 2773.39,1915.24 2717.00,1954.19C2691.70,1971.66 2646.74,1995.41 2616.00,2007.54C2559.12,2029.99 2498.00,2043.79 2436.56,2048.07C2403.21,2050.39 2353.76,2048.44 2321.00,2043.52C2276.23,2036.78 2258.54,2030.01 2202.50,1998.14C2156.13,1971.77 2135.81,1964.73 2106.00,1964.68C2084.12,1964.65 2063.94,1969.50 2042.50,1979.95C2032.48,1984.84 2025.08,1989.86 2002.23,2007.34C1984.68,2020.75 1966.30,2029.94 1937.50,2039.68C1900.55,2052.18 1860.26,2059.18 1827.28,2058.85C1819.15,2058.77 1811.15,2058.54 1809.50,2058.34ZM2337.31,1662.52C2369.59,1655.68 2396.54,1621.22 2404.58,1576.50C2407.00,1563.09 2407.00,1537.21 2404.60,1524.07C2398.85,1492.61 2384.13,1466.01 2364.08,1450.83C2336.56,1430.00 2302.60,1432.74 2277.11,1457.85C2259.94,1474.76 2247.96,1500.49 2243.98,1529.00C2242.47,1539.86 2242.70,1563.48 2244.43,1574.24C2248.72,1600.86 2259.02,1623.39 2274.35,1639.65C2292.94,1659.38 2314.76,1667.30 2337.31,1662.52Z"/></svg>
             </span>
             <span class="lead__headtext">
-              <span class="lead__title">Auf die Liste</span>
-              <span class="lead__sub">Kurz vorstellen, dann melden wir uns</span>
+              <span class="lead__title" data-i18n="lead.title">Auf die Liste</span>
+              <span class="lead__sub" data-i18n="lead.sub">Kurz vorstellen, dann melden wir uns</span>
             </span>
           </div>
           <div class="lead__body">
-            <p class="lead__intro">Wir fragen kurz nach deinem ungefähren Verdienst, weil er die Basis für deine Absicherung über die Künstlersozialkasse (KSK) ist: Daraus berechnen sich deine Beiträge zu Kranken-, Pflege- und Rentenversicherung, und über die KSK zahlst du davon nur etwa die Hälfte. Eine grobe Größenordnung reicht uns völlig.</p>
+            <p class="lead__intro" data-i18n="lead.intro">Wir fragen kurz nach deinem ungefähren Verdienst, weil er die Basis für deine Absicherung über die Künstlersozialkasse (KSK) ist: Daraus berechnen sich deine Beiträge zu Kranken-, Pflege- und Rentenversicherung, und über die KSK zahlst du davon nur etwa die Hälfte. Eine grobe Größenordnung reicht uns völlig.</p>
 
             <div class="lead__row">
               <label class="lead__field">
-                <span class="lead__label">Vorname</span>
+                <span class="lead__label" data-i18n="lead.first">Vorname</span>
                 <input class="lead__input" id="leadFirst" name="firstName" type="text" autocomplete="given-name" required />
               </label>
               <label class="lead__field">
-                <span class="lead__label">Nachname</span>
+                <span class="lead__label" data-i18n="lead.last">Nachname</span>
                 <input class="lead__input" id="leadLast" name="lastName" type="text" autocomplete="family-name" required />
               </label>
             </div>
 
             <div class="lead__field">
-              <span class="lead__label">Zeitraum</span>
-              <div class="lead__toggle" role="radiogroup" aria-label="Zeitraum">
+              <span class="lead__label" data-i18n="lead.period">Zeitraum</span>
+              <div class="lead__toggle" role="radiogroup" aria-label="Zeitraum" data-i18n-attr="aria-label:lead.period">
                 <input type="radio" id="leadPeriodMonthly" name="incomePeriod" value="monthly" checked />
-                <label for="leadPeriodMonthly">Monatlich</label>
+                <label for="leadPeriodMonthly" data-i18n="lead.monthly">Monatlich</label>
                 <input type="radio" id="leadPeriodYearly" name="incomePeriod" value="yearly" />
-                <label for="leadPeriodYearly">Jährlich</label>
+                <label for="leadPeriodYearly" data-i18n="lead.yearly">Jährlich</label>
               </div>
             </div>
 
             <div class="lead__field">
               <span class="lead__label" id="leadIncomeLabel">Ungefährer Verdienst (im Monat)</span>
               <select class="lead__select" id="leadIncome" name="incomeBand" aria-labelledby="leadIncomeLabel">
-                <option value="" selected>Bitte wählen…</option>
-                <option value="lt-3900" data-m="unter 325 €" data-y="unter 3.900 €">unter 325 €</option>
-                <option value="3900-10000" data-m="325 – 850 €" data-y="3.900 – 10.000 €">325 – 850 €</option>
-                <option value="10000-20000" data-m="850 – 1.700 €" data-y="10.000 – 20.000 €">850 – 1.700 €</option>
-                <option value="20000-35000" data-m="1.700 – 3.000 €" data-y="20.000 – 35.000 €">1.700 – 3.000 €</option>
-                <option value="35000-50000" data-m="3.000 – 4.200 €" data-y="35.000 – 50.000 €">3.000 – 4.200 €</option>
-                <option value="gt-50000" data-m="über 4.200 €" data-y="über 50.000 €">über 4.200 €</option>
+                <option value="" selected data-i18n="lead.choose">Bitte wählen…</option>
+                <option value="lt-3900" data-m="unter 325 €" data-y="unter 3.900 €" data-m-en="under €325" data-y-en="under €3,900">unter 325 €</option>
+                <option value="3900-10000" data-m="325 – 850 €" data-y="3.900 – 10.000 €" data-m-en="€325 – €850" data-y-en="€3,900 – €10,000">325 – 850 €</option>
+                <option value="10000-20000" data-m="850 – 1.700 €" data-y="10.000 – 20.000 €" data-m-en="€850 – €1,700" data-y-en="€10,000 – €20,000">850 – 1.700 €</option>
+                <option value="20000-35000" data-m="1.700 – 3.000 €" data-y="20.000 – 35.000 €" data-m-en="€1,700 – €3,000" data-y-en="€20,000 – €35,000">1.700 – 3.000 €</option>
+                <option value="35000-50000" data-m="3.000 – 4.200 €" data-y="35.000 – 50.000 €" data-m-en="€3,000 – €4,200" data-y-en="€35,000 – €50,000">3.000 – 4.200 €</option>
+                <option value="gt-50000" data-m="über 4.200 €" data-y="über 50.000 €" data-m-en="over €4,200" data-y-en="over €50,000">über 4.200 €</option>
               </select>
             </div>
 
-            <p class="lead__disclaimer">Die Angabe ist freiwillig und nur eine grobe Selbsteinschätzung für unser Gespräch, keine offizielle Meldung an die KSK. Bitte gib einen realistischen Wert an und keine Wunschzahlen „ins Blaue“: Unrichtige oder unvollständige Angaben gegenüber der Künstlersozialkasse können zu Beitragsnachzahlungen und nach § 36 KSVG zu einem Bußgeld führen. Diese Information ersetzt keine Rechts- oder Steuerberatung; verbindliche Auskünfte erteilt allein die KSK.</p>
+            <p class="lead__disclaimer" data-i18n="lead.disclaimer">Die Angabe ist freiwillig und nur eine grobe Selbsteinschätzung für unser Gespräch, keine offizielle Meldung an die KSK. Bitte gib einen realistischen Wert an und keine Wunschzahlen „ins Blaue“: Unrichtige oder unvollständige Angaben gegenüber der Künstlersozialkasse können zu Beitragsnachzahlungen und nach § 36 KSVG zu einem Bußgeld führen. Diese Information ersetzt keine Rechts- oder Steuerberatung; verbindliche Auskünfte erteilt allein die KSK.</p>
 
-            <button class="lead__submit" type="submit" id="leadSubmit">Auf die Liste</button>
+            <button class="lead__submit" type="submit" id="leadSubmit" data-i18n="lead.submit">Auf die Liste</button>
             <p class="lead__note" id="leadNote" role="status" aria-live="polite"></p>
 
             <div class="lead__done">
-              <strong>Danke, du stehst auf der Liste.</strong>
-              <p>Wir melden uns bei dir. Bis dahin: bleib hungrig.</p>
+              <strong data-i18n="lead.doneT">Danke, du stehst auf der Liste.</strong>
+              <p data-i18n="lead.doneP">Wir melden uns bei dir. Bis dahin: bleib hungrig.</p>
             </div>
           </div>
         </form>
@@ -372,59 +376,59 @@
     <section class="proof section" id="proof">
       <div class="shell">
         <h2 class="manifesto__line manifesto__line--onerow" data-animate>Nimmersatt — Code of Conduct</h2>
-        <p class="section__lead" data-animate>Ganz ehrlich, wir kennen das alle… Du bist, was du isst. Also friss keinen Mist und lass dir keinen andrehen. Bleib echt, mit dir selbst und mit allen um dich herum.</p>
+        <p class="section__lead" data-animate data-i18n="cc.lead">Ganz ehrlich, wir kennen das alle… Du bist, was du isst. Also friss keinen Mist und lass dir keinen andrehen. Bleib echt, mit dir selbst und mit allen um dich herum.</p>
         <div class="proof__grid" data-stagger>
           <div class="stat">
             <div class="stat__num">01</div>
             <div class="stat__copy">
-              <p class="stat__label label">Kultur, Handwerk &amp; Qualität</p>
-              <p class="stat__desc"><strong>Erst verstehen, dann machen:</strong> Tauch ins Briefing und in die Kultur ein, kein leeres Rauschen, nur Arbeit, die bei modernen Communities wirklich ankommt.</p>
-              <p class="stat__desc"><strong>Cineastischer Anspruch:</strong> Ob Strategie, Set, Design oder Postproduktion, halte überall einen hochwertigen, cineastischen Standard, in jedem Budget.</p>
+              <p class="stat__label label" data-i18n="cc.1l">Kultur, Handwerk &amp; Qualität</p>
+              <p class="stat__desc" data-i18n-html="cc.1a"><strong>Erst verstehen, dann machen:</strong> Tauch ins Briefing und in die Kultur ein, kein leeres Rauschen, nur Arbeit, die bei modernen Communities wirklich ankommt.</p>
+              <p class="stat__desc" data-i18n-html="cc.1b"><strong>Cineastischer Anspruch:</strong> Ob Strategie, Set, Design oder Postproduktion, halte überall einen hochwertigen, cineastischen Standard, in jedem Budget.</p>
             </div>
           </div>
           <div class="stat">
             <div class="stat__num">02</div>
             <div class="stat__copy">
-              <p class="stat__label label">Verantwortung &amp; Respekt im Team</p>
-              <p class="stat__desc"><strong>Generationen zusammen denken:</strong> Bring erfahrene Köpfe und junge Perspektiven zusammen, mit Respekt und Offenheit in beide Richtungen.</p>
-              <p class="stat__desc"><strong>Schlanke Umsetzung:</strong> Arbeite direkt, ohne Agentur-Ballast, übernimm Verantwortung für deinen Part und bring bei jedem Ergebnis echten Mehrwert.</p>
+              <p class="stat__label label" data-i18n="cc.2l">Verantwortung &amp; Respekt im Team</p>
+              <p class="stat__desc" data-i18n-html="cc.2a"><strong>Generationen zusammen denken:</strong> Bring erfahrene Köpfe und junge Perspektiven zusammen, mit Respekt und Offenheit in beide Richtungen.</p>
+              <p class="stat__desc" data-i18n-html="cc.2b"><strong>Schlanke Umsetzung:</strong> Arbeite direkt, ohne Agentur-Ballast, übernimm Verantwortung für deinen Part und bring bei jedem Ergebnis echten Mehrwert.</p>
             </div>
           </div>
           <div class="stat">
             <div class="stat__num">03</div>
             <div class="stat__copy">
-              <p class="stat__label label">Klare Ansagen &amp; gemeinsames Wachsen</p>
-              <p class="stat__desc"><strong>Früh und offen reden:</strong> Sag früh Bescheid, wenn Kapazität, Grenzen oder Engpässe drücken, bevor aus einer Kleinigkeit ein Produktionsproblem wird.</p>
-              <p class="stat__desc"><strong>Karriere statt nur Kalender:</strong> Halte dich an klare Briefings und Deadlines und nutze jeden Job, um dein Portfolio und die Arbeit des Kollektivs nach vorn zu bringen.</p>
+              <p class="stat__label label" data-i18n="cc.3l">Klare Ansagen &amp; gemeinsames Wachsen</p>
+              <p class="stat__desc" data-i18n-html="cc.3a"><strong>Früh und offen reden:</strong> Sag früh Bescheid, wenn Kapazität, Grenzen oder Engpässe drücken, bevor aus einer Kleinigkeit ein Produktionsproblem wird.</p>
+              <p class="stat__desc" data-i18n-html="cc.3b"><strong>Karriere statt nur Kalender:</strong> Halte dich an klare Briefings und Deadlines und nutze jeden Job, um dein Portfolio und die Arbeit des Kollektivs nach vorn zu bringen.</p>
             </div>
           </div>
         </div>
-        <p class="proof__signoff" data-animate>Immer hungrig. Nie satt.</p>
+        <p class="proof__signoff" data-animate data-i18n="cc.signoff">Immer hungrig. Nie satt.</p>
       </div>
     </section>
 
     <!-- The collective logic, without names -->
     <section class="roster section" id="collective">
       <div class="shell">
-        <h2 class="manifesto__line" data-animate>Streitet euch nicht um die Krümel. Backen wir den Kuchen zusammen.</h2>
-        <p class="roster__lead" data-animate>
+        <h2 class="manifesto__line" data-animate data-i18n="ros.h">Streitet euch nicht um die Krümel. Backen wir den Kuchen zusammen.</h2>
+        <p class="roster__lead" data-animate data-i18n="ros.lead">
           Wir sind kein Roster. Die Leute hier filmen die Arbeit der anderen,
           leihen sich gegenseitig Crew und halten denselben Mindestpreis. Keiner
           kämpft um dieselben drei Jobs, weil jeder andere reinholt.
         </p>
 
         <div class="artists" data-stagger>
-          <div class="artist"><span class="artist__name">Discord</span><span class="artist__role">verbinde dich mit der Community, bevor du selbst dabei bist</span></div>
-          <a class="artist artist--link" href="assets/documents/nimmersatt-vertrag-de.download" download="NIMMERSATT-Vertrag-DE.pdf"><span class="artist__name">Vertrag <span class="artist__mark" aria-hidden="true">↓</span></span><span class="artist__role">hier gibt es den ganzen Vertrag zum Download</span></a>
-          <a class="artist artist--link" href="assets/documents/nimmersatt-dealpaket-de.download" download="NIMMERSATT-Dealpaket-DE.pdf"><span class="artist__name">Paket <span class="artist__mark" aria-hidden="true">↓</span></span><span class="artist__role">heb dir das fürs Gespräch auf. schön, dass du reinschaust</span></a>
+          <div class="artist"><span class="artist__name">Discord</span><span class="artist__role" data-i18n="ros.discord">verbinde dich mit der Community, bevor du selbst dabei bist</span></div>
+          <a class="artist artist--link" href="assets/documents/nimmersatt-vertrag-de.download" download="NIMMERSATT-Vertrag-DE.pdf" data-i18n-doc="contract"><span class="artist__name"><span data-i18n="ros.contract">Vertrag</span> <span class="artist__mark" aria-hidden="true">↓</span></span><span class="artist__role" data-i18n="ros.contractR">hier gibt es den ganzen Vertrag zum Download</span></a>
+          <a class="artist artist--link" href="assets/documents/nimmersatt-dealpaket-de.download" download="NIMMERSATT-Dealpaket-DE.pdf" data-i18n-doc="deal"><span class="artist__name"><span data-i18n="ros.pack">Paket</span> <span class="artist__mark" aria-hidden="true">↓</span></span><span class="artist__role" data-i18n="ros.packR">heb dir das fürs Gespräch auf. schön, dass du reinschaust</span></a>
         </div>
 
         <div class="roster__partners" data-animate>
-          <h3 class="roster__subhead">Was wir von dir erwarten</h3>
+          <h3 class="roster__subhead" data-i18n="ros.expect">Was wir von dir erwarten</h3>
           <div class="partners partners--three">
-            <div class="partner"><span class="partner__name">Echtheit</span><span class="partner__role">bleib einfach du selbst</span></div>
-            <div class="partner"><span class="partner__name">Verlässlichkeit</span><span class="partner__role">vertrau der Freiheit</span></div>
-            <div class="partner"><span class="partner__name">Appetit</span><span class="partner__role">mach was draus</span></div>
+            <div class="partner"><span class="partner__name" data-i18n="ros.p1n">Echtheit</span><span class="partner__role" data-i18n="ros.p1r">bleib einfach du selbst</span></div>
+            <div class="partner"><span class="partner__name" data-i18n="ros.p2n">Verlässlichkeit</span><span class="partner__role" data-i18n="ros.p2r">vertrau der Freiheit</span></div>
+            <div class="partner"><span class="partner__name" data-i18n="ros.p3n">Appetit</span><span class="partner__role" data-i18n="ros.p3r">mach was draus</span></div>
           </div>
         </div>
       </div>
@@ -433,7 +437,7 @@
     <!-- Clients -->
     <section class="clients section--tight section">
       <div class="shell">
-        <p class="section__index" data-animate>Wo deine Arbeit landen kann</p>
+        <p class="section__index" data-animate data-i18n="cli.h">Wo deine Arbeit landen kann</p>
         <div class="clientwall" data-stagger>
           <span class="clientwall__logo clientwall__logo--mark"><img loading="lazy" decoding="async" src="assets/clients/universal-music.png" alt="Universal Music" /></span>
           <span class="clientwall__logo clientwall__logo--word"><img loading="lazy" decoding="async" src="assets/clients/sony-music.png" alt="Sony Music" /></span>
@@ -456,37 +460,37 @@
     <!-- Closing / CTA -->
     <section class="closing section" id="contact">
       <div class="shell">
-        <h2 class="closing__line" data-animate>Wir lesen den Raum, bevor wir den Tisch decken.</h2>
-        <p class="closing__lead" data-animate>Wir antworten. Du arbeitest.<br />Wir regeln. Du machst weiter.<br />Wir verhandeln. Du gestaltest.</p>
+        <h2 class="closing__line" data-animate data-i18n="clo.h">Wir lesen den Raum, bevor wir den Tisch decken.</h2>
+        <p class="closing__lead" data-animate data-i18n-html="clo.lead">Wir antworten. Du arbeitest.<br />Wir regeln. Du machst weiter.<br />Wir verhandeln. Du gestaltest.</p>
 
         <div class="application-timeline" data-stagger>
           <div class="timeline__step">
             <span class="timeline__no">01</span>
-            <h3>Komm hier an</h3>
-            <p>Danke, dass du dir Zeit für nimmersatt genommen hast, war mir eine echte Freude. Von meiner Seite ist es das, ab hier bist du dran.<br />Und damit ist Schluss für heute. Bis bald, hoffentlich!</p>
-            <p class="timeline__note timeline__note--lower2">admin hier: danke, Leute, echt jetzt</p>
+            <h3 data-i18n="clo.1h">Komm hier an</h3>
+            <p data-i18n-html="clo.1p">Danke, dass du dir Zeit für nimmersatt genommen hast, war mir eine echte Freude. Von meiner Seite ist es das, ab hier bist du dran.<br />Und damit ist Schluss für heute. Bis bald, hoffentlich!</p>
+            <p class="timeline__note timeline__note--lower2" data-i18n="clo.1n">admin hier: danke, Leute, echt jetzt</p>
           </div>
           <div class="timeline__step">
             <span class="timeline__no">02</span>
-            <h3>Triff deine Entscheidung</h3>
-            <p>Wenn du Bock hast, pack dein Portfolio zusammen und entscheide dich. Die Dateien selbst schickst du über Google Drive, swisstransfer oder was auch immer dein Ding ist.</p>
+            <h3 data-i18n="clo.2h">Triff deine Entscheidung</h3>
+            <p data-i18n="clo.2p">Wenn du Bock hast, pack dein Portfolio zusammen und entscheide dich. Die Dateien selbst schickst du über Google Drive, swisstransfer oder was auch immer dein Ding ist.</p>
           </div>
           <div class="timeline__step">
             <span class="timeline__no">03</span>
-            <h3>Buch deinen Termin</h3>
-            <p>Bring Fragen, Feedback und dreißig Minuten mit. Unser Team trifft dich und geht alle Details durch.<br />bis dahin: bleib hungrig, aber bescheiden</p>
-            <p class="timeline__note timeline__note--lower"><a href="https://calendly.com/otto-c-windmoeller/nimmersatt-meet-greet" target="_blank" rel="noopener">ab zu Calendly</a></p>
+            <h3 data-i18n="clo.3h">Buch deinen Termin</h3>
+            <p data-i18n-html="clo.3p">Bring Fragen, Feedback und dreißig Minuten mit. Unser Team trifft dich und geht alle Details durch.<br />bis dahin: bleib hungrig, aber bescheiden</p>
+            <p class="timeline__note timeline__note--lower"><a href="https://calendly.com/otto-c-windmoeller/nimmersatt-meet-greet" target="_blank" rel="noopener" data-i18n="clo.3cal">ab zu Calendly</a></p>
           </div>
         </div>
 
         <a class="application-cta" href="mailto:hello@nimmersatt.fyi" data-animate>
-          <span class="application-cta__label">sonst noch was</span>
+          <span class="application-cta__label" data-i18n="clo.cta">sonst noch was</span>
           <span class="application-cta__mail">hello@nimmersatt.fyi</span>
         </a>
 
         <details class="document-downloads document-downloads--dropdown" data-animate aria-labelledby="document-downloads-title">
           <summary class="document-downloads__summary">
-            <span id="document-downloads-title" class="document-downloads__summary-title">Dokumente</span>
+            <span id="document-downloads-title" class="document-downloads__summary-title" data-i18n="doc.h">Dokumente</span>
             <span class="document-downloads__chevron" aria-hidden="true">↓</span>
           </summary>
 
@@ -497,7 +501,7 @@
                 <strong>Künstlervertrag</strong>
                 <span>Artist Agreement</span>
               </div>
-              <div class="document-download__languages" aria-label="Künstlervertrag herunterladen">
+              <div class="document-download__languages" aria-label="Künstlervertrag herunterladen" data-i18n-attr="aria-label:doc.a1">
                 <a href="assets/documents/nimmersatt-vertrag-de.download" download="NIMMERSATT-Vertrag-DE.pdf" lang="de">Deutsch <span aria-hidden="true">↓</span></a>
                 <a href="assets/documents/nimmersatt-contract-en.download" download="NIMMERSATT-Contract-EN.pdf" lang="en">English <span aria-hidden="true">↓</span></a>
               </div>
@@ -509,7 +513,7 @@
                 <strong>Dealpaket</strong>
                 <span>Deal Package</span>
               </div>
-              <div class="document-download__languages" aria-label="Dealpaket herunterladen">
+              <div class="document-download__languages" aria-label="Dealpaket herunterladen" data-i18n-attr="aria-label:doc.a2">
                 <a href="assets/documents/nimmersatt-dealpaket-de.download" download="NIMMERSATT-Dealpaket-DE.pdf" lang="de">Deutsch <span aria-hidden="true">↓</span></a>
                 <a href="assets/documents/nimmersatt-deal-package-en.download" download="NIMMERSATT-Deal-Package-EN.pdf" lang="en">English <span aria-hidden="true">↓</span></a>
               </div>
@@ -519,7 +523,7 @@
 
         <div class="closing__foot">
           <span>Nimmersatt · Berlin</span>
-          <span>Nie satt · Nie fertig</span>
+          <span data-i18n="foot.tag">Nie satt · Nie fertig</span>
           <span>© 2026</span>
         </div>
       </div>
@@ -534,6 +538,7 @@
   <script src="js/motion.js"></script>
   <script src="js/main.js"></script>
   <script src="js/funnel.js"></script>
+  <script src="js/i18n.js"></script>
 
   <!-- "Let the AI read the contract" chat demo (industries section) -->
   <script>
@@ -543,6 +548,12 @@
     var input = document.getElementById('chatInput');
     var win = document.getElementById('chatWindow');
     var assistant = 'nimmersatt Bot';
+
+    // Copy that lives in JS rather than in the markup still has to follow the
+    // language switch — js/i18n.js exposes the dictionary through window.nsatLang.
+    function L(key, fallback) {
+      return (window.nsatLang && window.nsatLang.t) ? window.nsatLang.t(key, fallback) : fallback;
+    }
 
     var SUMMARY =
       'Alright, the whole thing in three lines:\n\n' +
@@ -573,7 +584,7 @@
     function fallback(text) {
       return /contract|summar|paragraph|catch|read|term|exit|commission|exclus|vertrag|zusammen|provision|kündig|paragraph/i.test(text)
         ? SUMMARY
-        : 'I’ve only got the Nimmersatt contract loaded right now — try “Summarize each paragraph of the contract”.';
+        : L('chat.offline', 'I’ve only got the Nimmersatt contract loaded right now — try “Summarize each paragraph of the contract”.');
     }
 
     // Tries the secure serverless proxy (/api/summarize -> DeepSeek, key stays
@@ -601,7 +612,12 @@
       fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: text })
+        body: JSON.stringify({
+          question: text,
+          // So the bot answers in the language the page is set to, not just
+          // the language it guesses from the question.
+          lang: (window.nsatLang && window.nsatLang.get) ? window.nsatLang.get() : 'de'
+        })
       })
         .then(function (r) { if (!r.ok) throw new Error('backend'); return r.json(); })
         .then(function (data) {
@@ -635,6 +651,13 @@
     var note = document.getElementById('leadNote');
     var submit = document.getElementById('leadSubmit');
 
+    function L(key, fallback) {
+      return (window.nsatLang && window.nsatLang.t) ? window.nsatLang.t(key, fallback) : fallback;
+    }
+    function isEN() {
+      return !!(window.nsatLang && window.nsatLang.get && window.nsatLang.get() === 'en');
+    }
+
     function currentPeriod() {
       var y = document.getElementById('leadPeriodYearly');
       return (y && y.checked) ? 'yearly' : 'monthly';
@@ -643,12 +666,18 @@
     // Relabel the income bands and the field label when the period switches.
     function applyPeriod() {
       var yearly = currentPeriod() === 'yearly';
-      incomeLabel.textContent = yearly ? 'Ungefährer Verdienst (im Jahr)' : 'Ungefährer Verdienst (im Monat)';
+      incomeLabel.textContent = yearly
+        ? L('lead.incomeY', 'Ungefährer Verdienst (im Jahr)')
+        : L('lead.incomeM', 'Ungefährer Verdienst (im Monat)');
+      // English uses "1,700" where German uses "1.700" — same amount, opposite
+      // meaning of the separator, so the bands carry both spellings.
+      var suffix = (yearly ? 'data-y' : 'data-m') + (isEN() ? '-en' : '');
       Array.prototype.forEach.call(income.options, function (opt) {
-        var t = opt.getAttribute(yearly ? 'data-y' : 'data-m');
+        var t = opt.getAttribute(suffix) || opt.getAttribute(yearly ? 'data-y' : 'data-m');
         if (t) opt.textContent = t;
       });
     }
+    document.addEventListener('nsat:langchange', applyPeriod);
     form.addEventListener('change', function (e) {
       if (e.target && e.target.name === 'incomePeriod') applyPeriod();
     });
@@ -661,7 +690,7 @@
       var last = document.getElementById('leadLast').value.trim();
       if (!first || !last) {
         note.className = 'lead__note lead__note--error';
-        note.textContent = 'Bitte Vor- und Nachnamen ausfüllen.';
+        note.textContent = L('lead.errName', 'Bitte Vor- und Nachnamen ausfüllen.');
         return;
       }
       var payload = {
@@ -671,7 +700,7 @@
         incomeBand: income.value
       };
       submit.disabled = true;
-      note.textContent = 'Wird gesendet…';
+      note.textContent = L('lead.sending', 'Wird gesendet…');
       fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -685,7 +714,7 @@
         .catch(function () {
           submit.disabled = false;
           note.className = 'lead__note lead__note--error';
-          note.textContent = 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.';
+          note.textContent = L('lead.errSend', 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.');
         });
     });
   })();
