@@ -1,19 +1,26 @@
 /* ===========================================================================
-   Language layer — German (default) / English, switched live, no reload.
+   Language layer — English (default) / German, switched live, no reload.
 
    How it works
-   - The German copy stays in index.html and is the source of truth.
-   - EN below is keyed by the data-i18n / data-i18n-html / data-i18n-attr
-     attributes in the markup. Editing English = editing this file only.
-   - On first paint the German is already there, so the default language never
-     flashes. Switching swaps text in place and remembers the choice.
-   - Order: ?lang=en|de  ->  saved choice  ->  browser language  ->  de.
+   - The German copy stays in index.html and is the source of truth for the
+     markup. EN below is keyed by the data-i18n / data-i18n-html /
+     data-i18n-attr attributes. Editing English = editing this file only.
+   - English is the default, so the first paint (German markup) is swapped to
+     English by boot(). That swap happens behind the preloader, before the
+     visitor taps to enter, so nothing visible flickers.
+   - Order: ?lang=en|de  ->  explicitly saved choice  ->  en.
+     Deliberately NOT auto-detected from the browser locale: a link has to
+     render the same page for everyone.
    =========================================================================== */
 (function () {
   'use strict';
 
-  var STORE = 'nsat-lang';
-  var LANGS = { de: 'Deutsch', en: 'English' };
+  // Key bumped when the default flipped to English: the old key holds an
+  // auto-written 'de' for every past visitor, which would pin them to German
+  // forever. Only a real choice is stored under the new key.
+  var STORE = 'nsat-lang-2';
+  var DEFAULT_LANG = 'en';
+  var LANGS = { en: 'English', de: 'Deutsch' };
 
   /* --- English copy ------------------------------------------------------- */
   var EN = {
@@ -187,16 +194,17 @@
   function remember(l) {
     try { localStorage.setItem(STORE, l); } catch (_) { /* private mode */ }
   }
-  // German is the default for everyone. Deliberately NOT auto-detected from the
-  // browser locale: this is a German-first pitch, and a page that silently
-  // changes language per visitor is impossible to link to or to check.
-  // Explicit choice wins, and it is remembered.
+  // English is the default for everyone. Deliberately NOT auto-detected from
+  // the browser locale: a page that silently changes language per visitor is
+  // impossible to link to or to check. An explicit choice wins and is kept;
+  // the resolved default is never written to storage, so flipping the default
+  // later actually reaches returning visitors.
   function initial() {
     var q = /[?&]lang=(de|en)\b/i.exec(window.location.search);
-    if (q) return q[1].toLowerCase();
+    if (q) return { lang: q[1].toLowerCase(), explicit: true };
     var s = stored();
-    if (s === 'de' || s === 'en') return s;
-    return 'de';
+    if (s === 'de' || s === 'en') return { lang: s, explicit: true };
+    return { lang: DEFAULT_LANG, explicit: false };
   }
 
   var current = 'de';
@@ -221,7 +229,9 @@
     return (current === 'en' && EN[key] !== undefined) ? EN[key] : null;
   }
 
-  function apply(lang) {
+  // persist === false only for the resolved default on boot; every explicit
+  // switch (menu, keyboard, ?lang=, window.nsatLang.set) is remembered.
+  function apply(lang, persist) {
     current = (lang === 'en') ? 'en' : 'de';
     var en = current === 'en';
 
@@ -275,7 +285,7 @@
       else if (el.getAttribute('data-de-ready') === '1') el.removeAttribute('hidden');
     });
 
-    remember(current);
+    if (persist !== false) remember(current);
     document.querySelectorAll('[data-lang-slot]').forEach(paint);
     document.dispatchEvent(new CustomEvent('nsat:langchange', { detail: { lang: current } }));
   }
@@ -380,14 +390,15 @@
   /* --- Boot --------------------------------------------------------------- */
   function boot() {
     document.querySelectorAll('[data-lang-slot]').forEach(build);
-    apply(initial());
+    var start = initial();
+    apply(start.lang, start.explicit);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 
   window.nsatLang = {
     get: function () { return current; },
-    set: apply,
+    set: function (lang) { apply(lang, true); },
     t: function (key, fallbackDe) { var v = t(key); return v === null ? fallbackDe : v; }
   };
 })();
