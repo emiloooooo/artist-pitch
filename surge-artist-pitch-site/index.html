@@ -573,11 +573,20 @@
     var hasTyped = false;  // the visitor has entered text at least once
 
     // --- Insurance nudge -------------------------------------------------
-    // The bot may bring up the Berufshaftpflicht ON ITS OWN only once someone
-    // has actually gone into the contract. Somebody who asks one surface
-    // question never hears about it. Answering a direct question about
-    // liability or insurance is a different thing and always allowed — that
-    // rule lives server-side in /api/summarize.
+    // The Berufshaftpflicht comes up UNASKED only once someone has actually
+    // gone into the contract. Somebody who asks one surface question never
+    // hears about it. Answering a direct question about liability or insurance
+    // is a different thing and always allowed — that rule lives server-side in
+    // /api/summarize, which is also told never to raise the topic itself.
+    //
+    // The pointer is a fixed line the page appends, not something the model is
+    // asked to write: on the live endpoint the model took that instruction in
+    // one of three runs and leaked the internal marker into the answer once.
+    var NUDGE_LINE =
+      'Kurz am Rande, weil du wirklich drin bist: § 12.7 gibt dir vier Wochen, ' +
+      'um uns zu zeigen, wie du gegen Leistungsverzug abgesichert bist. Der ' +
+      'Versicherungs-Chat weiter unten auf dieser Seite („Absicherung, ohne ' +
+      'Kleingedrucktes") erledigt das in ein paar Minuten.';
     var TOPIC_RE = /(vertrag|contract|provision|commission|honorar|fee|tagessatz|day.?rate|k(ü|ue)ndig|notice|laufzeit|term|probezeit|exklusiv|exclusiv|nutzungsrecht|urheber|copyright|licen|lizenz|credit|namensnennung|datenschutz|dsgvo|privacy|pitch|akquise|one.?voice|vetting|zahlung|payment|frist|deadline|paragraf|paragraph|§)/i;
     var RISK_RE  = /(haft|liabil|regress|freistell|indemnif|versicher|insur|schaden|damage|verzug|default|schlechtleistung|fahrl(ä|ae)ssig|neglig|privatverm|vorsatz|risiko|risk)/i;
 
@@ -692,8 +701,7 @@
           // So the bot answers in the language the page is set to, not just
           // the language it guesses from the question.
           lang: (window.nsatLang && window.nsatLang.get) ? window.nsatLang.get() : 'de',
-          history: history.slice(-6),
-          insuranceNudge: allowNudge
+          history: history.slice(-6)
         })
       })
         .then(function (r) { if (!r.ok) throw new Error('backend'); return r.json(); })
@@ -703,9 +711,15 @@
           addMsg('bot', assistant, answer);
           history.push({ role: 'user', content: text });
           history.push({ role: 'assistant', content: answer });
-          // Only burn the one shot if the bot actually took it.
-          if (allowNudge && /versicher|berufshaftpflicht|insurance|liabilit/i.test(answer)) nudged = true;
           setPending(false);
+          // Once, as a short follow-up line — and not if the answer already
+          // covered the insurance because the question itself went there.
+          if (allowNudge && !/versicher|berufshaftpflicht/i.test(answer)) {
+            nudged = true;
+            setTimeout(function () { addMsg('bot', null, NUDGE_LINE); }, 700);
+          } else if (allowNudge) {
+            nudged = true;
+          }
         })
         .catch(function () {
           setTimeout(function () {

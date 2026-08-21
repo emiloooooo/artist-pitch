@@ -60,14 +60,10 @@ const INSURANCE_RULES =
   'nachzuweisen: eigene Berufshaftpflicht, vergleichbare bestehende ' +
   'Versicherung, oder persönliche Haftung) und § 14 (Regress). Das ist eine ' +
   'Antwort, kein Verkaufsgespräch.\n' +
-  '7. VERSICHERUNG VON DIR AUS: Ganz unten steht pro Nachricht eine Zeile in ' +
-  'eckigen Klammern, [VERSICHERUNGS-HINWEIS: …]. Steht dort "gesperrt", ' +
-  'verlierst du kein Wort über die Versicherung, ausser die Frage geht ' +
-  'direkt danach (Regel 6). Steht dort "erlaubt", hängst du ans ENDE deiner ' +
-  'Antwort GENAU EINEN kurzen Satz an, der auf den Versicherungs-Chat weiter ' +
-  'unten auf dieser Seite hinweist ("Absicherung, ohne Kleingedrucktes") und ' +
-  'ihn mit § 12.7 verknüpft. Ein Satz, kein Absatz, keine Preise, kein ' +
-  'Drängeln, keine Wiederholung in späteren Antworten.\n' +
+  '7. NIE VON DIR AUS: Du fängst NIEMALS selbst von der Versicherung an, ' +
+  'wirbst nicht dafür und hängst keine Hinweise an. Nur antworten, wenn ' +
+  'gefragt wird (Regel 6). Den Hinweis auf den Versicherungs-Chat setzt die ' +
+  'Seite selbst, nicht du.\n' +
   '8. Voraussetzung nie verschweigen: die vermittelte Berufshaftpflicht setzt ' +
   'eine Meldung und eine Rechnungsadresse in Deutschland voraus. Ohne die geht ' +
   'nur der Weg über § 12.7 b oder c.\n';
@@ -137,23 +133,6 @@ module.exports = async function handler(req, res) {
         .map((m) => ({ role: m.role, content: String(m.content).slice(0, 1200) }))
     : [];
 
-  // The client decides this: has the visitor gone deep enough into the contract,
-  // and is the insurance section actually on screen (it is German-page only).
-  const nudge = INSURANCE && body && body.insuranceNudge === true;
-  // Spelled out rather than left as a flag: as a bare marker after 20k+ chars
-  // of contract text the model read it and did nothing. This sits last in the
-  // prompt, right before the question, and says what to do in full.
-  const nudgeRule = !INSURANCE ? '' : (nudge
-    ? '\n\n[VERSICHERUNGS-HINWEIS: erlaubt]\n' +
-      'Für DIESE eine Antwort gilt: beantworte zuerst ganz normal die Frage. ' +
-      'Hänge dann als ALLERLETZTES genau einen kurzen Satz an, der auf § 12.7 ' +
-      'und den Versicherungs-Chat weiter unten auf dieser Seite ' +
-      '("Absicherung, ohne Kleingedrucktes") hinweist. Ein Satz, locker, ohne ' +
-      'Preise und ohne Druck. Nicht mehr als ein Satz.'
-    : '\n\n[VERSICHERUNGS-HINWEIS: gesperrt]\n' +
-      'Für DIESE Antwort gilt: sprich die Versicherung von dir aus nicht an. ' +
-      'Nur wenn die Frage selbst nach Haftung, Schäden oder Versicherung geht, ' +
-      'antwortest du darauf (Regel 6).');
   const langRule = lang === 'en'
     ? '\n\nSPRACHE: Die Seite steht gerade auf Englisch. Antworte auf Englisch, ' +
       'im gleichen lockeren Ton. Deutsche Rechtsbegriffe und Paragrafen-Bezuege ' +
@@ -176,7 +155,7 @@ module.exports = async function handler(req, res) {
         model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
         temperature: 0.45,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT + langRule + nudgeRule },
+          { role: 'system', content: SYSTEM_PROMPT + langRule },
           ...history,
           { role: 'user', content: question },
         ],
