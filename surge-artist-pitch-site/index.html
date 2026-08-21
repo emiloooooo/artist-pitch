@@ -572,6 +572,36 @@
     var pending = false;   // a request is in flight
     var hasTyped = false;  // the visitor has entered text at least once
 
+    // --- Insurance nudge -------------------------------------------------
+    // The bot may bring up the Berufshaftpflicht ON ITS OWN only once someone
+    // has actually gone into the contract. Somebody who asks one surface
+    // question never hears about it. Answering a direct question about
+    // liability or insurance is a different thing and always allowed — that
+    // rule lives server-side in /api/summarize.
+    var TOPIC_RE = /(vertrag|contract|provision|commission|honorar|fee|tagessatz|day.?rate|k(ü|ue)ndig|notice|laufzeit|term|probezeit|exklusiv|exclusiv|nutzungsrecht|urheber|copyright|licen|lizenz|credit|namensnennung|datenschutz|dsgvo|privacy|pitch|akquise|one.?voice|vetting|zahlung|payment|frist|deadline|paragraf|paragraph|§)/i;
+    var RISK_RE  = /(haft|liabil|regress|freistell|indemnif|versicher|insur|schaden|damage|verzug|default|schlechtleistung|fahrl(ä|ae)ssig|neglig|privatverm|vorsatz|risiko|risk)/i;
+
+    var depth = 0;             // substantive contract questions asked so far
+    var riskTouched = false;   // one of them was about liability / risk
+    var nudged = false;        // already raised once, that is enough
+    var history = [];          // prior turns, so follow-up questions still land
+
+    function insuranceVisible() {
+      // German-law product: the section is hidden on the English page, and
+      // pointing at something the visitor cannot see would be nonsense.
+      var sec = document.getElementById('versicherung');
+      return !!(sec && !sec.hidden);
+    }
+    function nudgeAllowed() {
+      if (nudged || !insuranceVisible()) return false;
+      return riskTouched ? depth >= 2 : depth >= 3;
+    }
+    function noteQuestion(text) {
+      var risky = RISK_RE.test(text);
+      if (risky) riskTouched = true;
+      if (risky || TOPIC_RE.test(text)) depth++;
+    }
+
     input.addEventListener('input', function () {
       if (input.value.trim()) hasTyped = true;
     });
@@ -653,6 +683,7 @@
     function reply(text) {
       var typing = addTyping();
       setPending(true);
+      var allowNudge = nudgeAllowed();
       fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -660,13 +691,20 @@
           question: text,
           // So the bot answers in the language the page is set to, not just
           // the language it guesses from the question.
-          lang: (window.nsatLang && window.nsatLang.get) ? window.nsatLang.get() : 'de'
+          lang: (window.nsatLang && window.nsatLang.get) ? window.nsatLang.get() : 'de',
+          history: history.slice(-6),
+          insuranceNudge: allowNudge
         })
       })
         .then(function (r) { if (!r.ok) throw new Error('backend'); return r.json(); })
         .then(function (data) {
           typing.remove();
-          addMsg('bot', assistant, (data && data.answer) ? data.answer : fallback(text));
+          var answer = (data && data.answer) ? data.answer : fallback(text);
+          addMsg('bot', assistant, answer);
+          history.push({ role: 'user', content: text });
+          history.push({ role: 'assistant', content: answer });
+          // Only burn the one shot if the bot actually took it.
+          if (allowNudge && /versicher|berufshaftpflicht|insurance|liabilit/i.test(answer)) nudged = true;
           setPending(false);
         })
         .catch(function () {
@@ -692,6 +730,7 @@
       if (!text) return;
       addMsg('user', null, text);
       input.value = '';
+      noteQuestion(text);
       reply(text);
     });
   })();

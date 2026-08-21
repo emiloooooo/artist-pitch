@@ -69,6 +69,9 @@
 
   /* --- Data model (feeds the /api/funnel payload) ------------------------- */
   var data = {
+    // Gate: Markel Pro Media is a German-law product, so a German registration
+    // and a German billing address are a hard precondition (see abroadFlow).
+    de_registered: '', abroad_choice: '', abroad_country: '', abroad_insurer: '',
     prof: '', revenue: '', vsh: '1000000', sb: '0', bhp: 'no', bhpsum: '3000000', modules: [],
     q_claims: '', q_claims_detail: '', q_known: '', q_known_detail: '',
     q_startup: '', q_prev: '', q_prev_insurer: '', q_prev_end: '', q_prev_reason: '',
@@ -353,6 +356,7 @@
   /* --- Submit ------------------------------------------------------------- */
   function buildPayload() {
     return {
+      registeredInGermany: data.de_registered,
       profession: data.prof, revenueBand: data.revenue, vshSum: data.vsh, deductible: data.sb,
       bhp: data.bhp, bhpSum: data.bhp === 'yes' ? data.bhpsum : '', modules: data.modules,
       estimateAnnual: (function () { var e = estimate(); return e.valid ? e.annual : null; })(),
@@ -395,6 +399,112 @@
     });
   }
 
+  /* --- Abroad branch (§ 12.7) --------------------------------------------
+     No German registration or a billing address abroad means our partner
+     cannot quote at all. The contract already covers that case: § 12.7 gives
+     the artist four weeks to tell us whether they are comparably insured where
+     they are (b) or carry the liability personally (c). We take that
+     declaration right here instead of dropping the visitor.
+     The main funnel simply stops: the engine only advances through done(), and
+     this branch never calls it. */
+  function buildDeclarationPayload() {
+    return {
+      kind: 'abroad-liability-declaration',
+      registeredInGermany: 'no',
+      declaration: data.abroad_choice,
+      billingCountry: data.abroad_country,
+      existingInsurer: data.abroad_insurer,
+      legalForm: data.legalForm, company: data.company, salutation: data.salutation,
+      firstName: data.firstName, lastName: data.lastName, email: data.email, phone: data.phone
+    };
+  }
+
+  function finishAbroad() {
+    var ref = 'NIM-' + Date.now().toString(36).toUpperCase().slice(-6);
+    var lines = ['Notiert. Damit liegt uns deine Rückmeldung nach § 12.7 vor, innerhalb der vier Wochen.'];
+    if (data.abroad_choice === 'insured_abroad') {
+      lines.push('Ein Nachweis fehlt noch: schick uns die Police oder die Versicherungsbestätigung an hello@nimmersatt.fyi, dann ist es komplett.');
+    } else {
+      lines.push('Heißt konkret: für Schäden aus Leistungsverzug und Schlechtleistung stehst du nach § 12.5 selbst gerade — begrenzt auf dein Projekthonorar, darüber hinaus nur bei Vorsatz oder grober Fahrlässigkeit.');
+    }
+    lines.push('Referenz: ' + ref + '. Bis dahin: bleib hungrig.');
+    botSay(lines);
+  }
+
+  function sendDeclaration(c, submit) {
+    var e = c.querySelector('.ichat__err'); if (e) e.textContent = '';
+    botSay('Sekunde, ich schreib das auf…', function () {
+      fetch('/api/funnel', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildDeclarationPayload())
+      })
+        .then(function (r) { if (!r.ok) throw new Error('bad'); return r.json(); })
+        .then(function () { c.remove(); finishAbroad(); })
+        .catch(function () {
+          if (/^(localhost|127\.|0\.0\.0\.0)/.test(window.location.hostname) || window.location.protocol === 'file:') {
+            c.remove(); finishAbroad(); return;
+          }
+          submit.disabled = false;
+          showErr(c, 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.');
+        });
+    });
+  }
+
+  // One consent only: this is a short declaration, not an insurance application,
+  // so the VVG / AVB confirmations of the main funnel do not apply here.
+  function askDeclarationConsent() {
+    setInput(false);
+    var c = controls();
+    var wrap = document.createElement('div'); wrap.className = 'iconsents';
+    var lab = document.createElement('label'); lab.className = 'funnel__consent';
+    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.name = 'c_dsgvo';
+    var mark = document.createElement('span'); mark.className = 'funnel__consent-box'; mark.setAttribute('aria-hidden', 'true');
+    var txt = document.createElement('span'); txt.className = 'funnel__consent-text';
+    txt.textContent = 'Ich willige in die Verarbeitung meiner Daten zur Dokumentation dieser Erklärung nach DSGVO ein.';
+    lab.appendChild(cb); lab.appendChild(mark); lab.appendChild(txt);
+    wrap.appendChild(lab);
+    var nav = document.createElement('div'); nav.className = 'ichips';
+    var submit = chip('Erklärung absenden', function () {
+      if (!cb.checked) { showErr(c, 'Bitte bestätige den Hinweis, um abzusenden.'); return; }
+      submit.disabled = true;
+      sendDeclaration(c, submit);
+    }, 'primary');
+    nav.appendChild(submit);
+    wrap.appendChild(nav);
+    c.appendChild(wrap); scrollDown();
+  }
+
+  var ABROAD_STEPS = [
+    { bot: ['Danke fürs ehrliche Antippen. Dann können wir dir über unseren Partner kein Angebot machen: Markel Pro Media setzt eine deutsche Meldung und eine deutsche Rechnungsadresse voraus.',
+            'Der Vertrag kennt diesen Fall aber. § 12.7 gibt dir vier Wochen, uns zu sagen, wie du stattdessen abgesichert bist. Zwei Wege, beide völlig in Ordnung:'],
+      render: function (done) { askChoice('abroad_choice', [
+        { value: 'insured_abroad', label: 'Ich bin dort vergleichbar versichert', sub: '§ 12.7 b' },
+        { value: 'private_liability', label: 'Ich hafte persönlich', sub: '§ 12.7 c' }
+      ], done); } },
+
+    { bot: 'In welchem Land liegt deine Rechnungsadresse?',
+      render: function (done) { askText('abroad_country', { placeholder: 'z. B. Österreich' }, done); } },
+
+    { skipIf: function () { return data.abroad_choice !== 'insured_abroad'; },
+      bot: 'Bei welchem Versicherer bist du dort? Kannst du auch überspringen.',
+      render: function (done) { askText('abroad_insurer', { placeholder: 'Name des Versicherers (optional)', optional: true }, done); } },
+
+    { bot: 'Dann halte ich das für dich fest. Wie heißt du mit Vornamen?',
+      render: function (done) { askText('firstName', { placeholder: 'Vorname' }, done); } },
+    { bot: 'Und der Nachname?',
+      render: function (done) { askText('lastName', { placeholder: 'Nachname' }, done); } },
+    { bot: 'An welche E-Mail sollen wir uns halten?',
+      render: function (done) { askText('email', {
+        placeholder: 'name@mail.de',
+        validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Bitte eine gültige E-Mail-Adresse.'; }
+      }, done); } },
+
+    { bot: 'Zum Absenden noch ein Häkchen:',
+      render: function () { askDeclarationConsent(); } }   // terminal
+  ];
+
+  function abroadFlow() { runSteps(ABROAD_STEPS); }
+
   /* --- The scripted conversation ----------------------------------------- */
   var YESNO = function (noLabel, yesLabel) {
     return [{ value: 'no', label: noLabel || 'Nein' }, { value: 'yes', label: yesLabel || 'Ja' }];
@@ -405,7 +515,19 @@
             'Vorab alles Wichtige zur Haftpflicht als PDF, zum Nachlesen wann du willst:'],
       render: function (done) { showDoc(); done(); } },
 
-    { bot: 'Legen wir los. In welchem Bereich bist du überwiegend unterwegs?',
+    // Hard gate, deliberately the first question: no German registration means
+    // no offer, so asking anything else first would waste the visitor's time.
+    { bot: ['Eine Sache vorweg, sonst rechne ich dir etwas aus, das du gar nicht bekommen kannst: Markel Pro Media ist ein Produkt nach deutschem Recht.',
+            'Bist du mit deiner Tätigkeit in Deutschland gemeldet — und liegt deine Rechnungsadresse ebenfalls in Deutschland?'],
+      render: function (done) { askChoice('de_registered', [
+        { value: 'yes', label: 'Ja, beides in Deutschland' },
+        { value: 'no', label: 'Nein, oder Rechnungsadresse im Ausland' }
+      ], function () {
+        if (data.de_registered === 'yes') { done(); return; }
+        abroadFlow();   // no done(): the main funnel ends here
+      }); } },
+
+    { bot: 'Gut. Legen wir los — in welchem Bereich bist du überwiegend unterwegs?',
       render: function (done) { askChoice('prof', [
         { value: 'video', label: 'Video, Film & Content' },
         { value: 'design', label: 'Grafik, Web & Design' },
@@ -540,12 +662,9 @@
       render: function (done) { askText('website', { placeholder: 'z. B. instagram.com/… (optional)', optional: true }, done); } },
     { bot: 'PLZ und Ort?',
       render: function (done) { askText('city', { placeholder: 'PLZ, Ort (optional)', optional: true }, done); } },
-    { bot: 'Wo ist dein Sitz?',
-      render: function (done) { askChoice('country', [
-        { value: 'DE', label: 'Deutschland' },
-        { value: 'EU', label: 'EU' },
-        { value: 'EWR', label: 'EWR' }
-      ], done); } },
+    // (No "Wo ist dein Sitz?" step any more — the gate above already settled
+    // that, and offering EU/EWR here would let the answer contradict it.
+    // data.country stays 'DE'.)
     { bot: 'Welche Laufzeit hättest du gern?',
       render: function (done) { askChoice('term', [
         { value: '1', label: '1 Jahr (autom. Verlängerung)' },
@@ -567,21 +686,23 @@
   ];
 
   /* --- Engine ------------------------------------------------------------- */
-  var idx = -1;
-  function advance() {
-    idx++;
-    if (idx >= STEPS.length) return;
-    var step = STEPS[idx];
-    if (step.skipIf && step.skipIf()) { advance(); return; }
-    botSay(step.bot, function () {
-      step.render(advance);
-    });
+  // Walks a step list. A step advances only when its render() calls done(), so
+  // a branch that never calls it (abroadFlow) simply ends the conversation.
+  function runSteps(steps) {
+    var idx = -1;
+    (function next() {
+      idx++;
+      if (idx >= steps.length) return;
+      var step = steps[idx];
+      if (step.skipIf && step.skipIf()) { next(); return; }
+      botSay(step.bot, function () { step.render(next); });
+    })();
   }
 
   // Kick off once the chat scrolls into view, so the first lines don't fire
   // far above the fold (and it feels like the bot greets you when you arrive).
   var started = false;
-  function start() { if (started) return; started = true; advance(); }
+  function start() { if (started) return; started = true; runSteps(STEPS); }
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { if (e.isIntersecting) { start(); io.disconnect(); } });

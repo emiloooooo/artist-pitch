@@ -1,5 +1,11 @@
 // Serverless intake for the Markel Pro Media insurance funnel (DE visitors).
 //
+// Two payload shapes come through here:
+//   kind "insurance-application-request"   — the full funnel (default)
+//   kind "abroad-liability-declaration"    — the short § 12.7 declaration from
+//     visitors without a German registration / billing address, who cannot be
+//     quoted at all. Same CRM hop, much smaller record.
+//
 // Receives POST /api/funnel with the funnel selections + applicant master data
 // and hands it off to a CRM, exactly like /api/lead. This is a QUALIFIED LEAD /
 // non-binding application request: no bank data (IBAN) is collected and no
@@ -41,6 +47,41 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // Short branch: no quote possible, the visitor declares how they are covered
+  // instead (§ 12.7 b: comparable insurance abroad, or c: personal liability).
+  if (str(body.kind, 40) === 'abroad-liability-declaration') {
+    const declaration = pick(str(body.declaration, 24), ['insured_abroad', 'private_liability']);
+    if (!declaration) {
+      res.status(400).json({ error: 'Bitte eine der beiden Angaben nach § 12.7 wählen.' });
+      return;
+    }
+    const receivedAt = new Date();
+    const record = {
+      kind: 'abroad-liability-declaration',
+      contractClause: '§ 12.7',
+      registeredInGermany: 'no',
+      declaration: declaration,          // insured_abroad = § 12.7 b, private_liability = § 12.7 c
+      billingCountry: str(body.billingCountry, 80),
+      existingInsurer: str(body.existingInsurer, 120),
+      proofOutstanding: declaration === 'insured_abroad',
+      legalForm: str(body.legalForm, 60),
+      company: str(body.company, 160),
+      salutation: str(body.salutation, 20),
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: str(body.phone, 40),
+      product: 'Markel Pro Media (Berufshaftpflicht) — nicht angeboten, Auslandsfall',
+      source: 'artist-pitch/insurance-funnel',
+      receivedAt: receivedAt.toISOString(),
+      // § 12.7 runs four weeks; the deadline is stamped here so the CRM does not
+      // have to recompute it.
+      deadlineAt: new Date(receivedAt.getTime() + 28 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+    await forward(record, res);
+    return;
+  }
+
   const risk = (body.risk && typeof body.risk === 'object') ? body.risk : {};
   const modules = Array.isArray(body.modules)
     ? body.modules.map(function (m) { return str(m, 24); }).filter(Boolean).slice(0, 8)
@@ -49,6 +90,7 @@ module.exports = async function handler(req, res) {
 
   const lead = {
     // tariff selection
+    registeredInGermany: pick(str(body.registeredInGermany, 4), ['yes', 'no'], 'yes'),
     profession: pick(str(body.profession, 24), ['video', 'design', 'agency', 'text', 'music', 'consulting']),
     revenueBand: pick(str(body.revenueBand, 12), ['r50', 'r100', 'r250', 'r500', 'r500plus']),
     vshSum: str(body.vshSum, 12),
@@ -92,13 +134,19 @@ module.exports = async function handler(req, res) {
     receivedAt: new Date().toISOString(),
   };
 
+  await forward(lead, res);
+};
+
+// One CRM hop for both payload shapes. Without CRM_WEBHOOK_URL the record is
+// logged and accepted, so the chat never dead-ends on a missing integration.
+async function forward(record, res) {
   const hook = process.env.CRM_WEBHOOK_URL;
   if (hook) {
     try {
       const r = await fetch(hook, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(lead),
+        body: JSON.stringify(record),
       });
       if (!r.ok) {
         console.error('funnel: CRM webhook returned', r.status);
@@ -111,8 +159,7 @@ module.exports = async function handler(req, res) {
       return;
     }
   } else {
-    console.log('funnel lead (no CRM_WEBHOOK_URL set):', JSON.stringify(lead));
+    console.log('funnel record (no CRM_WEBHOOK_URL set):', JSON.stringify(record));
   }
-
   res.status(200).json({ ok: true });
-};
+}
