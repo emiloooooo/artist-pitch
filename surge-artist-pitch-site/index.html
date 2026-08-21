@@ -151,12 +151,18 @@
           <p class="casefeature__label" data-i18n="work.l1">01 / Jedes Projekt an einem Ort</p>
           <div class="moodgrid">
             <div class="tool-video mood--wide">
+              <!-- Runs by itself from the moment the page loads (the file has no
+                   audio track, so muted costs nothing). Controls stay for pause
+                   and scrubbing; browsers hold offscreen playback back on their
+                   own, so this does not fight the hero for bandwidth. -->
               <video
                 poster="assets/tool/workflow-poster.webp"
                 controls
+                autoplay
+                muted
                 loop
                 playsinline
-                preload="none"
+                preload="metadata"
                 title="Nimmersatt Workflow-Tool im Überblick" data-i18n-attr="title:work.vidTitle">
                 <source src="assets/tool/workflow.mp4" type="video/mp4" />
               </video>

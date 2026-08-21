@@ -40,13 +40,29 @@
      These were real GIFs originally; as muted <video> some browsers leave them
      paused on the poster until a gesture. Force play, and retry on first input. */
   (function autoplayLoops() {
-    var loops = Array.prototype.slice.call(document.querySelectorAll(".hero__mark"));
+    var loops = Array.prototype.slice.call(
+      document.querySelectorAll(".hero__mark, .hero__reel video, .tool-video video")
+    );
     var pv = preloader ? preloader.querySelector("video") : null;
     if (pv) loops.push(pv);
     if (!loops.length) return;
+    // The tool walkthrough carries visible controls. Once someone pauses it by
+    // hand, no later retry is allowed to resurrect it. A pause that happens
+    // while the video sits offscreen is the browser saving bandwidth, not the
+    // user, so that one does not count.
+    loops.forEach(function (v) {
+      if (!v || !v.controls) return;
+      v.addEventListener("pause", function () {
+        var r = v.getBoundingClientRect();
+        var onScreen = r.bottom > 0 && r.top < (window.innerHeight || 0);
+        if (onScreen) v.dataset.userPaused = "1";
+      });
+      v.addEventListener("play", function () { delete v.dataset.userPaused; });
+    });
     function kick() {
       loops.forEach(function (v) {
         if (!v || (v === pv && loaderDone)) return; // don't restart the dismissed loader
+        if (v.dataset && v.dataset.userPaused) return;
         try {
           v.muted = true;
           v.playsInline = true;
@@ -63,6 +79,25 @@
     // A couple of delayed retries cover slow metadata / late autoplay unlocks.
     window.setTimeout(kick, 400);
     window.setTimeout(kick, 1200);
+
+    // The tool walkthrough sits far down the page, so every retry above has
+    // already fired by the time anyone reaches it. If the browser held its
+    // autoplay back while it was offscreen, start it as it comes into view.
+    var deep = loops.filter(function (v) { return v && v.controls; });
+    if (deep.length && "IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var v = e.target;
+          if (!e.isIntersecting || !v.paused || v.dataset.userPaused) return;
+          try {
+            v.muted = true;
+            var p = v.play();
+            if (p && p.catch) p.catch(function () {});
+          } catch (err) {}
+        });
+      }, { threshold: 0.25 });
+      deep.forEach(function (v) { io.observe(v); });
+    }
   })();
 
   /* --- Header reveal — hidden over the hero, slides in once scrolled past -- */
