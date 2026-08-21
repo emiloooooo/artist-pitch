@@ -581,6 +581,24 @@
 
     function scroll() { win.scrollTop = win.scrollHeight; }
 
+    // The model answers in light markdown. Printed raw it showed literal stars
+    // ("**20 %**"), so the few marks it actually uses get rendered. The answer is
+    // escaped first and only these tags are re-introduced — model output is never
+    // trusted as HTML.
+    function mdLite(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\r\n?/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .replace(/^[ \t]{0,3}[-*\u2022][ \t]+/gm, '\u2022 ')
+        .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(^|[\s(])\*([^\s*][^*\n]*)\*(?=[\s.,;:!?)]|$)/g, '$1<em>$2</em>')
+        .replace(/`([^`\n]+)`/g, '<em>$1</em>')
+        .replace(/^[ \t]{0,3}#{1,6}[ \t]+(.*)$/gm, '<strong>$1</strong>');
+    }
+
     function addMsg(kind, who, text) {
       var wrap = document.createElement('div');
       wrap.className = 'chat__msg chat__msg--' + kind;
@@ -591,7 +609,9 @@
         wrap.appendChild(w);
       }
       var p = document.createElement('p');
-      p.textContent = text;
+      // Only the bot's own answers go through the renderer. Whatever the visitor
+      // typed stays plain text, always.
+      if (kind === 'bot') { p.innerHTML = mdLite(text); } else { p.textContent = text; }
       wrap.appendChild(p);
       win.appendChild(wrap);
       scroll();

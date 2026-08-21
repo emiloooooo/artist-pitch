@@ -160,13 +160,6 @@
   font-size: var(--text-display);
   max-width: 18ch;
 }
-/* Force a single-line heading (e.g. "Nimmersatt — Code of Conduct"): drop the
-   18ch cap, keep it on one row, and scale the display face down so it fits. */
-.manifesto__line--onerow {
-  max-width: none;
-  white-space: nowrap;
-  font-size: clamp(0.72rem, 2.9vw, 2.4rem);
-}
 .manifesto__body {
   margin-top: clamp(1.5rem, 3vw, 2.5rem);
   max-width: 54ch;
@@ -1227,6 +1220,11 @@ html.lenis, html.lenis body { height: auto; }
   font-size: clamp(1.55rem, 3.3vw, 2.6rem);
   max-width: 22ch;
 }
+/* Single-row heading ("Nimmersatt — Code of Conduct"): the 22ch cap above is
+   narrower than the line itself, so it needs lifting here, after the rule that
+   sets it. No nowrap — the line stays on one row wherever it fits and wraps on
+   narrow phones instead of pushing the whole page sideways. */
+.manifesto__line--onerow { max-width: none; }
 .pillar__name,
 .case__name,
 .industry__name,
