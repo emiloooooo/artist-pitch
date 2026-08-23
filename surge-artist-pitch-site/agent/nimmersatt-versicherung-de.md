@@ -2,8 +2,8 @@
 
 Zweite zulässige Wissensquelle für den nimmersatt Bot, neben dem Vertragstext.
 Sie beschreibt die Berufshaftpflicht, die NIMMERSATT Artists vermittelt, und den
-Versicherungs-Chat auf dieser Seite (Abschnitt „Absicherung, ohne
-Kleingedrucktes").
+Versicherungs-Chat auf dieser Seite (im Abschnitt „Auf die Liste", hinter dem
+Aufklapper „Haftpflichtversicherung?").
 
 > Pflegehinweis: Tarifwerte, Bausteine und Fragen spiegeln `js/funnel.js`.
 > Wer dort etwas ändert, ändert es hier mit.
@@ -97,6 +97,10 @@ sein (§ 19 Abs. 5 VVG). Der Chat gibt eine Referenznummer aus.
 
 ## 7. Wo das auf der Seite steht
 
-Abschnitt „Absicherung, ohne Kleingedrucktes" mit dem Versicherungs-Chat und dem
-PDF „Berufshaftpflicht — das Wichtigste". Der Abschnitt ist ein deutsches Produkt
-und wird nur auf der **deutschen** Seitenversion angezeigt.
+Im Abschnitt „Auf die Liste", direkt unter dem Anmeldeformular: ein Aufklapper
+„Haftpflichtversicherung?" mit dem Versicherungs-Chat und dem PDF
+„Berufshaftpflicht — das Wichtigste". Der Chat läuft auf der **deutschen und der
+englischen** Seitenversion. Beim ersten Aufklappen erscheint ein Hinweisfenster:
+Markel Pro Media ist ein deutsches Produkt und setzt eine Rechnungsadresse in
+Deutschland voraus; wer die nicht hat, wird von der ersten Frage in den
+§-12.7-Zweig geführt.

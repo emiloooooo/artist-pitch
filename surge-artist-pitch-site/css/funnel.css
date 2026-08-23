@@ -1,6 +1,6 @@
 /* ============================================================================
    NIMMERSATT — Insurance funnel (Markel Pro Media, Berufshaftpflicht)
-   A 3-step quote/apply wizard, shown to German-language visitors only.
+   A quote/apply chat inside "Auf die Liste", in both page languages.
    Reuses the flat liquid-glass frame of the chat / lead blocks: one accent
    (black), no colour, no gradients, no drop shadow — only glass edge lights.
    ========================================================================== */
@@ -387,12 +387,23 @@
 /* Inline validation / send error */
 .ichat__err { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--fg); font-weight: 600; }
 
+/* The funnel sits inside "Auf die Liste" (right under the lead form): one
+   intro line, then the dropdown. Same 680px column as .lead and .chat. */
+.ifunnel-slot { margin-top: clamp(2rem, 5vw, 3.2rem); max-width: 680px; }
+.ifunnel-slot__lead {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: var(--lh-read);
+  color: var(--muted);
+}
+.ifunnel-slot .idrop { margin-top: clamp(0.9rem, 2vw, 1.3rem); }
+
 /* ============================================================================
    Insurance dropdown + its one-time Germany note.
-   Most artists come for the contract, so the funnel no longer opens itself:
-   the section shows one row ("HAFTPFLICHTVERSICHERUNG? ↓", same chevron and
-   rotation as the document dropdown in the closing section) and only unfolds
-   the chat on request. Monochrome, hairline borders, no colour.
+   Most artists come for the contract, so the funnel does not open itself: it
+   shows one row ("HAFTPFLICHTVERSICHERUNG? ↓", same chevron and rotation as
+   the document dropdown in the closing section) and only unfolds the chat on
+   request. Monochrome, hairline borders, no colour.
    ========================================================================== */
 .idrop {
   margin-top: clamp(1.6rem, 3vw, 2.4rem);

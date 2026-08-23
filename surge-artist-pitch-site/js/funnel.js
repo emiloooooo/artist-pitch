@@ -5,50 +5,32 @@
    shows the same live, clearly-non-binding premium ESTIMATE, surfaces the
    Haftpflicht PDF right in the conversation, and ends as a qualified
    application request POSTed to /api/funnel.
-   - Gate: German-language visitors only (?funnel=1 forces on, =0 off).
+   - Since 2026-08-23 it lives inside "Auf die Liste" and runs in BOTH
+     languages (?funnel=0 still switches it off). It is still a German-law
+     product, which is what the one-time note and the first question say.
+   - German copy stays here as the fallback of T(); English lives in the
+     'ins.*' keys of js/i18n.js, like every other JS-side string on the page.
    - The estimate is a transparent order-of-magnitude heuristic, NOT a real
      Markel rate. The binding premium comes from Markel after review.
    =========================================================================== */
 (function () {
-  var section = document.getElementById('versicherung');
+  var slot = document.getElementById('versicherung');
   var chat = document.getElementById('insuranceChat');
-  if (!section || !chat) return;
+  if (!slot || !chat) return;
 
-  /* --- Language gate ------------------------------------------------------ */
-  var q = window.location.search;
-  var force = /[?&]funnel=1/.test(q);
-  var forceOff = /[?&]funnel=0/.test(q);
-  function isGerman() {
-    var langs = navigator.languages && navigator.languages.length
-      ? navigator.languages
-      : [navigator.language || navigator.userLanguage || ''];
-    return langs.some(function (l) { return /^de/i.test(l || ''); });
-  }
-  if (forceOff) return;   // stays hidden, unwired
+  if (/[?&]funnel=0/.test(window.location.search)) { slot.hidden = true; return; }
 
-  // The section is wired either way, but it is only SHOWN on the German page:
-  // the visitor can switch language at any time, so visibility follows the
-  // current page language (js/i18n.js) and falls back to the browser locale
-  // when the language layer is not present.
-  section.setAttribute('data-de-ready', '1');
-  function pageLang() {
-    if (window.nsatLang && window.nsatLang.get) return window.nsatLang.get();
-    return isGerman() ? 'de' : 'en';
+  /* --- Language ----------------------------------------------------------
+     Same contract as the other JS-side copy on this page: German inline as
+     the fallback, English in js/i18n.js. A line that has already been printed
+     stays in the language it was printed in — a chat log is a transcript, not
+     a re-rendered page — but every question from here on follows the switch. */
+  function T(key, de) {
+    return (window.nsatLang && window.nsatLang.t) ? window.nsatLang.t('ins.' + key, de) : de;
   }
-  function syncVisibility() {
-    // Two conditions, both required: the page has to be in German AND the
-    // visitor's browser has to be German (the original gate — this is a
-    // German-law product). Switching the page to English hides it either way.
-    if (!force && (pageLang() !== 'de' || !isGerman())) { section.hidden = true; return; }
-    section.hidden = false;
-    // main.js's scroll-reveal observer registered these while the section was
-    // display:none, so reveal them directly (the section sits below the fold).
-    section.querySelectorAll('[data-animate], [data-stagger]').forEach(function (el) {
-      el.classList.add('is-visible');
-    });
+  function isEN() {
+    return !!(window.nsatLang && window.nsatLang.get && window.nsatLang.get() === 'en');
   }
-  document.addEventListener('nsat:langchange', syncVisibility);
-  syncVisibility();
 
   var win = document.getElementById('ifunnelWindow');
   var form = document.getElementById('ifunnelForm');
@@ -62,10 +44,21 @@
   var SBF  = { '0': 1.0, '250': 0.95, '500': 0.90, '1000': 0.83 };
   var MOD  = { cyber: 96, eigenschaden: 72, druck: 48, veranstaltung: 84, doe: 60 };
 
-  var eur = (typeof Intl !== 'undefined' && Intl.NumberFormat)
-    ? new Intl.NumberFormat('de-DE')
-    : { format: function (n) { return String(n); } };
-  function euro(n) { return eur.format(Math.round(n)) + ' €'; }
+  // "1.700 €" in German, "€1,700" in English: same amount, opposite meaning of
+  // the separator, so the format follows the page language.
+  var FMT = {};
+  function nf(locale) {
+    if (!FMT[locale]) {
+      FMT[locale] = (typeof Intl !== 'undefined' && Intl.NumberFormat)
+        ? new Intl.NumberFormat(locale)
+        : { format: function (n) { return String(n); } };
+    }
+    return FMT[locale];
+  }
+  function euro(n) {
+    var v = Math.round(n);
+    return isEN() ? '€' + nf('en-GB').format(v) : nf('de-DE').format(v) + ' €';
+  }
 
   /* --- Data model (feeds the /api/funnel payload) ------------------------- */
   var data = {
@@ -89,15 +82,25 @@
     annual = Math.max(120, Math.round(annual));
     return { valid: true, annual: annual, monthly: Math.round(annual / 12) };
   }
-  var PROF_LABEL = {
-    video: 'Video, Film & Content', design: 'Grafik, Web & Design', agency: 'Marketing- & Medienagentur',
-    text: 'Text, Redaktion & Verlag', music: 'Musik, Audio & Event', consulting: 'Beratung / Dienstleistung'
-  };
+  // The six trade labels, used both as chips and in the review summary.
+  function profLabel(v) {
+    return {
+      video: T('prof.video', 'Video, Film & Content'),
+      design: T('prof.design', 'Grafik, Web & Design'),
+      agency: T('prof.agency', 'Marketing- & Medienagentur'),
+      text: T('prof.text', 'Text, Redaktion & Verlag'),
+      music: T('prof.music', 'Musik, Audio & Event'),
+      consulting: T('prof.consulting', 'Beratung / Dienstleistung')
+    }[v];
+  }
   function coverText() {
-    var parts = ['VSH ' + euro(data.vsh), 'SB ' + euro(data.sb)];
-    if (data.bhp === 'yes') parts.push('inkl. BHP ' + (data.bhpsum === '5000000' ? '5 Mio' : '3 Mio'));
+    var parts = [T('cov.vsh', 'VSH') + ' ' + euro(data.vsh), T('cov.sb', 'SB') + ' ' + euro(data.sb)];
+    if (data.bhp === 'yes') {
+      var five = data.bhpsum === '5000000';
+      parts.push(T('cov.bhp', 'inkl. BHP') + ' ' + T(five ? 'cov.bhp5' : 'cov.bhp3', five ? '5 Mio' : '3 Mio'));
+    }
     var m = data.modules.length;
-    if (m) parts.push('+' + m + ' ' + (m === 1 ? 'Baustein' : 'Bausteine'));
+    if (m) parts.push('+' + m + ' ' + T(m === 1 ? 'cov.mod1' : 'cov.modN', m === 1 ? 'Baustein' : 'Bausteine'));
     return parts.join(' · ');
   }
 
@@ -126,7 +129,7 @@
     var wrap = document.createElement('div');
     wrap.className = 'chat__msg chat__msg--bot chat__msg--typing';
     var p = document.createElement('p');
-    p.className = 'chat__dots'; p.setAttribute('aria-label', 'schreibt');
+    p.className = 'chat__dots'; p.setAttribute('aria-label', T('typing', 'schreibt'));
     p.innerHTML = '<i></i><i></i><i></i>';
     wrap.appendChild(p); win.appendChild(wrap); scrollDown();
     return wrap;
@@ -157,7 +160,7 @@
     form.hidden = !on;
     if (on) {
       input.value = '';
-      input.placeholder = placeholder || 'Deine Antwort…';
+      input.placeholder = placeholder || T('ph.default', 'Deine Antwort…');
       if (!reduce) { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }
     }
   }
@@ -197,11 +200,11 @@
     var c = controls();
     var list = document.createElement('div'); list.className = 'imods';
     var MODULES = [
-      { v: 'cyber', n: 'Cyber & Daten-Eigenschaden', d: 'Hackerangriff, Datenrettung, DSGVO-Krise', p: 96 },
-      { v: 'eigenschaden', n: 'Eigenschadendeckung', d: 'Projektrücktritt, Reputation, Phishing', p: 72 },
-      { v: 'druck', n: 'Druckeigenschaden', d: 'Fehlerhafte Druckaufträge', p: 48 },
-      { v: 'veranstaltung', n: 'Erweiterte Veranstaltungsdeckung', d: 'Events für Dritte, bis 250 Pers.', p: 84 },
-      { v: 'doe', n: 'D&O-Außenhaftung', d: 'Persönliche Organhaftung', p: 60 }
+      { v: 'cyber', n: T('mod.cyber.n', 'Cyber & Daten-Eigenschaden'), d: T('mod.cyber.d', 'Hackerangriff, Datenrettung, DSGVO-Krise'), p: 96 },
+      { v: 'eigenschaden', n: T('mod.own.n', 'Eigenschadendeckung'), d: T('mod.own.d', 'Projektrücktritt, Reputation, Phishing'), p: 72 },
+      { v: 'druck', n: T('mod.print.n', 'Druckeigenschaden'), d: T('mod.print.d', 'Fehlerhafte Druckaufträge'), p: 48 },
+      { v: 'veranstaltung', n: T('mod.event.n', 'Erweiterte Veranstaltungsdeckung'), d: T('mod.event.d', 'Events für Dritte, bis 250 Pers.'), p: 84 },
+      { v: 'doe', n: T('mod.doe.n', 'D&O-Außenhaftung'), d: T('mod.doe.d', 'Persönliche Organhaftung'), p: 60 }
     ];
     var chosen = {};
     MODULES.forEach(function (m) {
@@ -215,17 +218,18 @@
       body.querySelector('.imod__name').textContent = m.n;
       body.querySelector('.imod__desc').textContent = m.d;
       var price = document.createElement('span'); price.className = 'imod__price';
-      price.textContent = '+ ca. ' + m.p + ' €/J';
+      price.textContent = T('mod.price', '+ ca. {n} €/J').replace('{n}', m.p);
       var mark = document.createElement('span'); mark.className = 'imod__check'; mark.setAttribute('aria-hidden', 'true');
       lab.appendChild(box); lab.appendChild(mark); lab.appendChild(body); lab.appendChild(price);
       list.appendChild(lab);
     });
     var nav = document.createElement('div'); nav.className = 'ichips';
-    var go = chip('Weiter', function () {
+    var go = chip(T('next', 'Weiter'), function () {
       data.modules = MODULES.map(function (m) { return m.v; }).filter(function (v) { return chosen[v]; });
-      userMsg(data.modules.length
-        ? (data.modules.length + ' ' + (data.modules.length === 1 ? 'Baustein' : 'Bausteine') + ' dazu')
-        : 'Keine Zusatzbausteine');
+      var n = data.modules.length;
+      userMsg(n
+        ? T(n === 1 ? 'mods.one' : 'mods.many', n === 1 ? '{n} Baustein dazu' : '{n} Bausteine dazu').replace('{n}', n)
+        : T('mods.none', 'Keine Zusatzbausteine'));
       c.remove();
       done();
     }, 'primary');
@@ -240,8 +244,8 @@
     var c = controls();
     if (opts.optional) {
       var skipRow = document.createElement('div'); skipRow.className = 'ichips';
-      skipRow.appendChild(chip('Überspringen', function () {
-        cleanup(); userMsg('— übersprungen —'); done();
+      skipRow.appendChild(chip(T('skip', 'Überspringen'), function () {
+        cleanup(); userMsg(T('skipped', '— übersprungen —')); done();
       }, 'ghost'));
       c.appendChild(skipRow); scrollDown();
     }
@@ -249,8 +253,8 @@
     pendingText = function (raw) {
       var v = String(raw || '').trim();
       if (!v) {
-        if (opts.optional) { cleanup(); userMsg('— übersprungen —'); done(); return; }
-        showErr(c, 'Bitte kurz ausfüllen.'); return;
+        if (opts.optional) { cleanup(); userMsg(T('skipped', '— übersprungen —')); done(); return; }
+        showErr(c, T('err.empty', 'Bitte kurz ausfüllen.')); return;
       }
       if (opts.validate) {
         var err = opts.validate(v);
@@ -273,7 +277,8 @@
     if (pendingText) pendingText(input.value);
   });
 
-  // The Haftpflicht PDF as an in-chat document card.
+  // The Haftpflicht PDF as an in-chat document card. The overview only exists
+  // in German, which the English meta line says out loud.
   function showDoc() {
     var c = controls();
     var card = document.createElement('div'); card.className = 'idoc';
@@ -281,13 +286,17 @@
     card.innerHTML =
       '<span class="idoc__icon" aria-hidden="true">PDF</span>' +
       '<span class="idoc__text">' +
-        '<span class="idoc__title">Berufshaftpflicht — das Wichtigste</span>' +
-        '<span class="idoc__meta">Markel Pro Media · Übersicht · PDF</span>' +
+        '<span class="idoc__title"></span>' +
+        '<span class="idoc__meta"></span>' +
       '</span>' +
       '<span class="idoc__actions">' +
-        '<a class="idoc__btn" href="' + href + '" target="_blank" rel="noopener">Öffnen</a>' +
-        '<a class="idoc__btn idoc__btn--ghost" href="' + href + '" download="Berufshaftpflicht-Markel-Pro-Media.pdf">Sichern</a>' +
+        '<a class="idoc__btn" href="' + href + '" target="_blank" rel="noopener"></a>' +
+        '<a class="idoc__btn idoc__btn--ghost" href="' + href + '" download="Berufshaftpflicht-Markel-Pro-Media.pdf"></a>' +
       '</span>';
+    card.querySelector('.idoc__title').textContent = T('doc.title', 'Berufshaftpflicht — das Wichtigste');
+    card.querySelector('.idoc__meta').textContent = T('doc.meta', 'Markel Pro Media · Übersicht · PDF');
+    card.querySelector('.idoc__btn').textContent = T('doc.open', 'Öffnen');
+    card.querySelector('.idoc__btn--ghost').textContent = T('doc.save', 'Sichern');
     c.appendChild(card); scrollDown();
   }
 
@@ -298,12 +307,16 @@
     var c = controls();
     var box = document.createElement('div'); box.className = 'iprice';
     box.innerHTML =
-      '<span class="iprice__tag">Unverbindliche Schätzung</span>' +
-      '<span class="iprice__main">ca. ' + euro(e.annual) + '<span class="iprice__per"> / Jahr</span></span>' +
-      '<span class="iprice__alt">≈ ' + euro(e.monthly) + ' / Monat</span>' +
+      '<span class="iprice__tag"></span>' +
+      '<span class="iprice__main"></span>' +
+      '<span class="iprice__alt"></span>' +
       '<span class="iprice__basis"></span>';
+    box.querySelector('.iprice__tag').textContent = T('est.tag', 'Unverbindliche Schätzung');
+    box.querySelector('.iprice__main').innerHTML =
+      T('est.approx', 'ca.') + ' ' + euro(e.annual) + '<span class="iprice__per"> / ' + T('est.year', 'Jahr') + '</span>';
+    box.querySelector('.iprice__alt').textContent = '≈ ' + euro(e.monthly) + ' / ' + T('est.month', 'Monat');
     box.querySelector('.iprice__basis').textContent =
-      coverText() + '. Keine verbindliche Markel-Prämie — die kommt nach der Prüfung.';
+      coverText() + '. ' + T('est.basis', 'Keine verbindliche Markel-Prämie — die kommt nach der Prüfung.');
     c.appendChild(box); scrollDown();
   }
 
@@ -312,12 +325,18 @@
     var e = estimate();
     var c = controls();
     var box = document.createElement('div'); box.className = 'ireview';
-    function row(k, v) { return '<div class="ireview__row"><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
-    box.innerHTML = '<dl>' +
-      row('Tätigkeit', PROF_LABEL[data.prof] || '—') +
-      row('Deckung', coverText()) +
-      row('Geschätzte Prämie', e.valid ? ('ca. ' + euro(e.annual) + ' / Jahr') : '—') +
-    '</dl>';
+    var dl = document.createElement('dl');
+    function row(k, v) {
+      var r = document.createElement('div'); r.className = 'ireview__row';
+      var dt = document.createElement('dt'); dt.textContent = k;
+      var dd = document.createElement('dd'); dd.textContent = v;
+      r.appendChild(dt); r.appendChild(dd); dl.appendChild(r);
+    }
+    row(T('rev.prof', 'Tätigkeit'), profLabel(data.prof) || '—');
+    row(T('rev.cover', 'Deckung'), coverText());
+    row(T('rev.premium', 'Geschätzte Prämie'),
+      e.valid ? (T('est.approx', 'ca.') + ' ' + euro(e.annual) + ' / ' + T('est.year', 'Jahr')) : '—');
+    box.appendChild(dl);
     c.appendChild(box); scrollDown();
   }
 
@@ -327,9 +346,9 @@
     var c = controls();
     var wrap = document.createElement('div'); wrap.className = 'iconsents';
     var CONSENTS = [
-      { name: 'c_vvg', text: 'Meine Angaben sind wahrheitsgemäß und vollständig (§ 19 Abs. 5 VVG).' },
-      { name: 'c_avb', text: 'Mir werden vor Abschluss die AVB, das Produktinformationsblatt (IPID) und die 14-tägige Widerrufsbelehrung zugestellt.' },
-      { name: 'c_dsgvo', text: 'Ich willige in die Verarbeitung meiner Daten zur Bearbeitung dieser Anfrage nach DSGVO ein.' }
+      { name: 'c_vvg', text: T('consent.vvg', 'Meine Angaben sind wahrheitsgemäß und vollständig (§ 19 Abs. 5 VVG).') },
+      { name: 'c_avb', text: T('consent.avb', 'Mir werden vor Abschluss die AVB, das Produktinformationsblatt (IPID) und die 14-tägige Widerrufsbelehrung zugestellt.') },
+      { name: 'c_dsgvo', text: T('consent.dsgvo', 'Ich willige in die Verarbeitung meiner Daten zur Bearbeitung dieser Anfrage nach DSGVO ein.') }
     ];
     var boxes = [];
     CONSENTS.forEach(function (co) {
@@ -341,9 +360,9 @@
       wrap.appendChild(lab); boxes.push(cb);
     });
     var nav = document.createElement('div'); nav.className = 'ichips';
-    var submit = chip('Anfrage absenden', function () {
+    var submit = chip(T('submit.request', 'Anfrage absenden'), function () {
       if (!boxes.every(function (b) { return b.checked; })) {
-        showErr(c, 'Bitte bestätige die drei Pflichthinweise, um abzusenden.'); return;
+        showErr(c, T('err.consents', 'Bitte bestätige die drei Pflichthinweise, um abzusenden.')); return;
       }
       submit.disabled = true;
       sendLead(c, submit);
@@ -370,19 +389,23 @@
       legalForm: data.legalForm, company: data.company, salutation: data.salutation,
       firstName: data.firstName, lastName: data.lastName, email: data.email, phone: data.phone,
       website: data.website, city: data.city, country: data.country,
-      term: data.term, interval: data.interval, startDate: data.startDate
+      term: data.term, interval: data.interval, startDate: data.startDate,
+      lang: isEN() ? 'en' : 'de'
     };
   }
+  function ref() { return 'NIM-' + Date.now().toString(36).toUpperCase().slice(-6); }
+  function refLine() {
+    return T('ref', 'Referenz: {ref}. Bis dahin: bleib hungrig.').replace('{ref}', ref());
+  }
   function finish() {
-    var ref = 'NIM-' + Date.now().toString(36).toUpperCase().slice(-6);
     botSay([
-      'Danke, deine Anfrage ist raus. Wir prüfen deine Angaben, holen das verbindliche Markel-Angebot ein und melden uns bei dir.',
-      'Referenz: ' + ref + '. Bis dahin: bleib hungrig.'
+      T('done.sent', 'Danke, deine Anfrage ist raus. Wir prüfen deine Angaben, holen das verbindliche Markel-Angebot ein und melden uns bei dir.'),
+      refLine()
     ]);
   }
   function sendLead(c, submit) {
     var e = c.querySelector('.ichat__err'); if (e) e.textContent = '';
-    botSay('Sekunde, ich schick das ab…', function () {
+    botSay(T('sending.request', 'Sekunde, ich schick das ab…'), function () {
       fetch('/api/funnel', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildPayload())
@@ -394,7 +417,7 @@
             c.remove(); finish(); return;
           }
           submit.disabled = false;
-          showErr(c, 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.');
+          showErr(c, T('err.send', 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.'));
         });
     });
   }
@@ -415,25 +438,25 @@
       billingCountry: data.abroad_country,
       existingInsurer: data.abroad_insurer,
       legalForm: data.legalForm, company: data.company, salutation: data.salutation,
-      firstName: data.firstName, lastName: data.lastName, email: data.email, phone: data.phone
+      firstName: data.firstName, lastName: data.lastName, email: data.email, phone: data.phone,
+      lang: isEN() ? 'en' : 'de'
     };
   }
 
   function finishAbroad() {
-    var ref = 'NIM-' + Date.now().toString(36).toUpperCase().slice(-6);
-    var lines = ['Notiert. Damit liegt uns deine Rückmeldung nach § 12.7 vor, innerhalb der vier Wochen.'];
+    var lines = [T('ab.noted', 'Notiert. Damit liegt uns deine Rückmeldung nach § 12.7 vor, innerhalb der vier Wochen.')];
     if (data.abroad_choice === 'insured_abroad') {
-      lines.push('Ein Nachweis fehlt noch: schick uns die Police oder die Versicherungsbestätigung an hello@nimmersatt.fyi, dann ist es komplett.');
+      lines.push(T('ab.proof', 'Ein Nachweis fehlt noch: schick uns die Police oder die Versicherungsbestätigung an hello@nimmersatt.fyi, dann ist es komplett.'));
     } else {
-      lines.push('Heißt konkret: für Schäden aus Leistungsverzug und Schlechtleistung stehst du nach § 12.5 selbst gerade — begrenzt auf dein Projekthonorar, darüber hinaus nur bei Vorsatz oder grober Fahrlässigkeit.');
+      lines.push(T('ab.personal', 'Heißt konkret: für Schäden aus Leistungsverzug und Schlechtleistung stehst du nach § 12.5 selbst gerade — begrenzt auf dein Projekthonorar, darüber hinaus nur bei Vorsatz oder grober Fahrlässigkeit.'));
     }
-    lines.push('Referenz: ' + ref + '. Bis dahin: bleib hungrig.');
+    lines.push(refLine());
     botSay(lines);
   }
 
   function sendDeclaration(c, submit) {
     var e = c.querySelector('.ichat__err'); if (e) e.textContent = '';
-    botSay('Sekunde, ich schreib das auf…', function () {
+    botSay(T('sending.declaration', 'Sekunde, ich schreib das auf…'), function () {
       fetch('/api/funnel', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildDeclarationPayload())
@@ -445,7 +468,7 @@
             c.remove(); finishAbroad(); return;
           }
           submit.disabled = false;
-          showErr(c, 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.');
+          showErr(c, T('err.send', 'Hat gerade nicht geklappt. Schreib uns einfach an hello@nimmersatt.fyi.'));
         });
     });
   }
@@ -460,12 +483,12 @@
     var cb = document.createElement('input'); cb.type = 'checkbox'; cb.name = 'c_dsgvo';
     var mark = document.createElement('span'); mark.className = 'funnel__consent-box'; mark.setAttribute('aria-hidden', 'true');
     var txt = document.createElement('span'); txt.className = 'funnel__consent-text';
-    txt.textContent = 'Ich willige in die Verarbeitung meiner Daten zur Dokumentation dieser Erklärung nach DSGVO ein.';
+    txt.textContent = T('ab.consent', 'Ich willige in die Verarbeitung meiner Daten zur Dokumentation dieser Erklärung nach DSGVO ein.');
     lab.appendChild(cb); lab.appendChild(mark); lab.appendChild(txt);
     wrap.appendChild(lab);
     var nav = document.createElement('div'); nav.className = 'ichips';
-    var submit = chip('Erklärung absenden', function () {
-      if (!cb.checked) { showErr(c, 'Bitte bestätige den Hinweis, um abzusenden.'); return; }
+    var submit = chip(T('ab.submit', 'Erklärung absenden'), function () {
+      if (!cb.checked) { showErr(c, T('ab.errConsent', 'Bitte bestätige den Hinweis, um abzusenden.')); return; }
       submit.disabled = true;
       sendDeclaration(c, submit);
     }, 'primary');
@@ -474,226 +497,235 @@
     c.appendChild(wrap); scrollDown();
   }
 
-  var ABROAD_STEPS = [
-    { bot: ['Danke fürs ehrliche Antippen. Dann können wir dir über unseren Partner kein Angebot machen: Markel Pro Media setzt eine deutsche Meldung und eine deutsche Rechnungsadresse voraus.',
-            'Der Vertrag kennt diesen Fall aber. § 12.7 gibt dir vier Wochen, uns zu sagen, wie du stattdessen abgesichert bist. Zwei Wege, beide völlig in Ordnung:'],
-      render: function (done) { askChoice('abroad_choice', [
-        { value: 'insured_abroad', label: 'Ich bin dort vergleichbar versichert', sub: '§ 12.7 b' },
-        { value: 'private_liability', label: 'Ich hafte persönlich', sub: '§ 12.7 c' }
-      ], done); } },
+  // Built on demand (not at load) so every question is rendered in the
+  // language the page is in when the step actually runs.
+  function abroadSteps() {
+    return [
+      { bot: [T('ab.q1a', 'Danke fürs ehrliche Antippen. Dann können wir dir über unseren Partner kein Angebot machen: Markel Pro Media setzt eine deutsche Meldung und eine deutsche Rechnungsadresse voraus.'),
+              T('ab.q1b', 'Der Vertrag kennt diesen Fall aber. § 12.7 gibt dir vier Wochen, uns zu sagen, wie du stattdessen abgesichert bist. Zwei Wege, beide völlig in Ordnung:')],
+        render: function (done) { askChoice('abroad_choice', [
+          { value: 'insured_abroad', label: T('ab.optInsured', 'Ich bin dort vergleichbar versichert'), sub: '§ 12.7 b' },
+          { value: 'private_liability', label: T('ab.optPersonal', 'Ich hafte persönlich'), sub: '§ 12.7 c' }
+        ], done); } },
 
-    { bot: 'In welchem Land liegt deine Rechnungsadresse?',
-      render: function (done) { askText('abroad_country', { placeholder: 'z. B. Österreich' }, done); } },
+      { bot: T('ab.country', 'In welchem Land liegt deine Rechnungsadresse?'),
+        render: function (done) { askText('abroad_country', { placeholder: T('ab.countryPh', 'z. B. Österreich') }, done); } },
 
-    { skipIf: function () { return data.abroad_choice !== 'insured_abroad'; },
-      bot: 'Bei welchem Versicherer bist du dort? Kannst du auch überspringen.',
-      render: function (done) { askText('abroad_insurer', { placeholder: 'Name des Versicherers (optional)', optional: true }, done); } },
+      { skipIf: function () { return data.abroad_choice !== 'insured_abroad'; },
+        bot: T('ab.insurer', 'Bei welchem Versicherer bist du dort? Kannst du auch überspringen.'),
+        render: function (done) { askText('abroad_insurer', { placeholder: T('ab.insurerPh', 'Name des Versicherers (optional)'), optional: true }, done); } },
 
-    { bot: 'Dann halte ich das für dich fest. Wie heißt du mit Vornamen?',
-      render: function (done) { askText('firstName', { placeholder: 'Vorname' }, done); } },
-    { bot: 'Und der Nachname?',
-      render: function (done) { askText('lastName', { placeholder: 'Nachname' }, done); } },
-    { bot: 'An welche E-Mail sollen wir uns halten?',
-      render: function (done) { askText('email', {
-        placeholder: 'name@mail.de',
-        validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Bitte eine gültige E-Mail-Adresse.'; }
-      }, done); } },
+      { bot: T('ab.first', 'Dann halte ich das für dich fest. Wie heißt du mit Vornamen?'),
+        render: function (done) { askText('firstName', { placeholder: T('ph.first', 'Vorname') }, done); } },
+      { bot: T('q.last', 'Und der Nachname?'),
+        render: function (done) { askText('lastName', { placeholder: T('ph.last', 'Nachname') }, done); } },
+      { bot: T('ab.email', 'An welche E-Mail sollen wir uns halten?'),
+        render: function (done) { askText('email', {
+          placeholder: T('ph.email', 'name@mail.de'),
+          validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : T('err.email', 'Bitte eine gültige E-Mail-Adresse.'); }
+        }, done); } },
 
-    { bot: 'Zum Absenden noch ein Häkchen:',
-      render: function () { askDeclarationConsent(); } }   // terminal
-  ];
+      { bot: T('ab.consentIntro', 'Zum Absenden noch ein Häkchen:'),
+        render: function () { askDeclarationConsent(); } }   // terminal
+    ];
+  }
 
-  function abroadFlow() { runSteps(ABROAD_STEPS); }
+  function abroadFlow() { runSteps(abroadSteps()); }
 
   /* --- The scripted conversation ----------------------------------------- */
-  var YESNO = function (noLabel, yesLabel) {
-    return [{ value: 'no', label: noLabel || 'Nein' }, { value: 'yes', label: yesLabel || 'Ja' }];
-  };
+  function YESNO(noLabel, yesLabel) {
+    return [
+      { value: 'no', label: noLabel || T('no', 'Nein') },
+      { value: 'yes', label: yesLabel || T('yes', 'Ja') }
+    ];
+  }
 
-  var STEPS = [
-    { bot: ['Hey, ich bin der nimmersatt Bot. Ich schau mit dir in ein paar Minuten deine Berufshaftpflicht durch und rechne dir live, was sie ungefähr kostet.',
-            'Vorab alles Wichtige zur Haftpflicht als PDF, zum Nachlesen wann du willst:'],
-      render: function (done) { showDoc(); done(); } },
+  function steps() {
+    return [
+      { bot: [T('q.hello1', 'Hey, ich bin der nimmersatt Bot. Ich schau mit dir in ein paar Minuten deine Berufshaftpflicht durch und rechne dir live, was sie ungefähr kostet.'),
+              T('q.hello2', 'Vorab alles Wichtige zur Haftpflicht als PDF, zum Nachlesen wann du willst:')],
+        render: function (done) { showDoc(); done(); } },
 
-    // Hard gate, deliberately the first question: no German registration means
-    // no offer, so asking anything else first would waste the visitor's time.
-    { bot: ['Eine Sache vorweg, sonst rechne ich dir etwas aus, das du gar nicht bekommen kannst: Markel Pro Media ist ein Produkt nach deutschem Recht.',
-            'Bist du mit deiner Tätigkeit in Deutschland gemeldet — und liegt deine Rechnungsadresse ebenfalls in Deutschland?'],
-      render: function (done) { askChoice('de_registered', [
-        { value: 'yes', label: 'Ja, beides in Deutschland' },
-        { value: 'no', label: 'Nein, oder Rechnungsadresse im Ausland' }
-      ], function () {
-        if (data.de_registered === 'yes') { done(); return; }
-        abroadFlow();   // no done(): the main funnel ends here
-      }); } },
+      // Hard gate, deliberately the first question: no German registration means
+      // no offer, so asking anything else first would waste the visitor's time.
+      { bot: [T('q.gate1', 'Eine Sache vorweg, sonst rechne ich dir etwas aus, das du gar nicht bekommen kannst: Markel Pro Media ist ein Produkt nach deutschem Recht.'),
+              T('q.gate2', 'Bist du mit deiner Tätigkeit in Deutschland gemeldet — und liegt deine Rechnungsadresse ebenfalls in Deutschland?')],
+        render: function (done) { askChoice('de_registered', [
+          { value: 'yes', label: T('q.gateYes', 'Ja, beides in Deutschland') },
+          { value: 'no', label: T('q.gateNo', 'Nein, oder Rechnungsadresse im Ausland') }
+        ], function () {
+          if (data.de_registered === 'yes') { done(); return; }
+          abroadFlow();   // no done(): the main funnel ends here
+        }); } },
 
-    { bot: 'Gut. Legen wir los — in welchem Bereich bist du überwiegend unterwegs?',
-      render: function (done) { askChoice('prof', [
-        { value: 'video', label: 'Video, Film & Content' },
-        { value: 'design', label: 'Grafik, Web & Design' },
-        { value: 'agency', label: 'Marketing- & Medienagentur' },
-        { value: 'text', label: 'Text, Redaktion & Verlag' },
-        { value: 'music', label: 'Musik, Audio & Event' },
-        { value: 'consulting', label: 'Beratung / Dienstleistung' }
-      ], done); } },
+      { bot: T('q.prof', 'Gut. Legen wir los — in welchem Bereich bist du überwiegend unterwegs?'),
+        render: function (done) { askChoice('prof', [
+          { value: 'video', label: profLabel('video') },
+          { value: 'design', label: profLabel('design') },
+          { value: 'agency', label: profLabel('agency') },
+          { value: 'text', label: profLabel('text') },
+          { value: 'music', label: profLabel('music') },
+          { value: 'consulting', label: profLabel('consulting') }
+        ], done); } },
 
-    { bot: 'Und was machst du ungefähr an Jahresnettoumsatz?',
-      render: function (done) { askChoice('revenue', [
-        { value: 'r50', label: 'bis 50.000 €' },
-        { value: 'r100', label: 'bis 100.000 €' },
-        { value: 'r250', label: 'bis 250.000 €' },
-        { value: 'r500', label: 'bis 500.000 €' },
-        { value: 'r500plus', label: 'über 500.000 €' }
-      ], done); } },
+      { bot: T('q.revenue', 'Und was machst du ungefähr an Jahresnettoumsatz?'),
+        render: function (done) { askChoice('revenue', [
+          { value: 'r50', label: T('upTo', 'bis {v}').replace('{v}', euro(50000)) },
+          { value: 'r100', label: T('upTo', 'bis {v}').replace('{v}', euro(100000)) },
+          { value: 'r250', label: T('upTo', 'bis {v}').replace('{v}', euro(250000)) },
+          { value: 'r500', label: T('upTo', 'bis {v}').replace('{v}', euro(500000)) },
+          { value: 'r500plus', label: T('over', 'über {v}').replace('{v}', euro(500000)) }
+        ], done); } },
 
-    { bot: 'Wie hoch soll die Versicherungssumme für reine Vermögensschäden sein?',
-      render: function (done) { askChoice('vsh', [
-        { value: '300000', label: '300.000 €' },
-        { value: '500000', label: '500.000 €' },
-        { value: '1000000', label: '1.000.000 € (empfohlen)' },
-        { value: '2000000', label: '2.000.000 €' },
-        { value: '5000000', label: '5.000.000 €' },
-        { value: '10000000', label: '10.000.000 €' }
-      ], done); } },
+      { bot: T('q.vsh', 'Wie hoch soll die Versicherungssumme für reine Vermögensschäden sein?'),
+        render: function (done) { askChoice('vsh', [
+          { value: '300000', label: euro(300000) },
+          { value: '500000', label: euro(500000) },
+          { value: '1000000', label: euro(1000000) + ' ' + T('recommended', '(empfohlen)') },
+          { value: '2000000', label: euro(2000000) },
+          { value: '5000000', label: euro(5000000) },
+          { value: '10000000', label: euro(10000000) }
+        ], done); } },
 
-    { bot: 'Möchtest du eine Selbstbeteiligung pro Schaden? Mehr Selbstbehalt = günstigere Prämie.',
-      render: function (done) { askChoice('sb', [
-        { value: '0', label: '0 € (ohne Selbstbehalt)' },
-        { value: '250', label: '250 €' },
-        { value: '500', label: '500 €' },
-        { value: '1000', label: '1.000 €' }
-      ], done); } },
+      { bot: T('q.sb', 'Möchtest du eine Selbstbeteiligung pro Schaden? Mehr Selbstbehalt = günstigere Prämie.'),
+        render: function (done) { askChoice('sb', [
+          { value: '0', label: euro(0) + ' ' + T('q.sbNone', '(ohne Selbstbehalt)') },
+          { value: '250', label: euro(250) },
+          { value: '500', label: euro(500) },
+          { value: '1000', label: euro(1000) }
+        ], done); } },
 
-    { bot: 'Sollen auch physische Schäden mit rein? Also Personen-, Sach- und Mietsachschäden am Set, Drehort oder im Büro (Betriebshaftpflicht).',
-      render: function (done) { askChoice('bhp', [
-        { value: 'no', label: 'Nein, nur Vermögensschäden' },
-        { value: 'yes', label: 'Ja, auch physische Schäden' }
-      ], done); } },
+      { bot: T('q.bhp', 'Sollen auch physische Schäden mit rein? Also Personen-, Sach- und Mietsachschäden am Set, Drehort oder im Büro (Betriebshaftpflicht).'),
+        render: function (done) { askChoice('bhp', [
+          { value: 'no', label: T('q.bhpNo', 'Nein, nur Vermögensschäden') },
+          { value: 'yes', label: T('q.bhpYes', 'Ja, auch physische Schäden') }
+        ], done); } },
 
-    { skipIf: function () { return data.bhp !== 'yes'; },
-      bot: 'Welche Deckungssumme für Personen- & Sachschäden?',
-      render: function (done) { askChoice('bhpsum', [
-        { value: '3000000', label: '3 Mio. € pauschal' },
-        { value: '5000000', label: '5 Mio. € pauschal' }
-      ], done); } },
+      { skipIf: function () { return data.bhp !== 'yes'; },
+        bot: T('q.bhpsum', 'Welche Deckungssumme für Personen- & Sachschäden?'),
+        render: function (done) { askChoice('bhpsum', [
+          { value: '3000000', label: T('q.bhpsum3', '3 Mio. € pauschal') },
+          { value: '5000000', label: T('q.bhpsum5', '5 Mio. € pauschal') }
+        ], done); } },
 
-    { bot: 'Optional gibt es Zusatzbausteine. Tipp an, was du brauchst — oder direkt weiter.',
-      render: function (done) { askModules(done); } },
+      { bot: T('q.modules', 'Optional gibt es Zusatzbausteine. Tipp an, was du brauchst — oder direkt weiter.'),
+        render: function (done) { askModules(done); } },
 
-    { bot: 'So, grobe Größenordnung auf Basis deiner Angaben:',
-      render: function (done) { showEstimate(); done(); } },
+      { bot: T('q.estimate', 'So, grobe Größenordnung auf Basis deiner Angaben:'),
+        render: function (done) { showEstimate(); done(); } },
 
-    { bot: 'Jetzt ein paar kurze Risikofragen, damit die Prüfung sauber läuft. Gab es in den letzten 3 bis 5 Jahren Haftpflichtansprüche, Vermögens- oder Eigenschäden oder anhängige Streitigkeiten aus deiner Arbeit?',
-      render: function (done) { askChoice('q_claims', YESNO(), done); } },
-    { skipIf: function () { return data.q_claims !== 'yes'; },
-      bot: 'Beschreib die Vorschäden bitte kurz: Datum, Höhe, Ursache und Regulierungsstatus.',
-      render: function (done) { askText('q_claims_detail', { placeholder: 'Datum, Höhe, Ursache, Status' }, done); } },
+      { bot: T('q.claims', 'Jetzt ein paar kurze Risikofragen, damit die Prüfung sauber läuft. Gab es in den letzten 3 bis 5 Jahren Haftpflichtansprüche, Vermögens- oder Eigenschäden oder anhängige Streitigkeiten aus deiner Arbeit?'),
+        render: function (done) { askChoice('q_claims', YESNO(), done); } },
+      { skipIf: function () { return data.q_claims !== 'yes'; },
+        bot: T('q.claimsDetail', 'Beschreib die Vorschäden bitte kurz: Datum, Höhe, Ursache und Regulierungsstatus.'),
+        render: function (done) { askText('q_claims_detail', { placeholder: T('ph.claims', 'Datum, Höhe, Ursache, Status') }, done); } },
 
-    { bot: 'Sind dir aktuell Umstände oder Fälle bekannt, die zu künftigen Ansprüchen gegen dich führen könnten?',
-      render: function (done) { askChoice('q_known', YESNO(), done); } },
-    { skipIf: function () { return data.q_known !== 'yes'; },
-      bot: 'Schilder den Sachverhalt bitte kurz.',
-      render: function (done) { askText('q_known_detail', { placeholder: 'Kurze Schilderung' }, done); } },
+      { bot: T('q.known', 'Sind dir aktuell Umstände oder Fälle bekannt, die zu künftigen Ansprüchen gegen dich führen könnten?'),
+        render: function (done) { askChoice('q_known', YESNO(), done); } },
+      { skipIf: function () { return data.q_known !== 'yes'; },
+        bot: T('q.knownDetail', 'Schilder den Sachverhalt bitte kurz.'),
+        render: function (done) { askText('q_known_detail', { placeholder: T('ph.known', 'Kurze Schilderung') }, done); } },
 
-    { bot: 'Wurde dein Unternehmen in den letzten 12 Monaten neu gegründet?',
-      render: function (done) { askChoice('q_startup', [
-        { value: 'yes', label: 'Ja, Neugründung' },
-        { value: 'no', label: 'Nein' }
-      ], done); } },
-    { skipIf: function () { return data.q_startup !== 'no'; },
-      bot: 'Bestand direkt vor diesem Antrag schon eine gleichartige Berufshaftpflicht?',
-      render: function (done) { askChoice('q_prev', YESNO(), done); } },
-    { skipIf: function () { return data.q_prev !== 'yes'; },
-      bot: 'Bei welchem Vorversicherer warst du?',
-      render: function (done) { askText('q_prev_insurer', { placeholder: 'Name des Vorversicherers' }, done); } },
-    { skipIf: function () { return data.q_prev !== 'yes'; },
-      bot: 'Und das Ablaufdatum?',
-      render: function (done) { askText('q_prev_end', { placeholder: 'TT.MM.JJJJ' }, done); } },
-    { skipIf: function () { return data.q_prev !== 'yes'; },
-      bot: 'Was war der Kündigungsgrund?',
-      render: function (done) { askText('q_prev_reason', { placeholder: 'Kündigungsgrund' }, done); } },
+      { bot: T('q.startup', 'Wurde dein Unternehmen in den letzten 12 Monaten neu gegründet?'),
+        render: function (done) { askChoice('q_startup', [
+          { value: 'yes', label: T('q.startupYes', 'Ja, Neugründung') },
+          { value: 'no', label: T('no', 'Nein') }
+        ], done); } },
+      { skipIf: function () { return data.q_startup !== 'no'; },
+        bot: T('q.prev', 'Bestand direkt vor diesem Antrag schon eine gleichartige Berufshaftpflicht?'),
+        render: function (done) { askChoice('q_prev', YESNO(), done); } },
+      { skipIf: function () { return data.q_prev !== 'yes'; },
+        bot: T('q.prevInsurer', 'Bei welchem Vorversicherer warst du?'),
+        render: function (done) { askText('q_prev_insurer', { placeholder: T('ph.prevInsurer', 'Name des Vorversicherers') }, done); } },
+      { skipIf: function () { return data.q_prev !== 'yes'; },
+        bot: T('q.prevEnd', 'Und das Ablaufdatum?'),
+        render: function (done) { askText('q_prev_end', { placeholder: T('ph.date', 'TT.MM.JJJJ') }, done); } },
+      { skipIf: function () { return data.q_prev !== 'yes'; },
+        bot: T('q.prevReason', 'Was war der Kündigungsgrund?'),
+        render: function (done) { askText('q_prev_reason', { placeholder: T('ph.prevReason', 'Kündigungsgrund') }, done); } },
 
-    { bot: 'Machst du Umsätze mit direkten Auftraggebern in den USA oder Kanada, oder arbeitest du dort vor Ort?',
-      render: function (done) { askChoice('q_us', YESNO(), done); } },
-    { skipIf: function () { return data.q_us !== 'yes'; },
-      bot: 'Wie hoch ist der US-/Kanada-Umsatzanteil, ungefähr in Prozent?',
-      render: function (done) { askText('q_us_share', {
-        placeholder: 'z. B. 15',
-        validate: function (v) { return /^\d{1,3}\s*%?$/.test(v) ? '' : 'Bitte eine Zahl von 0 bis 100.'; },
-        transform: function (v) { return v.replace(/[^\d]/g, ''); }
-      }, done); } },
+      { bot: T('q.us', 'Machst du Umsätze mit direkten Auftraggebern in den USA oder Kanada, oder arbeitest du dort vor Ort?'),
+        render: function (done) { askChoice('q_us', YESNO(), done); } },
+      { skipIf: function () { return data.q_us !== 'yes'; },
+        bot: T('q.usShare', 'Wie hoch ist der US-/Kanada-Umsatzanteil, ungefähr in Prozent?'),
+        render: function (done) { askText('q_us_share', {
+          placeholder: T('ph.usShare', 'z. B. 15'),
+          validate: function (v) { return /^\d{1,3}\s*%?$/.test(v) ? '' : T('err.percent', 'Bitte eine Zahl von 0 bis 100.'); },
+          transform: function (v) { return v.replace(/[^\d]/g, ''); }
+        }, done); } },
 
-    { bot: 'Übst du Tätigkeiten als Architekt/Ingenieur mit Bauüberwachung, Anlage-/Vermögensberatung oder Planung von Waffensystemen bzw. kerntechnischen Anlagen aus?',
-      render: function (done) { askChoice('q_excl', YESNO(), done); } },
-    { skipIf: function () { return data.q_excl !== 'yes'; },
-      bot: 'Alles klar. Diese Tätigkeiten sind im Standardtarif ausgeschlossen — wir leiten dich an ein passendes Sonderkonzept weiter. Deine Anfrage kannst du trotzdem absenden.',
-      render: function (done) { done(); } },
+      { bot: T('q.excl', 'Übst du Tätigkeiten als Architekt/Ingenieur mit Bauüberwachung, Anlage-/Vermögensberatung oder Planung von Waffensystemen bzw. kerntechnischen Anlagen aus?'),
+        render: function (done) { askChoice('q_excl', YESNO(), done); } },
+      { skipIf: function () { return data.q_excl !== 'yes'; },
+        bot: T('q.exclNote', 'Alles klar. Diese Tätigkeiten sind im Standardtarif ausgeschlossen — wir leiten dich an ein passendes Sonderkonzept weiter. Deine Anfrage kannst du trotzdem absenden.'),
+        render: function (done) { done(); } },
 
-    { bot: 'Fast geschafft. Jetzt nur noch deine Daten für die Anfrage. Welche Rechtsform hast du?',
-      render: function (done) { askChoice('legalForm', [
-        { value: 'Freiberufler:in', label: 'Freiberufler:in' },
-        { value: 'Einzelunternehmen', label: 'Einzelunternehmen' },
-        { value: 'GbR', label: 'GbR' },
-        { value: 'UG (haftungsbeschränkt)', label: 'UG (haftungsbeschränkt)' },
-        { value: 'GmbH', label: 'GmbH' },
-        { value: 'Sonstige', label: 'Sonstige' }
-      ], done); } },
-    { bot: 'Gibt es einen Firmen- oder Unternehmensnamen?',
-      render: function (done) { askText('company', { placeholder: 'Firmenname (optional)', optional: true }, done); } },
-    { bot: 'Wie sprechen wir dich an?',
-      render: function (done) { askChoice('salutation', [
-        { value: 'Frau', label: 'Frau' },
-        { value: 'Herr', label: 'Herr' },
-        { value: 'Divers', label: 'Divers' },
-        { value: '', label: 'Keine Angabe' }
-      ], done); } },
-    { bot: 'Wie heißt du mit Vornamen?',
-      render: function (done) { askText('firstName', { placeholder: 'Vorname' }, done); } },
-    { bot: 'Und der Nachname?',
-      render: function (done) { askText('lastName', { placeholder: 'Nachname' }, done); } },
-    { bot: 'An welche E-Mail sollen wir das Angebot schicken?',
-      render: function (done) { askText('email', {
-        placeholder: 'name@mail.de',
-        validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Bitte eine gültige E-Mail-Adresse.'; }
-      }, done); } },
-    { bot: 'Telefon oder Mobil, falls Rückfragen? Kannst du auch überspringen.',
-      render: function (done) { askText('phone', { placeholder: 'Telefon / Mobil (optional)', optional: true }, done); } },
-    { bot: 'Webseite oder Social-Media-Profil zur Verifikation?',
-      render: function (done) { askText('website', { placeholder: 'z. B. instagram.com/… (optional)', optional: true }, done); } },
-    { bot: 'PLZ und Ort?',
-      render: function (done) { askText('city', { placeholder: 'PLZ, Ort (optional)', optional: true }, done); } },
-    // (No "Wo ist dein Sitz?" step any more — the gate above already settled
-    // that, and offering EU/EWR here would let the answer contradict it.
-    // data.country stays 'DE'.)
-    { bot: 'Welche Laufzeit hättest du gern?',
-      render: function (done) { askChoice('term', [
-        { value: '1', label: '1 Jahr (autom. Verlängerung)' },
-        { value: '3', label: '3 Jahre' }
-      ], done); } },
-    { bot: 'Und das Zahlungsintervall?',
-      render: function (done) { askChoice('interval', [
-        { value: 'yearly', label: 'Jährlich (ohne Zuschlag)' },
-        { value: 'halfyearly', label: 'Halbjährlich' },
-        { value: 'quarterly', label: 'Vierteljährlich' }
-      ], done); } },
-    { bot: 'Ab wann soll die Versicherung laufen?',
-      render: function (done) { askText('startDate', { placeholder: 'sofort oder TT.MM.JJJJ (optional)', optional: true }, done); } },
+      { bot: T('q.legalForm', 'Fast geschafft. Jetzt nur noch deine Daten für die Anfrage. Welche Rechtsform hast du?'),
+        render: function (done) { askChoice('legalForm', [
+          { value: 'Freiberufler:in', label: T('lf.freelance', 'Freiberufler:in') },
+          { value: 'Einzelunternehmen', label: T('lf.sole', 'Einzelunternehmen') },
+          { value: 'GbR', label: 'GbR' },
+          { value: 'UG (haftungsbeschränkt)', label: 'UG (haftungsbeschränkt)' },
+          { value: 'GmbH', label: 'GmbH' },
+          { value: 'Sonstige', label: T('lf.other', 'Sonstige') }
+        ], done); } },
+      { bot: T('q.company', 'Gibt es einen Firmen- oder Unternehmensnamen?'),
+        render: function (done) { askText('company', { placeholder: T('ph.company', 'Firmenname (optional)'), optional: true }, done); } },
+      { bot: T('q.salutation', 'Wie sprechen wir dich an?'),
+        render: function (done) { askChoice('salutation', [
+          { value: 'Frau', label: T('sal.f', 'Frau') },
+          { value: 'Herr', label: T('sal.m', 'Herr') },
+          { value: 'Divers', label: T('sal.d', 'Divers') },
+          { value: '', label: T('sal.none', 'Keine Angabe') }
+        ], done); } },
+      { bot: T('q.first', 'Wie heißt du mit Vornamen?'),
+        render: function (done) { askText('firstName', { placeholder: T('ph.first', 'Vorname') }, done); } },
+      { bot: T('q.last', 'Und der Nachname?'),
+        render: function (done) { askText('lastName', { placeholder: T('ph.last', 'Nachname') }, done); } },
+      { bot: T('q.email', 'An welche E-Mail sollen wir das Angebot schicken?'),
+        render: function (done) { askText('email', {
+          placeholder: T('ph.email', 'name@mail.de'),
+          validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : T('err.email', 'Bitte eine gültige E-Mail-Adresse.'); }
+        }, done); } },
+      { bot: T('q.phone', 'Telefon oder Mobil, falls Rückfragen? Kannst du auch überspringen.'),
+        render: function (done) { askText('phone', { placeholder: T('ph.phone', 'Telefon / Mobil (optional)'), optional: true }, done); } },
+      { bot: T('q.website', 'Webseite oder Social-Media-Profil zur Verifikation?'),
+        render: function (done) { askText('website', { placeholder: T('ph.website', 'z. B. instagram.com/… (optional)'), optional: true }, done); } },
+      { bot: T('q.city', 'PLZ und Ort?'),
+        render: function (done) { askText('city', { placeholder: T('ph.city', 'PLZ, Ort (optional)'), optional: true }, done); } },
+      // (No "Wo ist dein Sitz?" step any more — the gate above already settled
+      // that, and offering EU/EWR here would let the answer contradict it.
+      // data.country stays 'DE'.)
+      { bot: T('q.term', 'Welche Laufzeit hättest du gern?'),
+        render: function (done) { askChoice('term', [
+          { value: '1', label: T('q.term1', '1 Jahr (autom. Verlängerung)') },
+          { value: '3', label: T('q.term3', '3 Jahre') }
+        ], done); } },
+      { bot: T('q.interval', 'Und das Zahlungsintervall?'),
+        render: function (done) { askChoice('interval', [
+          { value: 'yearly', label: T('q.intYear', 'Jährlich (ohne Zuschlag)') },
+          { value: 'halfyearly', label: T('q.intHalf', 'Halbjährlich') },
+          { value: 'quarterly', label: T('q.intQuarter', 'Vierteljährlich') }
+        ], done); } },
+      { bot: T('q.start', 'Ab wann soll die Versicherung laufen?'),
+        render: function (done) { askText('startDate', { placeholder: T('ph.start', 'sofort oder TT.MM.JJJJ (optional)'), optional: true }, done); } },
 
-    { bot: 'Perfekt. Kurz dein Überblick:',
-      render: function (done) { showReview(); done(); } },
-    { bot: 'Zum Absenden bestätige bitte noch die drei Pflichthinweise:',
-      render: function () { askConsents(); } }   // terminal: submit takes over
-  ];
+      { bot: T('q.review', 'Perfekt. Kurz dein Überblick:'),
+        render: function (done) { showReview(); done(); } },
+      { bot: T('q.consents', 'Zum Absenden bestätige bitte noch die drei Pflichthinweise:'),
+        render: function () { askConsents(); } }   // terminal: submit takes over
+    ];
+  }
 
   /* --- Engine ------------------------------------------------------------- */
   // Walks a step list. A step advances only when its render() calls done(), so
   // a branch that never calls it (abroadFlow) simply ends the conversation.
-  function runSteps(steps) {
+  function runSteps(list) {
     var idx = -1;
     (function next() {
       idx++;
-      if (idx >= steps.length) return;
-      var step = steps[idx];
+      if (idx >= list.length) return;
+      var step = list[idx];
       if (step.skipIf && step.skipIf()) { next(); return; }
       botSay(step.bot, function () { step.render(next); });
     })();
@@ -703,7 +735,7 @@
   // The chat is opt-in: it lives inside <details id="insuranceDrop">, so while
   // that is closed its content is display:none and nothing runs. Opening it
   // raises the note once (Markel Pro Media is a German-law product, so an
-  // artist registered abroad should hear that before answering ten questions)
+  // artist billing from abroad should hear that before answering ten questions)
   // and the bot starts talking as soon as the note is away. The note is
   // informational only: the funnel's own first step is the Germany gate and
   // routes a "no" into the § 12.7 branch.
@@ -716,7 +748,7 @@
   function start() {
     if (started || !noteDone) return;   // never talk underneath the open note
     started = true;
-    runSteps(STEPS);
+    runSteps(steps());
   }
 
   function closeNote() {
@@ -758,14 +790,16 @@
     });
   }
 
-  // Kick off once the chat scrolls into view, so the first lines don't fire
-  // far above the fold (and it feels like the bot greets you when you arrive).
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { start(); if (started) io.disconnect(); } });
-    }, { threshold: 0.35 });
-    io.observe(chat);
-  } else {
-    start();
+  // No dropdown on the page (should not happen): fall back to the old
+  // behaviour and start the chat once it scrolls into view.
+  if (!drop) {
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { start(); if (started) io.disconnect(); } });
+      }, { threshold: 0.35 });
+      io.observe(chat);
+    } else {
+      start();
+    }
   }
 })();

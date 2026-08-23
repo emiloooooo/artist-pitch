@@ -1,4 +1,5 @@
-// Serverless intake for the Markel Pro Media insurance funnel (DE visitors).
+// Serverless intake for the Markel Pro Media insurance funnel. The funnel runs
+// in both page languages since 2026-08-23, so every record carries `lang`.
 //
 // Two payload shapes come through here:
 //   kind "insurance-application-request"   — the full funnel (default)
@@ -73,6 +74,7 @@ module.exports = async function handler(req, res) {
       phone: str(body.phone, 40),
       product: 'Markel Pro Media (Berufshaftpflicht) — nicht angeboten, Auslandsfall',
       source: 'artist-pitch/insurance-funnel',
+      lang: pick(str(body.lang, 4), ['de', 'en'], 'de'),   // language the chat ran in
       receivedAt: receivedAt.toISOString(),
       // § 12.7 runs four weeks; the deadline is stamped here so the CRM does not
       // have to recompute it.
@@ -131,6 +133,7 @@ module.exports = async function handler(req, res) {
     product: 'Markel Pro Media (Berufshaftpflicht)',
     kind: 'insurance-application-request',
     source: 'artist-pitch/insurance-funnel',
+    lang: pick(str(body.lang, 4), ['de', 'en'], 'de'),   // language the chat ran in
     receivedAt: new Date().toISOString(),
   };
 
