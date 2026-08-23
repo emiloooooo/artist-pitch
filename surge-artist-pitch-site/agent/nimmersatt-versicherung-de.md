@@ -2,7 +2,7 @@
 
 Zweite zulässige Wissensquelle für den nimmersatt Bot, neben dem Vertragstext.
 Sie beschreibt die Berufshaftpflicht, die NIMMERSATT Artists vermittelt, und den
-Versicherungs-Chat auf dieser Seite (im Abschnitt „Auf die Liste", hinter dem
+Versicherungs-Chat auf dieser Seite (im Fenster „Auf die Liste", hinter dem
 Aufklapper „Haftpflichtversicherung?").
 
 > Pflegehinweis: Tarifwerte, Bausteine und Fragen spiegeln `js/funnel.js`.
@@ -97,10 +97,23 @@ sein (§ 19 Abs. 5 VVG). Der Chat gibt eine Referenznummer aus.
 
 ## 7. Wo das auf der Seite steht
 
-Im Abschnitt „Auf die Liste", direkt unter dem Anmeldeformular: ein Aufklapper
-„Haftpflichtversicherung?" mit dem Versicherungs-Chat und dem PDF
-„Berufshaftpflicht — das Wichtigste". Der Chat läuft auf der **deutschen und der
-englischen** Seitenversion. Beim ersten Aufklappen erscheint ein Hinweisfenster:
-Markel Pro Media ist ein deutsches Produkt und setzt eine Rechnungsadresse in
-Deutschland voraus; wer die nicht hat, wird von der ersten Frage in den
-§-12.7-Zweig geführt.
+**Seit 2026-08-23 steckt alles im Fenster „Auf die Liste" selbst**, nicht mehr in
+einem eigenen Block darunter: dieselbe Karte wie das Anmeldeformular, eine
+Haarlinie tiefer, mit der Kopfzeile „Absicherung". Darin der Aufklapper
+„Haftpflichtversicherung?", und hinter dem Aufklapper zuerst der komplette
+Steckbrief als Faktenliste (Produkt, für wen, Deckung, Tätigkeiten,
+Versicherungssumme, Selbstbeteiligung, Betriebshaftpflicht, Zusatzbausteine mit
+Preisen, Beitragsschätzung, Laufzeit und Zahlung, was der Chat abfragt, was nach
+dem Absenden passiert, Ausschlüsse), dann die §-12.5-/12.7-/14.4-Box, das PDF
+„Berufshaftpflicht — das Wichtigste" und erst danach der Chat.
+
+Die Faktenliste ist die Kurzfassung genau dieses Dokuments; wer hier etwas
+ändert, ändert die `insfacts`-Blöcke in `index.html` (deutsch) und die
+`ins.f.*`-Keys in `js/i18n.js` (englisch) mit.
+
+Alles läuft auf der **deutschen und der englischen** Seitenversion. Beim ersten
+Aufklappen erscheint ein Hinweisfenster: Markel Pro Media ist ein deutsches
+Produkt und setzt eine Rechnungsadresse in Deutschland voraus; wer die nicht hat,
+wird von der ersten Frage in den §-12.7-Zweig geführt. Nach dem Absenden des
+Anmeldeformulars klappt nur das Formular auf die Danke-Zeile zusammen, der
+Versicherungsteil bleibt bedienbar.

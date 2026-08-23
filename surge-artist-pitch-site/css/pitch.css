@@ -698,7 +698,10 @@
 
 /* --- Lead capture: a short "get on the list" block that lives right under the
    chat, in the same flat liquid-glass frame. First/last name + a rough income
-   band (KSK context), a disclaimer, and a CRM-wireable submit. --------------- */
+   band (KSK context), a disclaimer, and a CRM-wireable submit.
+   .lead is the card, not the form: the sign-up form (.lead__body) and the
+   Berufshaftpflicht block (.ifunnel-slot, styled in css/funnel.css) are two
+   siblings inside it, because the insurance funnel brings its own <form>. ---- */
 .lead {
   margin-top: clamp(1.4rem, 3vw, 2rem);
   max-width: 680px;
@@ -796,9 +799,11 @@
 .lead__submit[disabled] { opacity: 0.55; cursor: default; transform: none; }
 .lead__note { margin: 0; font-size: 0.82rem; color: var(--muted); }
 .lead__note--error { color: var(--fg); }
-.lead.is-sent .lead__body > *:not(.lead__done) { display: none; }
+/* The sign-up form IS .lead__body now (the card wrapper .lead also holds the
+   insurance block below it), so the sent state hangs off the form itself. */
+.lead__body.is-sent > *:not(.lead__done) { display: none; }
 .lead__done { display: none; }
-.lead.is-sent .lead__done { display: block; }
+.lead__body.is-sent .lead__done { display: block; }
 .lead__done p { margin: 0.2rem 0 0; font-size: 0.9rem; line-height: 1.6; color: var(--fg); }
 .lead__done strong { font-weight: 700; }
 
