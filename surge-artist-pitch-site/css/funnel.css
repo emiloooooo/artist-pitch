@@ -312,6 +312,13 @@
 .ichip--primary:hover { transform: translateY(-1px); }
 .ichip--ghost { background: transparent; color: var(--muted); }
 .ichip--ghost:hover { color: var(--fg); border-color: var(--fg); }
+/* The short door: leave name and mail instead of answering the funnel. Louder
+   than a topic chip, quieter than the primary action. The palette is
+   monochrome, so that difference is border weight, not hue. */
+.ichip--signup { background: var(--bg); border-color: color-mix(in srgb, var(--fg) 52%, transparent); }
+.ichip--signup:hover { border-color: var(--fg); }
+/* The mailto fallback is an <a>, not a <button>: give it the chip box model. */
+a.ichip { text-decoration: none; display: inline-block; }
 .ichip[disabled] { opacity: 0.5; cursor: default; transform: none; }
 .ichip:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 14%, transparent); }
 

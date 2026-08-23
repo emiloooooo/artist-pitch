@@ -78,7 +78,10 @@
     q_us: '', q_us_share: '', q_excl: '',
     legalForm: '', company: '', salutation: '', firstName: '', lastName: '',
     email: '', phone: '', website: '', city: '', country: 'DE',
-    term: '1', interval: 'yearly', startDate: ''
+    term: '1', interval: 'yearly', startDate: '',
+    // Short door (signupFlow): the visitor leaves name + mail instead of
+    // answering the funnel. Goes to /api/signup, not into buildPayload().
+    signupName: '', signupEmail: ''
   };
 
   function estimate() {
@@ -253,16 +256,26 @@
     scrollDown();
   }
 
-  // Free text. opts: { placeholder, optional, validate(v)->err|'', transform(v) }
+  // Free text. opts: { placeholder, optional, cancel: {label, run},
+  //                    validate(v)->err|'', transform(v) }
+  // cancel is the way back out of a text prompt: without it a question with an
+  // open input has no exit but a reload.
   function askText(field, opts, done) {
     opts = opts || {};
     var c = controls();
-    if (opts.optional) {
-      var skipRow = document.createElement('div'); skipRow.className = 'ichips';
-      skipRow.appendChild(chip(T('skip', 'Überspringen'), function () {
-        cleanup(); userMsg(T('skipped', '— übersprungen —')); done();
-      }, 'ghost'));
-      c.appendChild(skipRow); scrollDown();
+    if (opts.optional || opts.cancel) {
+      var outRow = document.createElement('div'); outRow.className = 'ichips';
+      if (opts.optional) {
+        outRow.appendChild(chip(T('skip', 'Überspringen'), function () {
+          cleanup(); userMsg(T('skipped', '— übersprungen —')); done();
+        }, 'ghost'));
+      }
+      if (opts.cancel) {
+        outRow.appendChild(chip(opts.cancel.label, function () {
+          cleanup(); userMsg(opts.cancel.label); opts.cancel.run();
+        }, 'ghost'));
+      }
+      c.appendChild(outRow); scrollDown();
     }
     setInput(true, opts.placeholder);
     pendingText = function (raw) {
@@ -623,6 +636,19 @@
           })();
         }, 'ghost'));
       }
+      // The short door, offered from the first control block on and again under
+      // every answer: leave name and mail, skip the questionnaire entirely.
+      // The menu only ever comes back through the first callback, i.e. when the
+      // sign-up did NOT happen, so the chip never lingers after a real one.
+      nav.appendChild(chip(signupLabel(), function () {
+        if (busy) return;
+        busy = true; c.remove(); userMsg(signupLabel());
+        signupFlow(
+          function () { busy = false; menu(); },   // cancelled, failed, retry
+          function () { done(); }                  // signed up, wants the number anyway
+        );
+      }, 'signup'));
+
       var go = T('info.start', 'Los, rechne mir das aus');
       nav.appendChild(chip(go, function () {
         if (busy) return;
@@ -648,6 +674,123 @@
     }
 
     menu();
+  }
+
+  /* --- The short door: name, mail, a human calls back ---------------------
+     Not everyone wants to answer twenty questions to get a number. This is the
+     suggested prompt in the chat from the very first control block: name and
+     e-mail, stored server-side (POST /api/signup -> Supabase), and NIMMERSATT
+     gets back to the artist by hand. It collects no tariff and no risk data, so
+     it is NOT an application request — the wording says so.
+     If the endpoint is down the visitor still gets their data out, through a
+     prefilled mail to hello@nimmersatt.fyi. A sign-up is never lost silently. */
+  function signupLabel() { return T('su.chip', 'Melde mich einfach an'); }
+
+  function signupFlow(back, go) {
+    setInput(false);
+    botSay([
+      T('su.intro1', 'Kurzer Weg: Ich brauche nur deinen Namen und deine E-Mail-Adresse.'),
+      T('su.intro2', 'Den Rest geht die Versicherung persönlich mit dir durch, du sparst dir die Fragen hier im Chat. Deine Angaben gehen an NIMMERSATT und sonst nirgendwohin.')
+    ], function () {
+      botSay(T('su.askName', 'Wie heißt du?'), function () {
+        askText('signupName', {
+          placeholder: T('su.phName', 'Vor- und Nachname'),
+          cancel: { label: T('su.cancel', 'Doch lieber rechnen'), run: back },
+          validate: function (v) {
+            return v.length >= 2 ? '' : T('su.errName', 'Bitte deinen Namen eintragen.');
+          }
+        }, function () {
+          botSay(T('su.askMail', 'Und unter welcher E-Mail-Adresse erreicht man dich?'), function () {
+            askText('signupEmail', {
+              placeholder: T('su.phMail', 'name@mail.de'),
+              cancel: { label: T('su.cancel', 'Doch lieber rechnen'), run: back },
+              validate: function (v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? '' : T('err.email', 'Bitte eine gültige E-Mail-Adresse.');
+              }
+            }, function () { sendSignup(back, go); });
+          });
+        });
+      });
+    });
+  }
+
+  function sendSignup(back, go) {
+    var reference = ref();
+    botSay(T('su.sending', 'Sekunde, ich trag dich ein…'), function () {
+      fetch('/api/signup', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.signupName,
+          email: data.signupEmail,
+          lang: isEN() ? 'en' : 'de',
+          ref: reference
+        })
+      })
+        .then(function (r) { if (!r.ok) throw new Error('bad'); return r.json(); })
+        .then(function () { signupDone(reference, go); })
+        .catch(function () {
+          // Local preview has no serverless functions: do not fake a failure there.
+          if (/^(localhost|127\.|0\.0\.0\.0)/.test(window.location.hostname) || window.location.protocol === 'file:') {
+            signupDone(reference, go); return;
+          }
+          signupFailed(back);
+        });
+    });
+  }
+
+  function signupDone(reference, go) {
+    // Carry what we already know into the funnel, in case they keep going: the
+    // steps for name and mail skip themselves when these are filled.
+    var parts = data.signupName.split(/\s+/);
+    data.firstName = parts.shift() || data.signupName;
+    data.lastName = parts.join(' ') || '';
+    data.email = data.signupEmail;
+
+    botSay([
+      T('su.done1', 'Steht. Du bist eingetragen: {name}, {mail}.')
+        .replace('{name}', data.signupName).replace('{mail}', data.signupEmail),
+      T('su.done2', 'Die Versicherung meldet sich persönlich bei dir und klärt Tarif, Deckung und Beitrag direkt mit dir. Referenz: {ref}.')
+        .replace('{ref}', reference),
+      T('su.after', 'Willst du in der Zwischenzeit trotzdem wissen, was das ungefähr kostet?')
+    ], function () {
+      var c = controls();
+      var row = document.createElement('div'); row.className = 'ichips';
+      var yes = T('su.afterYes', 'Ja, rechne mal');
+      var no = T('su.afterNo', 'Passt, danke');
+      row.appendChild(chip(yes, function () {
+        userMsg(yes); c.remove(); go();
+      }, 'primary'));
+      row.appendChild(chip(no, function () {
+        userMsg(no); c.remove();
+        botSay(T('su.bye', 'Alles klar. Bleib hungrig.'));
+      }, 'ghost'));
+      c.appendChild(row); scrollDown();
+    });
+  }
+
+  // Storage unreachable. The data still leaves the page, just through the
+  // visitor's own mail client, prefilled.
+  function signupFailed(back) {
+    botSay([
+      T('su.fail1', 'Das Eintragen hat gerade nicht geklappt, an dir liegt das nicht.'),
+      T('su.fail2', 'Schick uns deine Daten einfach direkt, dann geht nichts verloren:')
+    ], function () {
+      var c = controls();
+      var row = document.createElement('div'); row.className = 'ichips';
+      var subject = T('su.mailSubject', 'Haftpflicht: bitte meldet euch bei mir');
+      var body = T('su.mailBody', 'Name: {name}\nE-Mail: {mail}\n\nBitte meldet euch bei mir zur Berufshaftpflicht.')
+        .replace('{name}', data.signupName).replace('{mail}', data.signupEmail);
+      var a = document.createElement('a');
+      a.className = 'ichip ichip--primary';
+      a.href = 'mailto:hello@nimmersatt.fyi?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body);
+      a.textContent = T('su.mailBtn', 'E-Mail an hello@nimmersatt.fyi');
+      row.appendChild(a);
+      row.appendChild(chip(T('su.retry', 'Nochmal versuchen'), function () {
+        c.remove(); back();
+      }, 'ghost'));
+      c.appendChild(row); scrollDown();
+    });
   }
 
   /* --- The scripted conversation ----------------------------------------- */
@@ -802,11 +945,16 @@
           { value: 'Divers', label: T('sal.d', 'Divers') },
           { value: '', label: T('sal.none', 'Keine Angabe') }
         ], done); } },
-      { bot: T('q.first', 'Wie heißt du mit Vornamen?'),
+      // Whoever came through the short door already told us these three; asking
+      // again would look like the chat was not listening (signupDone fills them).
+      { skipIf: function () { return !!data.firstName; },
+        bot: T('q.first', 'Wie heißt du mit Vornamen?'),
         render: function (done) { askText('firstName', { placeholder: T('ph.first', 'Vorname') }, done); } },
-      { bot: T('q.last', 'Und der Nachname?'),
+      { skipIf: function () { return !!data.lastName; },
+        bot: T('q.last', 'Und der Nachname?'),
         render: function (done) { askText('lastName', { placeholder: T('ph.last', 'Nachname') }, done); } },
-      { bot: T('q.email', 'An welche E-Mail sollen wir das Angebot schicken?'),
+      { skipIf: function () { return !!data.email; },
+        bot: T('q.email', 'An welche E-Mail sollen wir das Angebot schicken?'),
         render: function (done) { askText('email', {
           placeholder: T('ph.email', 'name@mail.de'),
           validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : T('err.email', 'Bitte eine gültige E-Mail-Adresse.'); }

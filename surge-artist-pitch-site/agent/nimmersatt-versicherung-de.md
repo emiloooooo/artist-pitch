@@ -108,10 +108,22 @@ saß, wurde am selben Tag auf Wunsch entfernt. Es gibt auf der Seite kein
 Anmeldeformular mehr — verweise nicht darauf.
 
 Der Bot bietet vier Themen an („Was ist das überhaupt?", „Was kostet das?", „Was
-fragst du mich?", „Warum brauche ich das?"), dazu „Zeig mir einfach alles" und
-„Los, rechne mir das aus". Inhalt und Zahlen dieser Antworten sind die
-Kurzfassung genau dieses Dokuments; wer hier etwas ändert, ändert `topics()` in
-`js/funnel.js` (deutsch) und die `ins.*`-Keys in `js/i18n.js` (englisch) mit.
+fragst du mich?", „Warum brauche ich das?"), dazu „Zeig mir einfach alles",
+„Melde mich einfach an" und „Los, rechne mir das aus". Inhalt und Zahlen dieser
+Antworten sind die Kurzfassung genau dieses Dokuments; wer hier etwas ändert,
+ändert `topics()` in `js/funnel.js` (deutsch) und die `ins.*`-Keys in
+`js/i18n.js` (englisch) mit.
+
+**Der kurze Weg (seit 2026-08-23):** „Melde mich einfach an" steht als
+vorgeschlagene Antwort im Chat, von der ersten Auswahl an und unter jeder
+Antwort erneut. Wer ihn nimmt, gibt nur Name und E-Mail an; die Angaben werden
+gespeichert und die Versicherung meldet sich persönlich. Das ist **keine**
+Antragsanfrage: Es werden keine Tarif- und keine Risikoangaben erhoben, es
+entsteht kein Angebot und keine Deckung, es ist eine Bitte um Rückruf. Wer
+danach trotzdem eine Größenordnung will, kann direkt weiter in den Rechenweg;
+Name und E-Mail werden dann nicht noch einmal abgefragt. Verweise Leute, die
+sich einfach anmelden wollen, auf diese Antwort im Chat — nicht auf ein
+Formular, es gibt keins.
 
 Alles läuft auf der **deutschen und der englischen** Seitenversion. Beim ersten
 Tippen im Chat erscheint ein Hinweisfenster: Markel Pro Media ist ein deutsches
