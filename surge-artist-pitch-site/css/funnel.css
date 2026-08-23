@@ -280,6 +280,14 @@
    sets display:flex, which beats the [hidden] UA style, so force it. */
 .ifunnel__form[hidden] { display: none; }
 .ifunnel__window { gap: 0.7rem; }
+/* This chat sits in a card inside the shell, so it is a good deal narrower
+   than the contract chat — and since 2026-08-23 its bot lines are whole facts,
+   not one-line questions. Give them the width instead of letting long German
+   compounds break mid-syllable. */
+.ifunnel__window .chat__msg { max-width: 96%; }
+@media (max-width: 520px) {
+  .ifunnel__window .chat__msg p { font-size: 0.88rem; }
+}
 
 /* A removable block of controls pinned under the latest message. */
 .ictrl { display: flex; flex-direction: column; gap: 0.55rem; align-self: stretch; }
@@ -298,6 +306,9 @@
 .ichip:hover { border-color: var(--fg); }
 .ichip:active { transform: scale(0.97); }
 .ichip--primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+/* An info topic the visitor has already read: still tappable, no longer loud. */
+.ichip.is-done { color: var(--muted); border-color: color-mix(in srgb, var(--fg) 9%, transparent); }
+.ichip.is-done:hover { color: var(--fg); border-color: var(--fg); }
 .ichip--primary:hover { transform: translateY(-1px); }
 .ichip--ghost { background: transparent; color: var(--muted); }
 .ichip--ghost:hover { color: var(--fg); border-color: var(--fg); }
@@ -388,8 +399,9 @@
 .ichat__err { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--fg); font-weight: 600; }
 
 /* The funnel sits INSIDE the "Auf die Liste" card, one hairline under the
-   sign-up form and in the same frame: eyebrow, one intro line, then the
-   dropdown that holds the full facts and the chat. */
+   sign-up form and in the same frame: eyebrow, heading, the Germany hint, one
+   intro line, then the chat. No second dropdown — the chat answers the whole
+   product itself (topics() in js/funnel.js). */
 .ifunnel-slot {
   margin-top: 0;
   padding: clamp(1rem, 2.4vw, 1.4rem);
@@ -403,19 +415,31 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+/* Was the <summary> row of the dropdown; now a plain heading, same mono face.
+   One long unbreakable word: the size follows the viewport down instead of
+   holding a floor, or it runs out of the card on small phones. Without the
+   chevron next to it there is more room than the old summary row had. */
+.ifunnel-slot__title {
+  margin: 0.15rem 0 0.35rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 4vw, 1.55rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.ifunnel-slot__hint {
+  margin: 0 0 0.7rem;
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .ifunnel-slot__lead {
   margin: 0;
   font-size: 0.9rem;
   line-height: var(--lh-read);
   color: var(--muted);
 }
-.ifunnel-slot .idrop {
-  margin-top: clamp(0.9rem, 2vw, 1.3rem);
-  max-width: none;
-  /* The card edge closes the block, so only the top hairline is needed. */
-  border-bottom: 0;
-}
-.ifunnel-slot .idrop__body { padding-bottom: 0; }
 /* Glass inside glass turns to mud: the chat keeps its frame but drops the
    blur once it sits in the card. */
 .ifunnel-slot .ifunnel.chat {
@@ -427,154 +451,10 @@
 }
 
 /* ============================================================================
-   The cover, spelled out. Everything the chat asks about and everything it
-   cannot say in a bubble: sums, deductible, add-ons with prices, what happens
-   after sending, exclusions, and the contract clauses behind all of it.
-   Values mirror the tariff table in js/funnel.js.
+   The one-time Germany note. There is no dropdown around the chat any more:
+   js/funnel.js raises this on the first tap inside the conversation, because
+   Markel Pro Media can only be quoted for a German billing address.
    ========================================================================== */
-.insfacts {
-  padding-top: clamp(1rem, 2.4vw, 1.4rem);
-  display: flex; flex-direction: column;
-  gap: clamp(1rem, 2.4vw, 1.35rem);
-}
-.insfacts__intro {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: var(--lh-read);
-  color: var(--fg);
-}
-.insfacts__list { margin: 0; display: flex; flex-direction: column; }
-.insfacts__row {
-  display: grid;
-  grid-template-columns: minmax(9rem, 12rem) 1fr;
-  gap: 0.4rem clamp(0.9rem, 2.5vw, 1.6rem);
-  padding-block: 0.7rem;
-  border-top: 1px solid var(--faint);
-}
-.insfacts__row:last-child { border-bottom: 1px solid var(--faint); }
-.insfacts__k {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 1.4;
-  color: var(--muted);
-}
-.insfacts__v {
-  margin: 0;
-  font-size: 0.85rem;
-  line-height: var(--lh-read);
-  color: var(--fg);
-}
-@media (max-width: 560px) {
-  .insfacts__row { grid-template-columns: 1fr; gap: 0.3rem; }
-}
-
-.insfacts__law {
-  padding: clamp(0.85rem, 2.2vw, 1.1rem);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--fg) 4%, transparent);
-  border: 1px solid color-mix(in srgb, var(--fg) 6%, transparent);
-}
-.insfacts__lawT {
-  margin: 0 0 0.55rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.insfacts__lawList { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
-.insfacts__lawList li {
-  font-size: 0.82rem;
-  line-height: var(--lh-read);
-  color: var(--fg);
-}
-.insfacts__lawList strong { font-weight: 700; }
-
-/* Same document card language as the in-chat PDF tile. */
-.insfacts__doc {
-  display: flex; align-items: center; gap: 0.7rem;
-  min-height: 44px;
-  padding: 0.7rem 0.85rem;
-  border-radius: 12px;
-  text-decoration: none;
-  color: var(--fg);
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
-  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
-  transition: border-color var(--dur-ui) var(--ease-spring);
-}
-.insfacts__doc:hover { border-color: color-mix(in srgb, var(--fg) 26%, transparent); }
-.insfacts__docIcon {
-  flex: 0 0 auto;
-  font-family: var(--font-mono);
-  font-size: 0.62rem; letter-spacing: 0.08em;
-  padding: 0.3rem 0.4rem; border-radius: 6px;
-  background: var(--fg); color: var(--bg);
-}
-.insfacts__docText { display: grid; gap: 0.15rem; min-width: 0; }
-.insfacts__docTitle { font-size: 0.85rem; font-weight: 600; }
-.insfacts__docMeta { font-size: var(--text-label); letter-spacing: 0.04em; color: var(--muted); }
-.insfacts__docArrow { margin-left: auto; flex: 0 0 auto; color: var(--muted); }
-
-.insfacts__fine {
-  margin: 0;
-  font-size: 0.72rem;
-  line-height: 1.55;
-  color: var(--muted);
-}
-
-/* ============================================================================
-   Insurance dropdown + its one-time Germany note.
-   Most artists come for the contract, so the funnel does not open itself: it
-   shows one row ("HAFTPFLICHTVERSICHERUNG? ↓", same chevron and rotation as
-   the document dropdown in the closing section) and only unfolds the chat on
-   request. Monochrome, hairline borders, no colour.
-   ========================================================================== */
-.idrop {
-  margin-top: clamp(1.6rem, 3vw, 2.4rem);
-  max-width: 680px;
-  border-top: 1px solid var(--faint);
-  border-bottom: 1px solid var(--faint);
-}
-.idrop__summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: clamp(1rem, 3vw, 2rem);
-  min-height: 44px;
-  padding-block: clamp(1rem, 2.2vw, 1.5rem);
-}
-.idrop__summary::-webkit-details-marker { display: none; }
-.idrop__summary:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
-.idrop__text { display: grid; gap: 0.45rem; min-width: 0; }
-.idrop__title {
-  font-family: var(--font-mono);
-  /* One long unbreakable word in a mono face: below ~380px it would run into
-     the chevron, so the size follows the viewport down instead of holding a
-     floor. Desktop is unchanged (the cap takes over above ~590px). */
-  font-size: clamp(0.85rem, 4.2vw, 1.55rem);
-  line-height: 1.1;
-  text-transform: uppercase;
-  color: var(--fg);
-}
-.idrop__hint {
-  font-size: var(--text-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.idrop__chevron {
-  flex: 0 0 auto;
-  font-size: 1.25rem; line-height: 1;
-  color: var(--muted);
-  transition: transform var(--dur-ui) var(--ease-spring);
-}
-.idrop__summary:hover .idrop__chevron { color: var(--fg); }
-.idrop[open] .idrop__chevron { transform: rotate(180deg); color: var(--fg); }
-.idrop__body { padding-bottom: clamp(1.25rem, 3vw, 2rem); }
-
 /* The note itself — same glass panel language as the chat frame. */
 .inote {
   width: min(30rem, calc(100vw - 2 * var(--pad-edge)));
@@ -628,6 +508,5 @@
 .inote__ok:active { transform: scale(0.97); }
 
 @media (prefers-reduced-motion: reduce) {
-  .idrop__chevron { transition: none; }
   .inote__ok:active { transform: none; }
 }

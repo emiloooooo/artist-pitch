@@ -8,6 +8,11 @@
    - Since 2026-08-23 it lives inside "Auf die Liste" and runs in BOTH
      languages (?funnel=0 still switches it off). It is still a German-law
      product, which is what the one-time note and the first question say.
+   - There is no second dropdown around it any more: the chat is the whole
+     block, so the bot also ANSWERS the product — every fact that used to sit
+     in a static list above the chat now lives in topics() and is asked for in
+     the conversation itself. Keep those numbers in sync with the tariff table
+     below and with agent/nimmersatt-versicherung-de.md.
    - German copy stays here as the fallback of T(); English lives in the
      'ins.*' keys of js/i18n.js, like every other JS-side string on the page.
    - The estimate is a transparent order-of-magnitude heuristic, NOT a real
@@ -134,14 +139,15 @@
     wrap.appendChild(p); win.appendChild(wrap); scrollDown();
     return wrap;
   }
-  // Say one or more bot lines, then run cb.
-  function botSay(lines, cb) {
+  // Say one or more bot lines, then run cb. quick=true is for the info answers:
+  // those are read, not waited for, so they come in at a steady fast tick.
+  function botSay(lines, cb, quick) {
     if (typeof lines === 'string') lines = [lines];
     var i = 0;
     function step() {
       if (i >= lines.length) { if (cb) cb(); return; }
       var t = typing();
-      var delay = reduce ? 120 : Math.min(900, 260 + lines[i].length * 12);
+      var delay = reduce ? 120 : (quick ? 240 : Math.min(900, 260 + lines[i].length * 12));
       window.setTimeout(function () {
         t.remove(); botMsg(lines[i]); i++; step();
       }, delay);
@@ -171,7 +177,14 @@
     b.type = 'button';
     b.className = 'ichip' + (variant ? ' ichip--' + variant : '');
     b.textContent = label;
-    b.addEventListener('click', onClick);
+    // The one-time Germany note is raised on the first tap anywhere in the
+    // chat — there is no dropdown left to hang it on — and the tap is not
+    // lost: it runs the moment the note is acknowledged. noteDone/showNote are
+    // declared at the bottom of this IIFE; a click can only happen after it ran.
+    b.addEventListener('click', function () {
+      if (!noteDone) { pendingTap = onClick; showNote(); return; }
+      onClick();
+    });
     return b;
   }
 
@@ -532,6 +545,109 @@
 
   function abroadFlow() { runSteps(abroadSteps()); }
 
+  /* --- The cover, answered in the chat ------------------------------------
+     This used to be a static list above the conversation, behind a second
+     dropdown. It is the same content, spoken by the bot on request: the whole
+     product before the first question, without a wall of text nobody scrolls.
+     Every number here mirrors the tariff table at the top of this file and
+     agent/nimmersatt-versicherung-de.md — change one, change all three. */
+  function topics() {
+    return [
+      { id: 'what', q: T('info.what.q', 'Was ist das überhaupt?'), a: [
+        T('info.what.1', 'Es geht um die Berufshaftpflicht für Medienberufe, Markel Pro Media. NIMMERSATT vermittelt sie, versichert wird bei Markel.'),
+        T('info.what.2', 'Gedacht ist sie für Artists, die in Deutschland gemeldet sind und deren Rechnungsadresse in Deutschland liegt. Fehlt eines von beidem, kann über diesen Partner kein Angebot entstehen. Dann führe ich dich in den § 12.7-Zweig, das klärt gleich meine erste Frage.'),
+        T('info.what.3', 'Abgedeckt sind reine Vermögensschäden aus deiner Arbeit, vor allem Leistungsverzug und Schlechtleistung. Personen-, Sach- und Mietsachschäden am Set, on location oder im Büro kommen optional über die Betriebshaftpflicht dazu.'),
+        T('info.what.4', 'Tätigkeiten: Video, Film & Content · Grafik, Web & Design · Marketing- & Medienagentur · Text, Redaktion & Verlag · Musik, Audio & Event · Beratung / Dienstleistung.')
+      ] },
+
+      { id: 'cost', q: T('info.cost.q', 'Was kostet das?'), a: [
+        T('info.cost.1', 'Die Schätzung hier im Chat rechnet aus Tätigkeit, Jahresnettoumsatz (bis 50.000 €, bis 100.000 €, bis 250.000 €, bis 500.000 € oder darüber), Versicherungssumme, Selbstbeteiligung und den Bausteinen, die du dazunimmst. Mindestens 120 € im Jahr. Das ist eine Größenordnung, keine Markel-Prämie.'),
+        T('info.cost.2', 'Versicherungssumme für Vermögensschäden: 300.000 €, 500.000 €, 1 Mio. € (empfohlen), 2 Mio. €, 5 Mio. € oder 10 Mio. €.'),
+        T('info.cost.3', 'Selbstbeteiligung: 0 €, 250 €, 500 € oder 1.000 € je Schaden. Mehr Selbstbeteiligung heißt weniger Beitrag.'),
+        T('info.cost.4', 'Betriebshaftpflicht optional dazu, 3 Mio. € oder 5 Mio. € pauschal für Personen-, Sach- und Mietsachschäden.'),
+        T('info.cost.5', 'Zusatzbausteine, alle freiwillig: Cyber & Daten-Eigenschaden ca. 96 €/Jahr · Eigenschadendeckung ca. 72 €/Jahr · Druckeigenschaden ca. 48 €/Jahr · Erweiterte Veranstaltungsdeckung bis 250 Personen ca. 84 €/Jahr · D&O-Außenhaftung ca. 60 €/Jahr.'),
+        T('info.cost.6', 'Laufzeit 1 Jahr mit automatischer Verlängerung oder 3 Jahre. Zahlung jährlich (ohne Zuschlag), halbjährlich oder vierteljährlich. Beginn nach deinem Wunschtermin.')
+      ] },
+
+      { id: 'ask', q: T('info.ask.q', 'Was fragst du mich?'), a: [
+        T('info.ask.1', 'Erst Tarif und Deckung, dann die Risikofragen: Vorschäden oder anhängige Streitigkeiten der letzten 3 bis 5 Jahre, bekannte Umstände mit möglichen künftigen Ansprüchen, Neugründung in den letzten 12 Monaten, Vorversicherer samt Ablaufdatum und Kündigungsgrund, Umsatzanteil in USA und Kanada, ausgeschlossene Tätigkeiten.'),
+        T('info.ask.2', 'Zum Schluss die Stammdaten: Rechtsform, Firmenname, Anrede, Vor- und Nachname, E-Mail, Telefon, Webseite oder Social-Profil, PLZ und Ort. Keine Bankdaten, keine IBAN, kein SEPA-Mandat.'),
+        T('info.ask.3', 'Abgeschickt geht eine unverbindliche Antragsanfrage raus, kein Vertrag. Du bekommst eine Referenznummer, NIMMERSATT prüft die Angaben, holt das verbindliche Markel-Angebot ein und meldet sich. Vor Abschluss bekommst du AVB, Produktinformationsblatt (IPID) und die 14-tägige Widerrufsbelehrung. Deine Angaben müssen wahrheitsgemäß und vollständig sein (§ 19 Abs. 5 VVG).'),
+        T('info.ask.4', 'Nicht im Standardtarif: Architektur oder Ingenieurwesen mit Bauüberwachung, Anlage- und Vermögensberatung sowie die Planung von Waffensystemen oder kerntechnischen Anlagen. Dafür gibt es ein Sonderkonzept, anfragen kannst du trotzdem.')
+      ] },
+
+      { id: 'why', q: T('info.why.q', 'Warum brauche ich das?'), a: [
+        T('info.why.1', '§ 12.5: Verursachst du durch Leistungsverzug oder Schlechtleistung einen finanziellen Ausfall, haftest du dafür. Die Haftung ist begrenzt auf die Deckungssumme deiner Berufshaftpflicht zzgl. deines Projekthonorars. Ans Privatvermögen geht es nur bei Vorsatz, grober Fahrlässigkeit oder wenn die Versicherung nicht leistet.'),
+        T('info.why.2', '§ 12.7: Innerhalb von vier Wochen, nachdem dir ein konkretes Angebot vorliegt, weist du eine von drei Absicherungen nach: a) eine Berufshaftpflicht für Leistungsverzug und Schlechtleistung, b) eine bestehende Versicherung mit vergleichbarem Deckungsumfang, oder c) du haftest persönlich. Es gibt also keinen Abschlusszwang, die Versicherung ist nur die bequemste der drei Türen.'),
+        T('info.why.3', '§ 14.4: Haftet NIMMERSATT gegenüber Agentur oder Endkunde für deinen Fehler, besteht im Innenverhältnis ein Regressanspruch, soweit du die Pflichtverletzung zu vertreten hast.')
+      ] }
+    ];
+  }
+
+  // The menu itself. It is re-rendered under the newest answer (never left
+  // sitting mid-conversation), keeps track of what has been read, and hands
+  // over to the funnel through done() when the visitor wants the number.
+  function askTopics(done) {
+    setInput(false);
+    var seen = {};
+    var wrapped = false;   // "that was all of it" is said once
+    var busy = false;
+
+    function allSeen() {
+      return topics().every(function (t) { return seen[t.id]; });
+    }
+
+    function menu() {
+      var c = controls();
+      var row = document.createElement('div'); row.className = 'ichips';
+      topics().forEach(function (t) {
+        var b = chip(t.q, function () {
+          if (busy) return;
+          busy = true; c.remove(); answer(t, function () { busy = false; menu(); });
+        });
+        if (seen[t.id]) b.classList.add('is-done');
+        row.appendChild(b);
+      });
+
+      var nav = document.createElement('div'); nav.className = 'ichips';
+      if (!allSeen()) {
+        nav.appendChild(chip(T('info.all', 'Zeig mir einfach alles'), function () {
+          if (busy) return;
+          busy = true; c.remove(); userMsg(T('info.all', 'Zeig mir einfach alles'));
+          var list = topics(); var i = 0;
+          (function next() {
+            if (i >= list.length) { busy = false; menu(); return; }
+            answer(list[i++], next, true);
+          })();
+        }, 'ghost'));
+      }
+      var go = T('info.start', 'Los, rechne mir das aus');
+      nav.appendChild(chip(go, function () {
+        if (busy) return;
+        busy = true; c.remove(); userMsg(go); done();
+      }, 'primary'));
+
+      c.appendChild(row); c.appendChild(nav);
+      scrollDown();
+    }
+
+    // One topic: echo it as the visitor's question, then answer it.
+    function answer(t, cb, silent) {
+      if (!silent) userMsg(t.q);
+      seen[t.id] = true;
+      botSay(t.a, function () {
+        if (allSeen() && !wrapped) {
+          wrapped = true;
+          botSay(T('info.wrap', 'Das war alles, was ich dazu habe. Sollen wir rechnen?'), cb);
+          return;
+        }
+        cb();
+      }, true);
+    }
+
+    menu();
+  }
+
   /* --- The scripted conversation ----------------------------------------- */
   function YESNO(noLabel, yesLabel) {
     return [
@@ -542,9 +658,15 @@
 
   function steps() {
     return [
-      { bot: [T('q.hello1', 'Hey, ich bin der nimmersatt Bot. Ich schau mit dir in ein paar Minuten deine Berufshaftpflicht durch und rechne dir live, was sie ungefähr kostet.'),
+      { bot: [T('q.hello1', 'Hey, ich bin der nimmersatt Bot. Ich habe hier alles zur Berufshaftpflicht für Medienberufe und rechne dir live aus, was sie ungefähr kostet.'),
               T('q.hello2', 'Vorab alles Wichtige zur Haftpflicht als PDF, zum Nachlesen wann du willst:')],
         render: function (done) { showDoc(); done(); } },
+
+      // Everything about the cover, on request, in the same conversation that
+      // collects the application. There is no static list next to the chat.
+      { bot: [T('info.intro', 'Frag mich einfach, was du wissen willst. Oder wir legen direkt los und ich rechne dir eine Größenordnung.'),
+              T('info.fine', 'Eins vorweg: Das hier ist keine Versicherungs- oder Rechtsberatung, keine verbindliche Prämie und keine Zusage auf Annahme. Verbindlich wird alles erst mit dem geprüften Angebot von Markel.')],
+        render: function (done) { askTopics(done); } },
 
       // Hard gate, deliberately the first question: no German registration means
       // no offer, so asking anything else first would waste the visitor's time.
@@ -731,22 +853,24 @@
     })();
   }
 
-  /* --- Dropdown, one-time Germany note, and kickoff ----------------------- */
-  // The chat is opt-in: it lives inside <details id="insuranceDrop">, so while
-  // that is closed its content is display:none and nothing runs. Opening it
-  // raises the note once (Markel Pro Media is a German-law product, so an
-  // artist billing from abroad should hear that before answering ten questions)
-  // and the bot starts talking as soon as the note is away. The note is
-  // informational only: the funnel's own first step is the Germany gate and
-  // routes a "no" into the § 12.7 branch.
-  var drop = document.getElementById('insuranceDrop');
+  /* --- One-time Germany note, and kickoff --------------------------------
+     The chat has no dropdown around it any more: it is part of the "Auf die
+     Liste" card and starts talking once it scrolls into view. The note is
+     raised on the visitor's FIRST tap inside the chat (see chip()), because
+     Markel Pro Media is a German-law product and an artist billing from abroad
+     should hear that before answering ten questions. It is informational only:
+     the funnel's own first question is the Germany gate and routes a "no" into
+     the § 12.7 branch. The tap that raised it is replayed afterwards, so no
+     click is lost.
+     ?funnel=0 hides the whole slot further up, so nothing here runs then. */
   var note = document.getElementById('insuranceNote');
   var noteSeen = false;
-  var noteDone = !(drop && note);   // no dropdown/note on the page: nothing to wait for
+  var noteDone = !note;      // no note on the page: nothing to wait for
+  var pendingTap = null;     // the chip tap that raised the note
 
   var started = false;
   function start() {
-    if (started || !noteDone) return;   // never talk underneath the open note
+    if (started) return;
     started = true;
     runSteps(steps());
   }
@@ -769,7 +893,12 @@
     note.classList.add('inote--fallback');
     note.setAttribute('open', '');
   }
-  function dismissNote() { noteDone = true; closeNote(); start(); }
+  function dismissNote() {
+    noteDone = true;
+    closeNote();
+    var tap = pendingTap; pendingTap = null;
+    if (tap) tap();
+  }
 
   if (note) {
     note.addEventListener('click', function (e) {
@@ -782,24 +911,17 @@
     // Esc (or any other native close) counts as read, too.
     note.addEventListener('close', dismissNote);
   }
-  if (drop) {
-    drop.addEventListener('toggle', function () {
-      if (!drop.open) return;
-      if (!noteSeen) { showNote(); return; }
-      start();
-    });
-  }
 
-  // No dropdown on the page (should not happen): fall back to the old
-  // behaviour and start the chat once it scrolls into view.
-  if (!drop) {
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { if (e.isIntersecting) { start(); if (started) io.disconnect(); } });
-      }, { threshold: 0.35 });
-      io.observe(chat);
-    } else {
-      start();
-    }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        start();
+      });
+    }, { threshold: 0.35 });
+    io.observe(chat);
+  } else {
+    start();
   }
 })();
