@@ -642,7 +642,10 @@
   background: color-mix(in srgb, var(--bg) 40%, transparent);
 }
 .chat__input {
-  flex: 1; appearance: none;
+  /* min-width: 0 or the flex item refuses to shrink past an input's default
+     ~20-character intrinsic width, and the send button gets pushed out of the
+     card on a 320px phone. */
+  flex: 1; min-width: 0; appearance: none;
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   color: var(--fg);
   border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
@@ -693,7 +696,12 @@
   object-fit: contain;
 }
 @media (max-width: 640px) {
-  .hero__reel { max-width: min(78vw, 340px); margin-top: clamp(3.5rem, 16vw, 6rem); }
+  /* On a phone the `auto` bottom margin was absorbing every spare pixel of a
+     100svh hero and dropping a 400px hole between the clip and the wordmark.
+     Zeroed, so the four parts (clip, NIMMERSATT, tagline, the three labels)
+     centre as one block on the .hero gap. Desktop keeps the pushed-apart
+     composition. */
+  .hero__reel { max-width: min(70vw, 300px); margin-top: 0; margin-bottom: 0; }
 }
 
 /* --- The card that used to hold the "Auf die Liste" sign-up form. That form
@@ -1699,6 +1707,63 @@ html.lenis, html.lenis body { height: auto; }
   /* Back-to-top: move to the right edge on phones so it stops covering the
      left-aligned roster names and the scrollytelling caption. */
   .backtotop { left: auto; right: var(--pad-edge); }
+
+  /* --- Reading on a phone (2026-08-23) ------------------------------------
+     Martian Mono advances 0.7em per character, so a 350px column tops out at
+     about 32 characters a line however the type is set. The line cannot get
+     much longer without shrinking the text, which would cost more than it
+     buys. So the work here is on everything else that makes a narrow column
+     hard to read: alignment, rag, hierarchy, and how big the things are that
+     a thumb has to hit. */
+
+  /* Eyebrows and the small block headings sat at 9.9px, under a body size of
+     15.2px, so the label of a block was smaller than the block it labelled,
+     which reads as noise instead of hierarchy. 11.2px stays quiet and can
+     actually be read at arm's length. */
+  :root { --text-label: clamp(0.7rem, 2.4vw, 0.78rem); }
+  /* One exception: the line under the bot's name is chrome, not content, and
+     at the larger label size "Berufshaftpflicht · Markel Pro Media" tips onto
+     a second row and pushes the whole chat header taller. */
+  .chat__brandmeta { font-size: 0.62rem; }
+
+  /* The three deal blocks run 15 to 20 lines each on a phone. Centred text
+     that long gives the eye no left edge to return to: every new line has to
+     be hunted for. Left-aligned, across the full column, and with half the
+     tile padding, which was eating a tenth of every line. On desktop they are
+     three short columns side by side and stay centred. */
+  .pillar {
+    text-align: left;
+    justify-items: start;
+    padding-inline: clamp(1.1rem, 4.5vw, 3rem);
+  }
+  .pillar__desc { max-width: none; margin-inline: 0; }
+
+  /* German at 32 characters a line tears holes into the rag: "zusammen-
+     arbeiten" alone is half a line. Hyphenation closes them and buys back
+     roughly a word per line. The dictionary follows documentElement.lang,
+     which js/i18n.js sets on every language switch. */
+  .about__body p,
+  .pillar__desc,
+  .stat__desc,
+  .roster__lead,
+  .section__lead {
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    /* Only split words worth splitting: at least 8 letters, and never leave a
+       stump. Without this Chrome offers "Dei-ne", which reads as a typo. */
+    hyphenate-limit-chars: 8 4 3;
+  }
+
+  /* The floating back-to-top sat at 82% white over running copy, so the words
+     behind it stayed half readable and looked like a printing error. Solid. */
+  .backtotop { background: var(--bg); }
+
+  /* Tap targets: 44px is the floor both Apple and Google quote, and these
+     four sat under it, the Calendly link worst of all at 12px tall. */
+  .nav__brand { min-width: 44px; min-height: 44px; }
+  .nav__toggle { width: 44px; height: 44px; margin-right: -10px; }
+  .chat__send { width: 44px; height: 44px; }
+  .timeline__note a { display: inline-flex; align-items: center; min-height: 44px; }
 }
 @media (max-width: 420px) {
   .hero__meta { gap: 0.4rem 1.2rem; }
