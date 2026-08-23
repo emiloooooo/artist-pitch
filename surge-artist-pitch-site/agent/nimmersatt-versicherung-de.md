@@ -2,8 +2,8 @@
 
 Zweite zulässige Wissensquelle für den nimmersatt Bot, neben dem Vertragstext.
 Sie beschreibt die Berufshaftpflicht, die NIMMERSATT Artists vermittelt, und den
-Versicherungs-Chat auf dieser Seite (im Fenster „Auf die Liste", hinter dem
-Aufklapper „Haftpflichtversicherung?").
+Versicherungs-Chat auf dieser Seite (die Karte „Haftpflichtversicherung",
+direkt unter dem Vertrags-Chat).
 
 > Pflegehinweis: Tarifwerte, Bausteine und Fragen spiegeln `js/funnel.js`.
 > Wer dort etwas ändert, ändert es hier mit.
@@ -97,23 +97,23 @@ sein (§ 19 Abs. 5 VVG). Der Chat gibt eine Referenznummer aus.
 
 ## 7. Wo das auf der Seite steht
 
-**Seit 2026-08-23 steckt alles im Fenster „Auf die Liste" selbst**, nicht mehr in
-einem eigenen Block darunter: dieselbe Karte wie das Anmeldeformular, eine
-Haarlinie tiefer, mit der Kopfzeile „Absicherung". Darin der Aufklapper
-„Haftpflichtversicherung?", und hinter dem Aufklapper zuerst der komplette
-Steckbrief als Faktenliste (Produkt, für wen, Deckung, Tätigkeiten,
-Versicherungssumme, Selbstbeteiligung, Betriebshaftpflicht, Zusatzbausteine mit
-Preisen, Beitragsschätzung, Laufzeit und Zahlung, was der Chat abfragt, was nach
-dem Absenden passiert, Ausschlüsse), dann die §-12.5-/12.7-/14.4-Box, das PDF
-„Berufshaftpflicht — das Wichtigste" und erst danach der Chat.
+**Stand 2026-08-23:** Der Versicherungs-Chat ist eine eigene Karte direkt unter
+dem Vertrags-Chat, mit der Kopfzeile „Absicherung", der Überschrift
+„Haftpflichtversicherung" und der festen Zeile „nur für Artists mit
+Rechnungsadresse in Deutschland". Kein Aufklapper, keine Faktenliste davor: Der
+Chat ist der ganze Block und erklärt das Produkt selbst.
 
-Die Faktenliste ist die Kurzfassung genau dieses Dokuments; wer hier etwas
-ändert, ändert die `insfacts`-Blöcke in `index.html` (deutsch) und die
-`ins.f.*`-Keys in `js/i18n.js` (englisch) mit.
+Das Anmeldeformular „Auf die Liste", in dessen Karte der Chat zwischenzeitlich
+saß, wurde am selben Tag auf Wunsch entfernt. Es gibt auf der Seite kein
+Anmeldeformular mehr — verweise nicht darauf.
+
+Der Bot bietet vier Themen an („Was ist das überhaupt?", „Was kostet das?", „Was
+fragst du mich?", „Warum brauche ich das?"), dazu „Zeig mir einfach alles" und
+„Los, rechne mir das aus". Inhalt und Zahlen dieser Antworten sind die
+Kurzfassung genau dieses Dokuments; wer hier etwas ändert, ändert `topics()` in
+`js/funnel.js` (deutsch) und die `ins.*`-Keys in `js/i18n.js` (englisch) mit.
 
 Alles läuft auf der **deutschen und der englischen** Seitenversion. Beim ersten
-Aufklappen erscheint ein Hinweisfenster: Markel Pro Media ist ein deutsches
+Tippen im Chat erscheint ein Hinweisfenster: Markel Pro Media ist ein deutsches
 Produkt und setzt eine Rechnungsadresse in Deutschland voraus; wer die nicht hat,
-wird von der ersten Frage in den §-12.7-Zweig geführt. Nach dem Absenden des
-Anmeldeformulars klappt nur das Formular auf die Danke-Zeile zusammen, der
-Versicherungsteil bleibt bedienbar.
+wird von der ersten Frage in den §-12.7-Zweig geführt.

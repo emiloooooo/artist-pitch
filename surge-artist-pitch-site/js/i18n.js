@@ -101,27 +101,8 @@
     'chat.send': 'Send message',
     'chat.offline': 'I’ve only got the Nimmersatt contract loaded right now — try “Summarize each paragraph of the contract”.',
 
-    /* lead form */
-    'lead.title': 'Get on the list',
-    'lead.sub': 'Quick intro, then we get in touch',
-    'lead.intro': 'We briefly ask for your approximate income because it is the basis for your cover through the German artists’ social insurance fund (Künstlersozialkasse, KSK): your health, long-term care and pension contributions are calculated from it, and through the KSK you only pay about half of them. A rough ballpark is completely enough for us.',
-    'lead.first': 'First name',
-    'lead.last': 'Last name',
-    'lead.period': 'Period',
-    'lead.monthly': 'Monthly',
-    'lead.yearly': 'Yearly',
-    'lead.choose': 'Please choose…',
-    'lead.incomeM': 'Approximate income (per month)',
-    'lead.incomeY': 'Approximate income (per year)',
-    'lead.disclaimer': 'This is voluntary and only a rough self-assessment for our conversation, not an official declaration to the KSK. Please give a realistic figure and no wishful numbers: incorrect or incomplete statements to the Künstlersozialkasse can lead to back payments and, under § 36 KSVG, to a fine. This information does not replace legal or tax advice; only the KSK can give binding statements.',
-    'lead.submit': 'Get on the list',
-    'lead.doneT': 'Thanks, you’re on the list.',
-    'lead.doneP': 'We’ll get back to you. Until then: stay hungry.',
-    'lead.errName': 'Please fill in your first and last name.',
-    'lead.sending': 'Sending…',
-    'lead.errSend': 'That didn’t work just now. Just write to us at hello@nimmersatt.fyi.',
-
-    /* insurance funnel (Markel Pro Media) — markup inside "Get on the list" */
+    /* insurance funnel (Markel Pro Media) — the whole card since the sign-up
+       form above it was removed on 2026-08-23 */
     'ins.eyebrow': 'Cover',
     'ins.lead': 'As a creator you are liable for your work, often with your private assets. Professional liability cover for media work (Markel Pro Media) catches exactly that. Ask the chat whatever you want to know: it explains the whole product, works out a rough ballpark live and takes your enquiry along the way.',
     'ins.title': 'Liability insurance',
@@ -134,7 +115,7 @@
     'ins.noteTitle': 'Only for artists with a billing address in Germany',
     'ins.noteText': 'Markel Pro Media is a German insurance product. It requires you to be registered in Germany and to have a billing address in Germany. If that is not you: start the chat anyway. The first question settles exactly that and then shows you the route via § 12.7 of the contract.',
     'ins.noteOk': 'Got it',
-    'ins.nudge': 'Quick aside, because you are really in it: § 12.7 gives you four weeks to show us how you are covered against late delivery. The insurance chat right under the sign-up form (“Get on the list”) explains the whole thing and sorts it out in a few minutes.',
+    'ins.nudge': 'Quick aside, because you are really in it: § 12.7 gives you four weeks to show us how you are covered against late delivery. The insurance chat right below this one (“Liability insurance”) explains the whole thing and sorts it out in a few minutes.',
 
     /* insurance funnel — the cover, answered by the bot on request (topics()
        in js/funnel.js). Same content the static list used to hold. */

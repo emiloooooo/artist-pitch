@@ -398,15 +398,15 @@
 /* Inline validation / send error */
 .ichat__err { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--fg); font-weight: 600; }
 
-/* The funnel sits INSIDE the "Auf die Liste" card, one hairline under the
-   sign-up form and in the same frame: eyebrow, heading, the Germany hint, one
-   intro line, then the chat. No second dropdown — the chat answers the whole
-   product itself (topics() in js/funnel.js). */
+/* The funnel fills the card on its own since the sign-up form above it was
+   removed (2026-08-23): eyebrow, heading, the Germany hint, one intro line,
+   then the chat. No dropdown — the chat answers the whole product itself
+   (topics() in js/funnel.js). The hairline and the grey tint that separated it
+   from the form are gone with the form; as the only child they would have put
+   a stray line across the top of the card. */
 .ifunnel-slot {
   margin-top: 0;
   padding: clamp(1rem, 2.4vw, 1.4rem);
-  border-top: 1px solid color-mix(in srgb, var(--fg) 7%, transparent);
-  background: color-mix(in srgb, var(--fg) 2.5%, transparent);
 }
 .ifunnel-slot__eyebrow {
   margin: 0 0 0.45rem;

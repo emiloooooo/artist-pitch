@@ -5,9 +5,11 @@
    shows the same live, clearly-non-binding premium ESTIMATE, surfaces the
    Haftpflicht PDF right in the conversation, and ends as a qualified
    application request POSTed to /api/funnel.
-   - Since 2026-08-23 it lives inside "Auf die Liste" and runs in BOTH
-     languages (?funnel=0 still switches it off). It is still a German-law
-     product, which is what the one-time note and the first question say.
+   - Since 2026-08-23 it runs in BOTH languages (?funnel=0 still switches it
+     off). It is still a German-law product, which is what the one-time note
+     and the first question say. It moved into the "Auf die Liste" card that
+     day and, later the same day, became that card's only content: the sign-up
+     form above it was removed on request.
    - There is no second dropdown around it any more: the chat is the whole
      block, so the bot also ANSWERS the product — every fact that used to sit
      in a static list above the chat now lives in topics() and is asked for in
