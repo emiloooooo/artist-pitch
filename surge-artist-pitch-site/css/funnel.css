@@ -517,3 +517,19 @@ a.ichip { text-decoration: none; display: inline-block; }
 @media (prefers-reduced-motion: reduce) {
   .inote__ok:active { transform: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Phones: the chips ARE the interface in this chat, so they get the same 44px
+   floor as every other tap target on the page (see the mobile block in
+   pitch.css). At 0.5rem of padding they were 35px, and the two document
+   buttons 36px.
+   ------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .ichip,
+  .idoc__btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
