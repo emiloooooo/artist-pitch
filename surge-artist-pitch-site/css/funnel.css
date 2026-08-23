@@ -386,3 +386,110 @@
 
 /* Inline validation / send error */
 .ichat__err { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--fg); font-weight: 600; }
+
+/* ============================================================================
+   Insurance dropdown + its one-time Germany note.
+   Most artists come for the contract, so the funnel no longer opens itself:
+   the section shows one row ("HAFTPFLICHTVERSICHERUNG? ↓", same chevron and
+   rotation as the document dropdown in the closing section) and only unfolds
+   the chat on request. Monochrome, hairline borders, no colour.
+   ========================================================================== */
+.idrop {
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
+  max-width: 680px;
+  border-top: 1px solid var(--faint);
+  border-bottom: 1px solid var(--faint);
+}
+.idrop__summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2rem);
+  min-height: 44px;
+  padding-block: clamp(1rem, 2.2vw, 1.5rem);
+}
+.idrop__summary::-webkit-details-marker { display: none; }
+.idrop__summary:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+.idrop__text { display: grid; gap: 0.45rem; min-width: 0; }
+.idrop__title {
+  font-family: var(--font-mono);
+  /* One long unbreakable word in a mono face: below ~380px it would run into
+     the chevron, so the size follows the viewport down instead of holding a
+     floor. Desktop is unchanged (the cap takes over above ~590px). */
+  font-size: clamp(0.85rem, 4.2vw, 1.55rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.idrop__hint {
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.idrop__chevron {
+  flex: 0 0 auto;
+  font-size: 1.25rem; line-height: 1;
+  color: var(--muted);
+  transition: transform var(--dur-ui) var(--ease-spring);
+}
+.idrop__summary:hover .idrop__chevron { color: var(--fg); }
+.idrop[open] .idrop__chevron { transform: rotate(180deg); color: var(--fg); }
+.idrop__body { padding-bottom: clamp(1.25rem, 3vw, 2rem); }
+
+/* The note itself — same glass panel language as the chat frame. */
+.inote {
+  width: min(30rem, calc(100vw - 2 * var(--pad-edge)));
+  /* The global reset zeroes every margin, which also kills the UA's
+     `margin: auto` on an open modal dialog — without this it sticks to the
+     top-left corner instead of centring. */
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  backdrop-filter: blur(22px) saturate(1.25);
+  color: var(--fg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 30px 60px -40px rgba(5, 5, 5, 0.5);
+}
+.inote::backdrop { background: color-mix(in srgb, var(--fg) 42%, transparent); }
+/* Browsers without <dialog>: js/funnel.js adds this class and centres it. */
+.inote--fallback {
+  position: fixed; z-index: 60;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: block;
+}
+.inote__inner {
+  display: flex; flex-direction: column; gap: 0.7rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+.inote__eyebrow {
+  margin: 0;
+  font-size: var(--text-label); letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+}
+.inote__title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+.inote__text { margin: 0; font-size: 0.86rem; line-height: var(--lh-read); color: var(--muted); }
+.inote__ok {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  appearance: none; cursor: pointer; font: inherit;
+  font-size: 0.86rem; font-weight: 600;
+  min-height: 44px; padding: 0.6rem 1.3rem; border-radius: 999px;
+  background: var(--fg); color: var(--bg); border: 1px solid var(--fg);
+  transition: transform var(--dur-ui) var(--ease-spring);
+}
+.inote__ok:active { transform: scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .idrop__chevron { transition: none; }
+  .inote__ok:active { transform: none; }
+}

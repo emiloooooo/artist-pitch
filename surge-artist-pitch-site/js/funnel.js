@@ -699,13 +699,70 @@
     })();
   }
 
+  /* --- Dropdown, one-time Germany note, and kickoff ----------------------- */
+  // The chat is opt-in: it lives inside <details id="insuranceDrop">, so while
+  // that is closed its content is display:none and nothing runs. Opening it
+  // raises the note once (Markel Pro Media is a German-law product, so an
+  // artist registered abroad should hear that before answering ten questions)
+  // and the bot starts talking as soon as the note is away. The note is
+  // informational only: the funnel's own first step is the Germany gate and
+  // routes a "no" into the § 12.7 branch.
+  var drop = document.getElementById('insuranceDrop');
+  var note = document.getElementById('insuranceNote');
+  var noteSeen = false;
+  var noteDone = !(drop && note);   // no dropdown/note on the page: nothing to wait for
+
+  var started = false;
+  function start() {
+    if (started || !noteDone) return;   // never talk underneath the open note
+    started = true;
+    runSteps(STEPS);
+  }
+
+  function closeNote() {
+    if (!note) return;
+    if (typeof note.close === 'function' && note.open) {
+      try { note.close(); } catch (err) { /* was not open as a modal */ }
+    }
+    note.removeAttribute('open');
+    note.classList.remove('inote--fallback');
+  }
+  function showNote() {
+    if (noteSeen || !note) return;
+    noteSeen = true;
+    if (typeof note.showModal === 'function') {
+      try { note.showModal(); return; } catch (err) { /* fall through */ }
+    }
+    // No <dialog> support: css/funnel.css centres it as a plain fixed panel.
+    note.classList.add('inote--fallback');
+    note.setAttribute('open', '');
+  }
+  function dismissNote() { noteDone = true; closeNote(); start(); }
+
+  if (note) {
+    note.addEventListener('click', function (e) {
+      // The button closes it; so does the backdrop, which reports the dialog
+      // element itself as the click target.
+      if (e.target === note || (e.target.closest && e.target.closest('[data-note-close]'))) {
+        dismissNote();
+      }
+    });
+    // Esc (or any other native close) counts as read, too.
+    note.addEventListener('close', dismissNote);
+  }
+  if (drop) {
+    drop.addEventListener('toggle', function () {
+      if (!drop.open) return;
+      if (!noteSeen) { showNote(); return; }
+      start();
+    });
+  }
+
   // Kick off once the chat scrolls into view, so the first lines don't fire
   // far above the fold (and it feels like the bot greets you when you arrive).
-  var started = false;
-  function start() { if (started) return; started = true; runSteps(STEPS); }
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { start(); io.disconnect(); } });
+      entries.forEach(function (e) { if (e.isIntersecting) { start(); if (started) io.disconnect(); } });
     }, { threshold: 0.35 });
     io.observe(chat);
   } else {
