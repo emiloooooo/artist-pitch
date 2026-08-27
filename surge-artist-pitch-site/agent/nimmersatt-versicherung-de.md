@@ -66,8 +66,10 @@ letzten 12 Monaten · Vorversicherung inkl. Versicherer, Ablaufdatum und
 Kündigungsgrund · Umsatzanteil USA/Kanada · ausgeschlossene Tätigkeiten.
 
 **Stammdaten:** Rechtsform, Firmenname, Anrede, Vor- und Nachname, E-Mail,
-Telefon, Webseite/Social-Profil, PLZ und Ort, Laufzeit (1 oder 3 Jahre),
-Zahlungsintervall (jährlich, halbjährlich, vierteljährlich), gewünschter Beginn.
+Telefon, Webseite/Social-Profil, Straße und Hausnummer, PLZ und Ort, Laufzeit
+(1 oder 3 Jahre, **beide verlängern sich automatisch**), Zahlungsintervall
+(jährlich, halbjährlich, vierteljährlich — **monatlich gibt es nicht**),
+gewünschter Beginn.
 
 Keine Bankdaten. Keine IBAN. Kein SEPA-Mandat im Chat.
 
@@ -77,6 +79,11 @@ Der Chat zeigt live eine **grobe Größenordnung**, keine Markel-Prämie. Sie re
 aus Tätigkeit × Umsatzband × Versicherungssumme × Selbstbeteiligung, plus
 Betriebshaftpflicht und gewählte Bausteine, mindestens 120 € im Jahr. Verbindlich
 wird eine Prämie erst, wenn Markel den Antrag geprüft hat.
+
+Angezeigt wird der Jahresbeitrag, darunter derselbe Betrag als halbjährliche und
+vierteljährliche Rate. **Einen Monatsbeitrag zeigt der Chat bewusst nicht**, weil
+monatliche Zahlung in diesem Produkt nicht wählbar ist. Die Raten sind in der
+Schätzung ohne Ratenzuschlag gerechnet.
 
 ## 5. Was nach dem Absenden passiert
 

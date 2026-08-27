@@ -125,6 +125,7 @@ module.exports = async function handler(req, res) {
     email: email,
     phone: str(body.phone, 40),
     website: str(body.website, 200),
+    street: str(body.street, 160),
     city: str(body.city, 120),
     country: pick(str(body.country, 4), ['DE', 'EU', 'EWR'], 'DE'),
     term: pick(str(body.term, 2), ['1', '3'], '1'),

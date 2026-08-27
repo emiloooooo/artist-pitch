@@ -77,7 +77,7 @@
     q_startup: '', q_prev: '', q_prev_insurer: '', q_prev_end: '', q_prev_reason: '',
     q_us: '', q_us_share: '', q_excl: '',
     legalForm: '', company: '', salutation: '', firstName: '', lastName: '',
-    email: '', phone: '', website: '', city: '', country: 'DE',
+    email: '', phone: '', website: '', street: '', city: '', country: 'DE',
     term: '1', interval: 'yearly', startDate: '',
     // Short door (signupFlow): the visitor leaves name + mail instead of
     // answering the funnel. Goes to /api/signup, not into buildPayload().
@@ -90,7 +90,10 @@
     if (data.bhp === 'yes') annual += (data.bhpsum === '5000000' ? 130 : 95) * REV[data.revenue];
     data.modules.forEach(function (m) { annual += (MOD[m] || 0); });
     annual = Math.max(120, Math.round(annual));
-    return { valid: true, annual: annual, monthly: Math.round(annual / 12) };
+    // Monthly payment does not exist in this product, so the estimate never
+    // shows a monthly figure — it splits into the two instalments you can
+    // actually pick further down (halbjährlich / vierteljährlich).
+    return { valid: true, annual: annual, half: Math.round(annual / 2), quarter: Math.round(annual / 4) };
   }
   // The six trade labels, used both as chips and in the review summary.
   function profLabel(v) {
@@ -342,9 +345,16 @@
     box.querySelector('.iprice__tag').textContent = T('est.tag', 'Unverbindliche Schätzung');
     box.querySelector('.iprice__main').innerHTML =
       T('est.approx', 'ca.') + ' ' + euro(e.annual) + '<span class="iprice__per"> / ' + T('est.year', 'Jahr') + '</span>';
-    box.querySelector('.iprice__alt').textContent = '≈ ' + euro(e.monthly) + ' / ' + T('est.month', 'Monat');
+    // Two separate spans, not one string: on a narrow phone the line has to
+    // break BETWEEN the two instalments, never inside one of them.
+    var alt = box.querySelector('.iprice__alt');
+    alt.appendChild(document.createElement('span')).textContent =
+      '≈ ' + euro(e.half) + ' ' + T('est.half', 'halbjährlich');
+    alt.appendChild(document.createElement('span')).textContent =
+      '≈ ' + euro(e.quarter) + ' ' + T('est.quarter', 'vierteljährlich');
     box.querySelector('.iprice__basis').textContent =
-      coverText() + '. ' + T('est.basis', 'Keine verbindliche Markel-Prämie — die kommt nach der Prüfung.');
+      coverText() + '. ' + T('est.basis', 'Keine verbindliche Markel-Prämie — die kommt nach der Prüfung.') +
+      ' ' + T('est.rates', 'Raten ohne Zuschlag gerechnet.');
     c.appendChild(box); scrollDown();
   }
 
@@ -416,7 +426,7 @@
       },
       legalForm: data.legalForm, company: data.company, salutation: data.salutation,
       firstName: data.firstName, lastName: data.lastName, email: data.email, phone: data.phone,
-      website: data.website, city: data.city, country: data.country,
+      website: data.website, street: data.street, city: data.city, country: data.country,
       term: data.term, interval: data.interval, startDate: data.startDate,
       lang: isEN() ? 'en' : 'de'
     };
@@ -581,12 +591,12 @@
         T('info.cost.3', 'Selbstbeteiligung: 0 €, 250 €, 500 € oder 1.000 € je Schaden. Mehr Selbstbeteiligung heißt weniger Beitrag.'),
         T('info.cost.4', 'Betriebshaftpflicht optional dazu, 3 Mio. € oder 5 Mio. € pauschal für Personen-, Sach- und Mietsachschäden.'),
         T('info.cost.5', 'Zusatzbausteine, alle freiwillig: Cyber & Daten-Eigenschaden ca. 96 €/Jahr · Eigenschadendeckung ca. 72 €/Jahr · Druckeigenschaden ca. 48 €/Jahr · Erweiterte Veranstaltungsdeckung bis 250 Personen ca. 84 €/Jahr · D&O-Außenhaftung ca. 60 €/Jahr.'),
-        T('info.cost.6', 'Laufzeit 1 Jahr mit automatischer Verlängerung oder 3 Jahre. Zahlung jährlich (ohne Zuschlag), halbjährlich oder vierteljährlich. Beginn nach deinem Wunschtermin.')
+        T('info.cost.6', 'Laufzeit 1 Jahr oder 3 Jahre, beide verlängern sich automatisch. Zahlung jährlich (ohne Zuschlag), halbjährlich oder vierteljährlich — monatlich gibt es nicht. Beginn nach deinem Wunschtermin.')
       ] },
 
       { id: 'ask', q: T('info.ask.q', 'Was fragst du mich?'), a: [
         T('info.ask.1', 'Erst Tarif und Deckung, dann die Risikofragen: Vorschäden oder anhängige Streitigkeiten der letzten 3 bis 5 Jahre, bekannte Umstände mit möglichen künftigen Ansprüchen, Neugründung in den letzten 12 Monaten, Vorversicherer samt Ablaufdatum und Kündigungsgrund, Umsatzanteil in USA und Kanada, ausgeschlossene Tätigkeiten.'),
-        T('info.ask.2', 'Zum Schluss die Stammdaten: Rechtsform, Firmenname, Anrede, Vor- und Nachname, E-Mail, Telefon, Webseite oder Social-Profil, PLZ und Ort. Keine Bankdaten, keine IBAN, kein SEPA-Mandat.'),
+        T('info.ask.2', 'Zum Schluss die Stammdaten: Rechtsform, Firmenname, Anrede, Vor- und Nachname, E-Mail, Telefon, Webseite oder Social-Profil, Straße und Hausnummer, PLZ und Ort. Keine Bankdaten, keine IBAN, kein SEPA-Mandat.'),
         T('info.ask.3', 'Abgeschickt geht eine unverbindliche Antragsanfrage raus, kein Vertrag. Du bekommst eine Referenznummer, NIMMERSATT prüft die Angaben, holt das verbindliche Markel-Angebot ein und meldet sich. Vor Abschluss bekommst du AVB, Produktinformationsblatt (IPID) und die 14-tägige Widerrufsbelehrung. Deine Angaben müssen wahrheitsgemäß und vollständig sein (§ 19 Abs. 5 VVG).'),
         T('info.ask.4', 'Nicht im Standardtarif: Architektur oder Ingenieurwesen mit Bauüberwachung, Anlage- und Vermögensberatung sowie die Planung von Waffensystemen oder kerntechnischen Anlagen. Dafür gibt es ein Sonderkonzept, anfragen kannst du trotzdem.')
       ] },
@@ -963,14 +973,18 @@
         render: function (done) { askText('phone', { placeholder: T('ph.phone', 'Telefon / Mobil (optional)'), optional: true }, done); } },
       { bot: T('q.website', 'Webseite oder Social-Media-Profil zur Verifikation?'),
         render: function (done) { askText('website', { placeholder: T('ph.website', 'z. B. instagram.com/… (optional)'), optional: true }, done); } },
+      { bot: T('q.street', 'Straße und Hausnummer?'),
+        render: function (done) { askText('street', { placeholder: T('ph.street', 'Straße und Hausnummer (optional)'), optional: true }, done); } },
       { bot: T('q.city', 'PLZ und Ort?'),
         render: function (done) { askText('city', { placeholder: T('ph.city', 'PLZ, Ort (optional)'), optional: true }, done); } },
       // (No "Wo ist dein Sitz?" step any more — the gate above already settled
       // that, and offering EU/EWR here would let the answer contradict it.
       // data.country stays 'DE'.)
-      { bot: T('q.term', 'Welche Laufzeit hättest du gern?'),
+      // Both terms renew automatically, so the note sits in the QUESTION and not
+      // on one of the two answers, where it read like only the 1-year one does.
+      { bot: T('q.term', 'Welche Laufzeit hättest du gern? Beide verlängern sich automatisch.'),
         render: function (done) { askChoice('term', [
-          { value: '1', label: T('q.term1', '1 Jahr (autom. Verlängerung)') },
+          { value: '1', label: T('q.term1', '1 Jahr') },
           { value: '3', label: T('q.term3', '3 Jahre') }
         ], done); } },
       { bot: T('q.interval', 'Und das Zahlungsintervall?'),
