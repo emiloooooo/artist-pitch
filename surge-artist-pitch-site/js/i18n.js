@@ -402,7 +402,7 @@
     /* head */
     'meta.title': 'NIMMERSATT · Artist management for visual designers & moving image',
     'meta.desc': 'An artist management agency for visual designers and moving image makers. We protect your visual language, make your work bigger and bring you jobs.',
-    'meta.alt': 'Nimmersatt: artist management for visual designers and moving image makers.'
+    'meta.alt': 'The Nimmersatt mark, cut out of the artists reel.'
   };
 
   /* Documents that exist in both languages. */
@@ -530,7 +530,7 @@
   var DE_HEAD = {
     title: 'NIMMERSATT · Artist-Management für visuelle Gestalter und Bewegtbild',
     desc: 'Eine Artist-Management-Agentur für visuelle Gestalter und Bewegtbild-Macher. Wir schützen deine Bildsprache, machen deine Arbeit größer und bringen dir Jobs.',
-    alt: 'Nimmersatt: Artist-Management für visuelle Gestalter und Bewegtbild-Macher.'
+    alt: 'Das Nimmersatt-Zeichen, ausgeschnitten aus dem Artist-Reel.'
   };
 
   /* --- The switcher ------------------------------------------------------- */
