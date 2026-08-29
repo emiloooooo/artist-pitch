@@ -3,8 +3,11 @@
 
    How it works
    - The German copy stays in index.html and is the source of truth for the
-     markup. EN below is keyed by the data-i18n / data-i18n-html /
+     <body> markup. EN below is keyed by the data-i18n / data-i18n-html /
      data-i18n-attr attributes. Editing English = editing this file only.
+   - The <head> is the exception: it ships English in the markup, because link
+     previews, search engines and every other crawler never run this script.
+     German head copy therefore lives in DE_HEAD further down, not in the DOM.
    - English is the default, so the first paint (German markup) is swapped to
      English by boot(). That swap happens behind the preloader, before the
      visitor taps to enter, so nothing visible flickers.
@@ -31,15 +34,16 @@
     'nav.menu': 'Open menu',
 
     /* hero */
-    'hero.sub': 'You found your own visual language a long time ago. We built the infrastructure that protects it, makes it bigger and brings you work, without bending you or your art out of shape.',
+    'hero.sub': 'Creatives are artists. We are an artist management agency for visual designers and moving image makers. We protect your visual language, make it bigger and bring you work, without bending you or your art out of shape.',
     'hero.m1': 'Artist Management',
-    'hero.m2': 'Visual Production',
+    'hero.m2': 'Visual Design',
     'hero.m3': 'Creative Community',
+    'hero.m4': 'Moving Image',
 
     /* about */
     'about.lead1': 'At nimmersatt we believe<br />in one simple truth:',
     'about.p1': 'The ideas we take in shape what we make. That is why every project starts with culture, not with content. Out of research, real insights and decoding a whole generation, we read what catches fire on its own and how the next generation actually works. That is how we bring brands in from the inside: they play along honestly instead of just broadcasting.',
-    'about.p2': 'We are a creative studio, an artist management and a production company in one. Instead of forcing projects into rigid agency structures, we build a dedicated team for every job from our circle of directors, designers, photographers, strategists, editors, developers and producers. Whether a project needs a single head or a full team from start to finish: the team is built around the brief, not the other way around.',
+    'about.p2': 'We are an artist management agency for visual designers and moving image makers: creative studio, management and production company in one. Instead of forcing projects into rigid agency structures, we build a dedicated team for every job from our circle of directors, designers, photographers, strategists, editors, developers and producers. Whether a project needs a single head or a full team from start to finish: the team is built around the brief, not the other way around.',
     'about.p3': 'In our network, old hands from the industry meet the next generation of creative voices. We put experienced heads together with young talent, and out of that comes work that combines craft with a fresh perspective and holds up at any scale and any budget.',
     'about.s1': 'What we make mirrors what we take in. We built a collective of Berlin’s strongest visual minds, found on the street and in the networks of the city.',
     'about.s2': 'Our artists are self-taught. Instead of university there was raw trial and error, and outdated processes mean nothing to them.',
@@ -387,11 +391,18 @@
     'doc.h': 'Documents',
     'doc.a1': 'Download artist agreement',
     'doc.a2': 'Download deal package',
+    // In English the English name leads and the German title becomes the
+    // sub-line; German mode reads the markup and flips back on its own.
+    'doc.n1': 'Artist Agreement',
+    'doc.s1': 'Künstlervertrag',
+    'doc.n2': 'Deal Package',
+    'doc.s2': 'Dealpaket',
     'foot.tag': 'Never full · Never finished',
 
     /* head */
-    'meta.title': 'NIMMERSATT — Your place in the collective',
-    'meta.desc': 'An infrastructure that protects your visual language, makes your work bigger and brings you jobs, without bending your creative identity out of shape.'
+    'meta.title': 'NIMMERSATT · Artist management for visual designers & moving image',
+    'meta.desc': 'An artist management agency for visual designers and moving image makers. We protect your visual language, make your work bigger and bring you jobs.',
+    'meta.alt': 'Nimmersatt: artist management for visual designers and moving image makers.'
   };
 
   /* Documents that exist in both languages. */
@@ -490,13 +501,17 @@
     });
 
     // Head: title + description, so shares and tabs match the page.
-    document.title = (en && EN['meta.title']) ? EN['meta.title'] : DE_TITLE;
-    setMeta('name', 'description', en ? EN['meta.desc'] : DE_DESC);
+    // The markup ships English (see DE_HEAD), so German is the swapped-in side
+    // here, not the other way round.
+    document.title = en ? EN['meta.title'] : DE_HEAD.title;
+    setMeta('name', 'description', en ? EN['meta.desc'] : DE_HEAD.desc);
     setMeta('property', 'og:title', document.title);
-    setMeta('property', 'og:description', en ? EN['meta.desc'] : DE_DESC);
+    setMeta('property', 'og:description', en ? EN['meta.desc'] : DE_HEAD.desc);
     setMeta('property', 'og:locale', en ? 'en_GB' : 'de_DE');
+    setMeta('property', 'og:image:alt', en ? EN['meta.alt'] : DE_HEAD.alt);
     setMeta('name', 'twitter:title', document.title);
-    setMeta('name', 'twitter:description', en ? EN['meta.desc'] : DE_DESC);
+    setMeta('name', 'twitter:description', en ? EN['meta.desc'] : DE_HEAD.desc);
+    setMeta('name', 'twitter:image:alt', en ? EN['meta.alt'] : DE_HEAD.alt);
 
     if (persist !== false) remember(current);
     document.querySelectorAll('[data-lang-slot]').forEach(paint);
@@ -508,11 +523,15 @@
     if (el && value) el.setAttribute('content', value);
   }
 
-  var DE_TITLE = document.title;
-  var DE_DESC = (function () {
-    var m = document.querySelector('meta[name="description"]');
-    return m ? m.getAttribute('content') : '';
-  })();
+  // The <head> in index.html is English, because link previews, search engines
+  // and every other crawler never run this script and would otherwise only ever
+  // see German. So the German head copy cannot be read off the DOM any more, it
+  // is spelled out here and swapped in when the page switches to German.
+  var DE_HEAD = {
+    title: 'NIMMERSATT · Artist-Management für visuelle Gestalter und Bewegtbild',
+    desc: 'Eine Artist-Management-Agentur für visuelle Gestalter und Bewegtbild-Macher. Wir schützen deine Bildsprache, machen deine Arbeit größer und bringen dir Jobs.',
+    alt: 'Nimmersatt: Artist-Management für visuelle Gestalter und Bewegtbild-Macher.'
+  };
 
   /* --- The switcher ------------------------------------------------------- */
   // One component, mounted into every [data-lang-slot]: a button that opens a
