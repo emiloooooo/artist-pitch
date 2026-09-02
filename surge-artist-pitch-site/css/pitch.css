@@ -773,26 +773,7 @@
   text-transform: uppercase;
 }
 
-/* Inline (non-redirecting) video player for the project overview */
-.tool-video {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 1px solid var(--faint);
-  background: #000;
-}
-.tool-video iframe,
-.tool-video video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-}
-.tool-video video { object-fit: cover; background: #000; }
-
-/* Real product screenshots in the artist-side casefeature */
+/* Real product screenshots of the operating system */
 .tool-shot {
   margin: 0;
   border: 1px solid var(--faint);
@@ -803,7 +784,8 @@
 }
 .tool-shot img {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: auto;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top left;
   display: block;
@@ -828,6 +810,22 @@
   color: var(--muted);
 }
 
+/* Section opener: one capture across the full column instead of a pair. */
+.tool-shot--wide { margin-top: clamp(2rem, 4vw, 3rem); }
+/* Phone captures are portrait, so they are sized by height and centred inside
+   the panel rather than filling a landscape box that would crop them to a strip. */
+.tool-shot--phone img {
+  align-self: center;
+  width: auto;
+  max-width: 100%;
+  height: clamp(340px, 42vw, 520px);
+  aspect-ratio: 1170 / 2532;
+  object-fit: contain;
+  background: var(--bg);
+  margin: clamp(1rem, 3vw, 2rem) 0;
+}
+.tool-shot--phone figcaption { margin-top: auto; }
+
 /* Screenshot + note pairs. Single container so mobile order is
    shot → note → shot → note (each screenshot keeps its own explanation right
    under it). On desktop the grid areas restore the shots-row / notes-row look. */
@@ -837,11 +835,32 @@
   gap: clamp(1rem, 3.5vw, 1.6rem);
   margin-top: clamp(1.5rem, 3vw, 2.2rem);
 }
+.toolpairs--phone { margin-top: clamp(1rem, 2.5vw, 1.6rem); }
+.tool-note--wide { margin-top: clamp(1.6rem, 3vw, 2.4rem); }
 .tool-note h3 {
   font-size: var(--text-label); letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--fg); margin-bottom: 0.7rem;
 }
 .tool-note p { color: var(--muted); line-height: 1.7; font-size: var(--text-body); }
+/* Square markers, drawn rather than listed, so they keep the page monochrome
+   and stay aligned with the first line of a wrapping bullet. */
+.tool-bullets { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.tool-bullets li {
+  position: relative;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: var(--text-body);
+}
+.tool-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.66em;
+  width: 5px;
+  height: 5px;
+  background: var(--fg);
+}
 @media (min-width: 720px) {
   .toolpairs {
     grid-template-columns: 1fr 1fr;
@@ -853,6 +872,7 @@
   .toolpairs > *:nth-child(2) { grid-area: note1; }
   .toolpairs > *:nth-child(3) { grid-area: shot2; }
   .toolpairs > *:nth-child(4) { grid-area: note2; }
+  .tool-note--wide { max-width: 62ch; }
 }
 
 /* ============================================================================

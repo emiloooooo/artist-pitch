@@ -41,15 +41,15 @@
      paused on the poster until a gesture. Force play, and retry on first input. */
   (function autoplayLoops() {
     var loops = Array.prototype.slice.call(
-      document.querySelectorAll(".hero__mark, .hero__reel video, .tool-video video")
+      document.querySelectorAll(".hero__mark, .hero__reel video")
     );
     var pv = preloader ? preloader.querySelector("video") : null;
     if (pv) loops.push(pv);
     if (!loops.length) return;
-    // The tool walkthrough carries visible controls. Once someone pauses it by
-    // hand, no later retry is allowed to resurrect it. A pause that happens
-    // while the video sits offscreen is the browser saving bandwidth, not the
-    // user, so that one does not count.
+    // A loop that carries visible controls can be paused by hand, and no later
+    // retry is allowed to resurrect it. A pause that happens while the video
+    // sits offscreen is the browser saving bandwidth, not the user, so that one
+    // does not count.
     loops.forEach(function (v) {
       if (!v || !v.controls) return;
       v.addEventListener("pause", function () {
