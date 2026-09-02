@@ -836,6 +836,28 @@
   margin-top: clamp(1.5rem, 3vw, 2.2rem);
 }
 .toolpairs--phone { margin-top: clamp(1rem, 2.5vw, 1.6rem); }
+/* The two phone captures stay side by side at every width, phones included:
+   they are narrow, and they only read as a pair. Their notes drop underneath at
+   full column width so the text keeps its measure instead of being squeezed
+   into a 170px column. Desktop restores the shared notes row further down. */
+.toolpairs--phone {
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "shot1 shot2" "note1 note1" "note2 note2";
+  column-gap: clamp(0.6rem, 2.5vw, 1.6rem);
+}
+.toolpairs--phone > *:nth-child(1) { grid-area: shot1; }
+.toolpairs--phone > *:nth-child(2) { grid-area: note1; }
+.toolpairs--phone > *:nth-child(3) { grid-area: shot2; }
+.toolpairs--phone > *:nth-child(4) { grid-area: note2; }
+@media (max-width: 719px) {
+  /* Two captures now share one row, so the shot is sized by its column instead
+     of by a fixed height that would spill out of it. */
+  .tool-shot--phone img {
+    width: 100%;
+    height: auto;
+    margin: clamp(0.6rem, 2.5vw, 1.4rem) 0;
+  }
+}
 .tool-note--wide { margin-top: clamp(1.6rem, 3vw, 2.4rem); }
 .tool-note h3 {
   font-size: var(--text-label); letter-spacing: 0.16em; text-transform: uppercase;
